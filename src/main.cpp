@@ -1,12 +1,22 @@
 #include "webserv.hpp"
 #include <iostream>
+#include <sstream>
 #include <unistd.h>
 #include <sys/socket.h>
 #include <arpa/inet.h>
 
-int main()
+// https://gist.github.com/vthanki/8405c9cd4a09d3a0b73bf876b2635ad4#file-unix_server-c
+
+int main(int argc, char *argv[])
 {
-    int port = 8000;
+    if (argc != 2)
+    {
+        std::cout << "Usage: ./webserv <port>" << std::endl;
+        return -1;
+    }
+    int port;
+    std::stringstream ss(argv[1]);
+    ss >> port;
     
     struct sockaddr_in serv_addr;
     struct sockaddr_in cli_addr;

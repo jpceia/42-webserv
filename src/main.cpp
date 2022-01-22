@@ -5,6 +5,8 @@
 #include <sys/socket.h>
 #include <arpa/inet.h>
 
+#define BUFF_SIZE 1024
+
 // https://gist.github.com/vthanki/8405c9cd4a09d3a0b73bf876b2635ad4#file-unix_server-c
 
 int main(int argc, char *argv[])
@@ -47,9 +49,8 @@ int main(int argc, char *argv[])
         return -1;
     }
     // read from the socket
-    char buffer[2048];
-    int n = read(connection, buffer, sizeof(buffer)); // we must use pool instead of read 
-    if (n < 0)
+    char buffer[BUFF_SIZE];
+    if (recv(connection, buffer, sizeof(buffer), 0) < 0)
     {
         std::cerr << "Could not read from socket" << std::endl;
         return -1;
@@ -57,8 +58,7 @@ int main(int argc, char *argv[])
     std::cout << buffer << std::endl;
     // write to the socket
     std::string response = "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\n\r\n<html><body><h1>Hello World</h1></body></html>";
-    n = write(connection, response.c_str(), response.length()); // we must use write instead of read 
-    if (n < 0)
+    if (send(connection, response.c_str(), response.length(), 0) < 0)
     {
         std::cerr << "Could not write to socket" << std::endl;
         return -1;

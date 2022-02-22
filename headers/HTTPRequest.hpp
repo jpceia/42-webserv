@@ -21,7 +21,6 @@
 enum HTTPMethod {
     GET,
     POST,
-    PUT,
     DELETE,
     UNKNOWN
 };

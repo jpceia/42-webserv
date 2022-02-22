@@ -19,8 +19,6 @@ HTTPMethod parseHTTPMethod(std::string const &method)
         return GET;
     else if (method == "POST")
         return POST;
-    else if (method == "PUT")
-        return PUT;
     else if (method == "DELETE")
         return DELETE;
     return UNKNOWN;
@@ -32,8 +30,6 @@ std::string strHTTPMethod(HTTPMethod method)
         return "GET";
     else if (method == POST)
         return "POST";
-    else if (method == PUT)
-        return "PUT";
     else if (method == DELETE)
         return "DELETE";
     return "UNKNOWN";

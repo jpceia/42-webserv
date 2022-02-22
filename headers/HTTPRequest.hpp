@@ -6,7 +6,7 @@
 /*   By: jceia <jceia@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/22 13:00:01 by jceia             #+#    #+#             */
-/*   Updated: 2022/02/22 15:37:50 by jceia            ###   ########.fr       */
+/*   Updated: 2022/02/22 16:33:44 by jceia            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,6 +36,13 @@ public:
 
     friend std::istream &operator>>(std::istream &is, HTTPRequest &request);
     friend std::ostream &operator<<(std::ostream &out, HTTPRequest &request);
+
+    class ParseException : public std::exception
+    {
+        public:
+            virtual const char* what(void) const throw();
+    };
+    
 private:
     HTTPMethod _method;
     std::string _path;

@@ -6,7 +6,7 @@
 /*   By: jceia <jceia@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/22 15:33:45 by jceia             #+#    #+#             */
-/*   Updated: 2022/02/22 16:25:15 by jceia            ###   ########.fr       */
+/*   Updated: 2022/02/22 16:34:18 by jceia            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,6 +57,11 @@ HTTPRequest& HTTPRequest::operator=(const HTTPRequest &rhs)
     return *this;
 }
 
+const char* HTTPRequest::ParseException::what(void) const throw()
+{
+    return "Error parsing HTTP Request";
+}
+
 std::istream &operator>>(std::istream &is, HTTPRequest &request)
 {
     std::string line;
@@ -65,10 +70,10 @@ std::istream &operator>>(std::istream &is, HTTPRequest &request)
     std::string method;
     ss >> method >> request._path >> request._version; // parse start line
     if (!ss.eof())
-        throw std::exception(); // invalid start line
+        throw HTTPRequest::ParseException(); // invalid start line
     request._method = parseHTTPMethod(method);
     if (request._method == UNKNOWN)
-        throw std::exception(); // invalid method
+        throw HTTPRequest::ParseException(); // invalid method
     // Parse requests
     while (std::getline(is, line))
     {
@@ -76,10 +81,9 @@ std::istream &operator>>(std::istream &is, HTTPRequest &request)
         if (line.empty())
             break;
         size_t pos = line.find(':');
-        if (pos != std::string::npos)
-            request._headers[line.substr(0, pos)] = line.substr(pos + 2);
-        else
-            throw std::exception(); // invalid header
+        if (pos == std::string::npos)
+            throw HTTPRequest::ParseException(); // invalid header
+        request._headers[line.substr(0, pos)] = line.substr(pos + 2);      
     }
     // Parse body
     while (std::getline(is, line))

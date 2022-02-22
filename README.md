@@ -1,6 +1,6 @@
 ## HTTP:
 
-What is HTTP?
+### What is HTTP?
 
     HTTP stands for Hyper Text Transfer Protocol.
     WWW is about communication between web clients and servers.
@@ -9,7 +9,7 @@ What is HTTP?
     Clients are often browsers (Chrome, Edge, Safari), but they can be any type of program or device.
     Servers are most often computers in the cloud.
 
-HTTP Request / Response
+### HTTP Request / Response
 
     Communication between clients and servers is done by requests and responses:
 
@@ -19,7 +19,7 @@ HTTP Request / Response
     4. The server returns an HTTP response (output) to the browser.
     5. The client (the browser) receives the response.
 
-The HTTP Request Circle
+### The HTTP Request Circle
 
     A typical HTTP request / response circle:
 
@@ -32,7 +32,7 @@ The HTTP Request Circle
 
 ## HTML:
 
-What is HTML?
+### What is HTML?
     
     HTML stands for Hyper Text Markup Language.
     HTML is the standard markup language for Web pages.
@@ -42,12 +42,12 @@ What is HTML?
 
 ## Git:
 
-Go to a Branch:
+### Go to a Branch:
 
     git clone https://github.com/jpceia/42-webserv/tree/master
     git checkout dock
 
-Make a new Branch:
+### Make a new Branch:
 
     git clone https://github.com/jpceia/42-webserv/tree/master
     git branch dock
@@ -55,7 +55,7 @@ Make a new Branch:
     git commit
     git push
 
-Make a new Branch and change to it:
+### Make a new Branch and change to it:
 
     git clone https://github.com/jpceia/42-webserv/tree/master
     git checkout -b [name_of_your_new_branch]
@@ -63,13 +63,13 @@ Make a new Branch and change to it:
     git commit
     git push -u origin [name_of_your_new_branch]
 
-Commit to a Branch:
+### Commit to a Branch:
 
     git add .
     git commit -m "bla bla"
     git push -u origin docker
 
-Merge to a Dev Branch:
+### Merge to a Dev Branch:
 
     git checkout dock
     git merger dev

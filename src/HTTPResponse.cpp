@@ -6,7 +6,7 @@
 /*   By: jceia <jceia@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/22 15:33:45 by jceia             #+#    #+#             */
-/*   Updated: 2022/02/22 16:09:55 by jceia            ###   ########.fr       */
+/*   Updated: 2022/02/22 16:14:56 by jceia            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,6 +33,27 @@ HTTPResponse& HTTPResponse::operator=(const HTTPResponse &rhs)
         this->_version = rhs._version;
     }
     return *this;
+}
+
+void HTTPResponse::setStatus(int status_code, const std::string& text)
+{
+    this->_status_code = status_code;
+    this->_status_text = text;
+}
+
+void HTTPResponse::setHeader(const std::string& name, const std::string& value)
+{
+    this->_headers[name] = value;
+}
+
+void HTTPResponse::setVersion(const std::string& version)
+{
+    this->_version = version;
+}
+
+void HTTPResponse::setBody(const std::string& body)
+{
+    this->_body = body;
 }
 
 std::ostream &operator<<(std::ostream &out, HTTPResponse &response)

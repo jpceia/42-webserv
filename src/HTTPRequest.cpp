@@ -6,7 +6,7 @@
 /*   By: jceia <jceia@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/22 15:33:45 by jceia             #+#    #+#             */
-/*   Updated: 2022/02/22 15:38:05 by jceia            ###   ########.fr       */
+/*   Updated: 2022/02/22 16:25:15 by jceia            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,7 +67,8 @@ std::istream &operator>>(std::istream &is, HTTPRequest &request)
     if (!ss.eof())
         throw std::exception(); // invalid start line
     request._method = parseHTTPMethod(method);
-
+    if (request._method == UNKNOWN)
+        throw std::exception(); // invalid method
     // Parse requests
     while (std::getline(is, line))
     {

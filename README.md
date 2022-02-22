@@ -4,7 +4,8 @@
 
     HTTP stands for Hyper Text Transfer Protocol.
     WWW is about communication between web clients and servers.
-    Communication between client computers and web servers is done / by sending HTTP Requests and receiving HTTP Responses.
+    Communication between client computers and web servers is done 
+    by sending HTTP Requests and receiving HTTP Responses.
 
     Clients are often browsers (Chrome, Edge, Safari), but they can be any type of program or device.
     Servers are most often computers in the cloud.

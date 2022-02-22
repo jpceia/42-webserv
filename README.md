@@ -31,7 +31,6 @@ The HTTP Request Circle
 
 
 ## HTML:
-<code>
 
 What is HTML?
     
@@ -39,13 +38,9 @@ What is HTML?
     HTML is the standard markup language for Web pages.
     HTML elements are the building blocks of HTML pages.
     HTML elements are represented by <> tags.
-</code>
-
 
 
 ## Git:
-
-<code>
 
 Go to a Branch:
 
@@ -85,4 +80,3 @@ Merge to a Dev Branch:
     git checkout dev
     git merge dock
     git push
-</code>

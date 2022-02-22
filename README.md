@@ -1,5 +1,6 @@
 ## HTTP:
 <code>
+
 What is HTTP?
 
     HTTP stands for Hyper Text Transfer Protocol.
@@ -27,8 +28,7 @@ The HTTP Request Circle
     2. The browser requests a style sheet. The server returns a CSS file.
     3. The browser requests an JPG image. The server returns a JPG file.
     4. The browser requests JavaScript code. The server returns a JS file.
-    5. The browser requests data. The server returns data (in XML or JSON).
-</code>
+    5. The browser requests data. The server returns data (in XML or JSON).</code>
 
 
 ## HTML:

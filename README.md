@@ -1,6 +1,6 @@
 ## HTTP:
+<code>
 
-<code> 
 What is HTTP?
 
     HTTP stands for Hyper Text Transfer Protocol.
@@ -33,6 +33,7 @@ The HTTP Request Circle
 
 ## HTML:
 <code>
+
 What is HTML?
     
     HTML stands for Hyper Text Markup Language.

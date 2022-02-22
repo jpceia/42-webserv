@@ -1,4 +1,6 @@
 #include "webserv.hpp"
+#include "HTTPRequest.hpp"
+#include "HTTPResponse.hpp"
 #include <iostream>
 #include <sstream>
 #include <unistd.h>
@@ -55,10 +57,25 @@ int main(int argc, char *argv[])
         std::cerr << "Could not read from socket" << std::endl;
         return -1;
     }
-    std::cout << buffer << std::endl;
+    //std::cout << buffer << std::endl;
+    // parse the request
+    HTTPRequest request;
+    ss.str("");
+    ss.clear();
+    ss << buffer;
+    ss >> request;
+    std::cout << request << std::endl;
     // write to the socket
-    std::string response = "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\n\r\n<html><body><h1>Hello World</h1></body></html>";
-    if (send(connection, response.c_str(), response.length(), 0) < 0)
+    HTTPResponse response;
+    response.setVersion("HTTP/1.1");
+    response.setStatus(200, "OK");
+    response.setHeader("Content-Type", "text/html");
+    response.setBody("<html><body><h1>Hello World</h1></body></html>");
+    ss.str("");
+    ss.clear();
+    ss << response;
+    std::string msg = ss.str();
+    if (send(connection, msg.c_str(), msg.length(), 0) < 0)
     {
         std::cerr << "Could not write to socket" << std::endl;
         return -1;

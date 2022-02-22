@@ -1,6 +1,6 @@
 # HTTP:
 
-### What is HTTP?
+### What is HTTP? 
 
     HTTP stands for Hyper Text Transfer Protocol.
     WWW is about communication between web clients and servers.
@@ -10,7 +10,7 @@
     Clients are often browsers (Chrome, Edge, Safari), but they can be any type of program or device.
     Servers are most often computers in the cloud.
 
-### HTTP Request / Response
+### HTTP Request / Response 
 
     Communication between clients and servers is done by requests and responses:
 
@@ -41,11 +41,11 @@
     HTML elements are represented by <> tags.
 
 
-# OSI Model:
+# OSI Model
 
 https://medium.com/from-the-scratch/http-server-what-do-you-need-to-know-to-build-a-simple-http-server-from-scratch-d1ef8945e4fa
 
-### What is OSI Model (Open Systems Interconnection Model):
+### What is OSI Model (Open Systems Interconnection Model)
 
     It's a conceptual model (a representation of a system, consisting of concepts used to help
     people know, understand, or simulate a subject the model represents) that characterises
@@ -64,7 +64,7 @@ https://medium.com/from-the-scratch/http-server-what-do-you-need-to-know-to-buil
     does not always map directly to specific systems, the OSI Model is still used today as a means
     to describe Network Architecture.
 
-### 7 Layers of OSI Model:
+### 7 Layers of OSI Model
 
             Application Layer                   \
             Presentation Layer                   > Software Layers
@@ -150,20 +150,66 @@ https://medium.com/from-the-scratch/http-server-what-do-you-need-to-know-to-buil
         scalable and comes with lesser overhead as compared to TCP. It is used in video and voice streaming. 
 
 
+# RCA (Request for Comments)
+
+### What is RCA:
+
+    A Request for Comments (RFC) is a formal document from the Internet Engineering Task Force ( IETF ) that is the
+    result of committee drafting and subsequent review by interested parties. Some RFCs are informational in nature.
+    Of those that are intended to become Internet standards, the final version of the RFC becomes the standard and no
+    further comments or changes are permitted.
+
+    HTTP server RFC documents are at:
+ 
+        RFC 7230    -   https://www.rfc-editor.org/info/rfc7230
+        RFC 7231    -   https://www.rfc-editor.org/info/rfc7231
+        RFC 7232    -   https://www.rfc-editor.org/info/rfc7232
+        RFC 7233    -   https://www.rfc-editor.org/info/rfc7233
+        RFC 7234    -   https://www.rfc-editor.org/info/rfc7234
+        RFC 7235    -   https://www.rfc-editor.org/info/rfc7235
 
 
 
+# Socket
+
+### What is Socket:
+
+    A socket is the mechanism that most popular operating systems provide to give programs access to the network.
+    It allows messages to be sent and received between applications (unrelated processes) on different networked machines.
+
+    The sockets mechanism has been created to be independent of any specific type of network. IP, however, is by far
+    the most dominant network and the most popular use of sockets.
+
+### How it Works:
+
+    Normally, a server runs on a specific computer and has a socket that is bound to a specific port number.
+    The server just waits, listening to the socket for a client to make a connection request.
+
+    On the client-side: The client knows the hostname of the machine on which the server is running and the port number
+    on which the server is listening. To make a connection request, the client tries to rendezvous with the server on
+    the server's machine and port. The client also needs to identify itself to the server so it binds to a local port
+    number that it will use during this connection. This is usually assigned by the system.
+
+    If everything goes well, the server accepts the connection. Upon acceptance, the server gets a new socket bound to
+    the same local port and also has its remote endpoint (combination of an IP address and a port number) set to the
+    address and port of the client. It needs a new socket so that it can continue to listen to the original socket
+    for connection requests while tending to the needs of the connected client.
+
+    On the client side, if the connection is accepted, a socket is successfully created and the client can use the
+    socket to communicate with the server.
+
+    The client and server can now communicate by writing to or reading from their sockets.
 
 
 
 # Git:
 
-### Go to a Branch:
+### Go to a Branch
 
     git clone https://github.com/jpceia/42-webserv/tree/master
     git checkout dock
 
-### Make a new Branch:
+### Make a new Branch
 
     git clone https://github.com/jpceia/42-webserv/tree/master
     git branch dock
@@ -171,7 +217,7 @@ https://medium.com/from-the-scratch/http-server-what-do-you-need-to-know-to-buil
     git commit
     git push
 
-### Make a new Branch and change to it:
+### Make a new Branch and change to it
 
     git clone https://github.com/jpceia/42-webserv/tree/master
     git checkout -b [name_of_your_new_branch]
@@ -179,13 +225,13 @@ https://medium.com/from-the-scratch/http-server-what-do-you-need-to-know-to-buil
     git commit
     git push -u origin [name_of_your_new_branch]
 
-### Commit to a Branch:
+### Commit to a Branch
 
     git add .
     git commit -m "bla bla"
     git push -u origin docker
 
-### Merge to a Dev Branch:
+### Merge to a Dev Branch
 
     git checkout dock
     git merger dev

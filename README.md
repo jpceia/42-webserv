@@ -1,4 +1,4 @@
-## HTTP:
+# HTTP:
 
 ### What is HTTP?
 
@@ -30,7 +30,7 @@
     5. The browser requests data. The server returns data (in XML or JSON).
 
 
-## HTML:
+# HTML:
 
 ### What is HTML?
     
@@ -40,7 +40,7 @@
     HTML elements are represented by <> tags.
 
 
-## Git:
+# Git:
 
 ### Go to a Branch:
 

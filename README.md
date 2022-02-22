@@ -1,6 +1,7 @@
 ## HTTP:
 
-<code> What is HTTP?
+<code> 
+What is HTTP?
 
     HTTP stands for Hyper Text Transfer Protocol.
     WWW is about communication between web clients and servers.

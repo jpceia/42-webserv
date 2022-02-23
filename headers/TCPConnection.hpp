@@ -18,7 +18,7 @@
 # include <arpa/inet.h>
 # include <unistd.h>
 
-# define BUFF_SIZE 1024
+# define BUFF_SIZE 2048
 
 class TCPConnection
 {

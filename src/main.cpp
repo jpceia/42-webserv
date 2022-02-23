@@ -6,8 +6,6 @@
 #include <iostream>
 #include <sstream>
 
-#define BUFF_SIZE 1024
-
 // https://gist.github.com/vthanki/8405c9cd4a09d3a0b73bf876b2635ad4#file-unix_server-c
 
 int stoi(const std::string& str)

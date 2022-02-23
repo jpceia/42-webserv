@@ -6,7 +6,7 @@
 /*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/23 05:15:40 by jpceia            #+#    #+#             */
-/*   Updated: 2022/02/23 05:44:19 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/02/23 06:06:11 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,32 +23,15 @@ class TCPConnection;
 class HTTPConnection : public TCPConnection
 {
 public:
-    HTTPConnection(int fd) : TCPConnection(fd) {};
-    HTTPConnection(const TCPConnection& rhs) : TCPConnection(rhs) {};
-    HTTPConnection(const HTTPConnection& rhs) : TCPConnection(rhs) {};
+    HTTPConnection(int fd);
+    HTTPConnection(const TCPConnection& rhs);
+    HTTPConnection(const HTTPConnection& rhs);
 
-    ~HTTPConnection() {};
-    HTTPConnection& operator=(const HTTPConnection& rhs) {
-        TCPConnection::operator=(rhs);
-        return *this;
-    };
+    ~HTTPConnection();
+    HTTPConnection& operator=(const HTTPConnection& rhs);
 
-    void send(const HTTPResponse& response)
-    {
-        std::stringstream ss;
-        ss << response;
-        TCPConnection::send(ss.str());
-    }
-
-    HTTPRequest recv()
-    {
-        std::string msg = TCPConnection::recv();
-        std::stringstream ss(msg);
-
-        HTTPRequest request;
-        ss >> request;
-        return request;
-    }
+    void send(const HTTPResponse& response);
+    HTTPRequest recv();
 };
 
 #endif

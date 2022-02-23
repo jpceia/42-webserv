@@ -2,7 +2,7 @@
 #include "HTTPRequest.hpp"
 #include "HTTPResponse.hpp"
 #include "TCPListener.hpp"
-#include "TCPConnection.hpp"
+#include "HTTPConnection.hpp"
 #include <iostream>
 #include <sstream>
 
@@ -31,13 +31,10 @@ int main(int argc, char *argv[])
         listener.init();
 
         // Receiving connections
-        TCPConnection connection = listener.accept();
+        HTTPConnection connection = listener.accept();
 
         // Read and parse the request
-        HTTPRequest request;
-        std::stringstream ss_req;
-        ss_req << connection.recv();
-        ss_req >> request;
+        HTTPRequest request = connection.recv();
         std::cout << request << std::endl;
 
         // Build the response
@@ -48,9 +45,7 @@ int main(int argc, char *argv[])
         response.setBody("<html><body><h1>Hello World</h1></body></html>");
 
         // Send the response
-        std::stringstream ss_resp;
-        ss_resp << response;
-        connection.send(ss_resp.str());
+        connection.send(response);
     }
     catch (std::exception& e)
     {

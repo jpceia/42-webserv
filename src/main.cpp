@@ -13,6 +13,15 @@
 
 // https://gist.github.com/vthanki/8405c9cd4a09d3a0b73bf876b2635ad4#file-unix_server-c
 
+int stoi(const std::string& str)
+{
+    std::stringstream ss(str);
+    int i;
+    ss >> i;
+    return i;
+}
+
+
 int main(int argc, char *argv[])
 {
     if (argc != 2)
@@ -20,31 +29,30 @@ int main(int argc, char *argv[])
         std::cout << "Usage: ./webserv <port>" << std::endl;
         return -1;
     }
-    int port;
-    std::stringstream ss(argv[1]);
-    ss >> port;
-
-    TCPListener listener("0.0.0.0", port);
+    TCPListener listener("0.0.0.0", stoi(argv[1]));
     listener.init();
+
+    // Receiving connections
     TCPConnection connection = listener.accept();
-    // parse the request
+    
+    // Read and parse the request
     HTTPRequest request;
-    ss.str("");
-    ss.clear();
-    std::string recv_msg = connection.recv();
-    ss << recv_msg;
-    ss >> request;
+    std::stringstream ss_req;
+    ss_req << connection.recv();
+    ss_req >> request;
     std::cout << request << std::endl;
-    // write to the socket
+    
+    // Build the response
     HTTPResponse response;
     response.setVersion("HTTP/1.1");
     response.setStatus(200, "OK");
     response.setHeader("Content-Type", "text/html");
     response.setBody("<html><body><h1>Hello World</h1></body></html>");
-    ss.str("");
-    ss.clear();
-    ss << response;
-    std::string send_msg = ss.str();
-    connection.send(send_msg);
+
+    // Send the response
+    std::stringstream ss_resp;
+    ss_resp << response;
+    connection.send(ss_resp.str());
+
     return 0;
 }

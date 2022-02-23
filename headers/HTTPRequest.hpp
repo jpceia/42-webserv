@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   HTTPRequest.hpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jceia <jceia@student.42.fr>                +#+  +:+       +#+        */
+/*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/22 13:00:01 by jceia             #+#    #+#             */
-/*   Updated: 2022/02/22 16:33:44 by jceia            ###   ########.fr       */
+/*   Updated: 2022/02/23 05:45:06 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,7 @@ public:
     HTTPRequest &operator=(const HTTPRequest &rhs);
 
     friend std::istream &operator>>(std::istream &is, HTTPRequest &request);
-    friend std::ostream &operator<<(std::ostream &out, HTTPRequest &request);
+    friend std::ostream &operator<<(std::ostream &out, const HTTPRequest &request);
 
     class ParseException : public std::exception
     {

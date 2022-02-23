@@ -27,8 +27,9 @@ int main(int argc, char *argv[])
 
     try
     {
-        TCPListener listener("0.0.0.0", stoi(argv[1]));
-        listener.init();
+        TCPListener listener("0.0.0.0", stoi(argv[1])); // populates the listener addresss
+        listener.init();                                // creates a socket + bind + listen
+
 
         // Receiving connections
         HTTPConnection connection = listener.accept();

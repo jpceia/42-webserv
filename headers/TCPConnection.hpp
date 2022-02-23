@@ -6,7 +6,7 @@
 /*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/23 03:04:11 by jpceia            #+#    #+#             */
-/*   Updated: 2022/02/23 04:29:30 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/02/23 07:18:31 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,8 @@
 # include <sys/socket.h>
 # include <arpa/inet.h>
 # include <unistd.h>
+# include <sys/resource.h>
+# include <map>
 
 # define BUFF_SIZE 2048
 
@@ -46,6 +48,11 @@ public:
 
 private:
     int _fd;
+
+    // File descriptor reference count
+    static std::map<int, size_t> _ref_count;
+    static void _increase_ref_count(int fd);
+    static void _decrease_ref_count(int fd);
 };
 
 #endif

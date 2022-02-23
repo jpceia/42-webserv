@@ -6,7 +6,7 @@
 /*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/23 05:15:40 by jpceia            #+#    #+#             */
-/*   Updated: 2022/02/23 06:06:11 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/02/23 07:13:13 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,8 @@
 # include "HTTPRequest.hpp"
 # include "HTTPResponse.hpp"
 # include <sstream>
+
+// https://stackoverflow.com/questions/68468641/parse-http-responses-from-a-tcp-stream
 
 class TCPConnection;
 

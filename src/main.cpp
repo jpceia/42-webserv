@@ -5,9 +5,6 @@
 #include "TCPConnection.hpp"
 #include <iostream>
 #include <sstream>
-#include <unistd.h>
-#include <sys/socket.h>
-#include <arpa/inet.h>
 
 #define BUFF_SIZE 1024
 

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   HTTPRequest.cpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jceia <jceia@student.42.fr>                +#+  +:+       +#+        */
+/*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/22 15:33:45 by jceia             #+#    #+#             */
-/*   Updated: 2022/02/22 16:34:18 by jceia            ###   ########.fr       */
+/*   Updated: 2022/02/23 05:45:56 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,10 +94,10 @@ std::istream &operator>>(std::istream &is, HTTPRequest &request)
     return is;
 }
 
-std::ostream &operator<<(std::ostream &out, HTTPRequest &request)
+std::ostream &operator<<(std::ostream &out, const HTTPRequest &request)
 {
     out << strHTTPMethod(request._method) << " " << request._path << " " << request._version << "\r\n";
-    for (std::map<std::string, std::string>::iterator it = request._headers.begin();
+    for (std::map<std::string, std::string>::const_iterator it = request._headers.begin();
         it != request._headers.end(); ++it)
         out << it->first << ": " << it->second << "\r\n";
     out << "\r\n" << request._body;

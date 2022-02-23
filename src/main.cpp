@@ -1,15 +1,21 @@
 #include "webserv.hpp"
 #include "HTTPRequest.hpp"
 #include "HTTPResponse.hpp"
+#include "TCPListener.hpp"
+#include "TCPConnection.hpp"
 #include <iostream>
 #include <sstream>
-#include <unistd.h>
-#include <sys/socket.h>
-#include <arpa/inet.h>
-
-#define BUFF_SIZE 1024
 
 // https://gist.github.com/vthanki/8405c9cd4a09d3a0b73bf876b2635ad4#file-unix_server-c
+
+int stoi(const std::string& str)
+{
+    std::stringstream ss(str);
+    int i;
+    ss >> i;
+    return i;
+}
+
 
 int main(int argc, char *argv[])
 {
@@ -18,72 +24,39 @@ int main(int argc, char *argv[])
         std::cout << "Usage: ./webserv <port>" << std::endl;
         return -1;
     }
-    int port;
-    std::stringstream ss(argv[1]);
-    ss >> port;
-    
-    struct sockaddr_in serv_addr;
-    struct sockaddr_in cli_addr;
 
-    serv_addr.sin_family = AF_INET;
-    serv_addr.sin_addr.s_addr = htonl(INADDR_ANY);
-    serv_addr.sin_port = htons(port);
-
-    int sockfd = socket(AF_INET, SOCK_STREAM, 0);
-    if (sockfd < 0)
+    try
     {
-        std::cerr << "Could not create socket" << std::endl;
+        TCPListener listener("0.0.0.0", stoi(argv[1]));
+        listener.init();
+
+        // Receiving connections
+        TCPConnection connection = listener.accept();
+
+        // Read and parse the request
+        HTTPRequest request;
+        std::stringstream ss_req;
+        ss_req << connection.recv();
+        ss_req >> request;
+        std::cout << request << std::endl;
+
+        // Build the response
+        HTTPResponse response;
+        response.setVersion("HTTP/1.1");
+        response.setStatus(200, "OK");
+        response.setHeader("Content-Type", "text/html");
+        response.setBody("<html><body><h1>Hello World</h1></body></html>");
+
+        // Send the response
+        std::stringstream ss_resp;
+        ss_resp << response;
+        connection.send(ss_resp.str());
+    }
+    catch (std::exception& e)
+    {
+        std::cout << e.what() << std::endl;
         return -1;
     }
-    if (bind(sockfd, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) < 0)
-    {
-        std::cerr << "Could not bind socket" << std::endl;
-        return -1;
-    }
 
-    listen(sockfd, 256); // not sure about the last parameter
-
-    socklen_t cli_len = sizeof(cli_addr);
-    int connection = accept(sockfd, (struct sockaddr *)&cli_addr, &cli_len);
-    if (connection < 0)
-    {
-        std::cerr << "Could not accept connection" << std::endl;
-        return -1;
-    }
-    // read from the socket
-    char buffer[BUFF_SIZE];
-    if (recv(connection, buffer, sizeof(buffer), 0) < 0)
-    {
-        std::cerr << "Could not read from socket" << std::endl;
-        return -1;
-    }
-    //std::cout << buffer << std::endl;
-    // parse the request
-    HTTPRequest request;
-    ss.str("");
-    ss.clear();
-    ss << buffer;
-    ss >> request;
-    std::cout << request << std::endl;
-    // write to the socket
-    HTTPResponse response;
-    response.setVersion("HTTP/1.1");
-    response.setStatus(200, "OK");
-    response.setHeader("Content-Type", "text/html");
-    response.setBody("<html><body><h1>Hello World</h1></body></html>");
-    ss.str("");
-    ss.clear();
-    ss << response;
-    std::string msg = ss.str();
-    if (send(connection, msg.c_str(), msg.length(), 0) < 0)
-    {
-        std::cerr << "Could not write to socket" << std::endl;
-        return -1;
-    }
-    // close the connection
-    close(connection);
-
-    // close the socket
-    close(sockfd);
     return 0;
 }

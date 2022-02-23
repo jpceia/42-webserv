@@ -26,7 +26,7 @@ public:
     TCPConnection(int fd);
     TCPConnection(const TCPConnection& rhs);
 
-    ~TCPConnection();
+    virtual ~TCPConnection();
     TCPConnection& operator=(const TCPConnection& rhs);
 
     void send(const std::string& msg);

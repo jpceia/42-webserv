@@ -6,7 +6,7 @@
 /*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/23 03:04:11 by jpceia            #+#    #+#             */
-/*   Updated: 2022/02/23 04:17:22 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/02/23 04:20:10 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,10 +50,8 @@ std::string TCPConnection::recv()
 {
     char buff[BUFF_SIZE];
 
-    if (::recv(_fd, buff, sizeof(buff), 0) < 0)
-    {
-        std::cerr << "Could not read from socket" << std::endl;
-        throw std::exception();
-    }
-    return std::string(buff);
+    int n = ::recv(_fd, buff, sizeof(buff), 0);
+    if (n < 0)
+        throw std::runtime_error("Could not read from socket");
+    return std::string(buff, n);
 }

@@ -6,7 +6,7 @@
 /*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/23 03:04:11 by jpceia            #+#    #+#             */
-/*   Updated: 2022/02/23 03:52:49 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/02/23 04:17:22 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,10 +36,13 @@ TCPConnection& TCPConnection::operator=(const TCPConnection& rhs)
 
 void TCPConnection::send(const std::string& msg)
 {
-    if (::send(_fd, msg.c_str(), msg.length(), 0) < 0)
+    size_t pos = 0;
+    while (pos < msg.size())
     {
-        std::cerr << "Could not write to socket" << std::endl;
-        throw std::exception();
+        int n = ::send(_fd, msg.c_str() + pos, msg.size() - pos, 0);
+        if (n < 0)
+            throw std::runtime_error("Error sending message");
+        pos += n;
     }
 }
 

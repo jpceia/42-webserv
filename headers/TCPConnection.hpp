@@ -1,41 +1,39 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   TCPListener.hpp                                    :+:      :+:    :+:   */
+/*   TCPConnection.hpp                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/02/23 02:48:15 by jpceia            #+#    #+#             */
-/*   Updated: 2022/02/23 03:15:32 by jpceia           ###   ########.fr       */
+/*   Created: 2022/02/23 03:04:11 by jpceia            #+#    #+#             */
+/*   Updated: 2022/02/23 03:54:18 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef TCPLISTENER_HPP
-# define TCPLISTENER_HPP
+#ifndef TCPCONNECTION_HPP
+# define TCPCONNECTION_HPP
 
-# include "TCPConnection.hpp"
 # include <iostream>
 # include <sys/socket.h>
 # include <arpa/inet.h>
 # include <unistd.h>
 
-class TCPListener
+# define BUFF_SIZE 1024
+
+class TCPConnection
 {
 public:
-    TCPListener(const std::string& host, int port);
-    ~TCPListener();
+    TCPConnection(int fd);
+    TCPConnection(const TCPConnection& rhs);
 
-    void init();
-    TCPConnection accept();
+    ~TCPConnection();
+    TCPConnection& operator=(const TCPConnection& rhs);
+
+    void send(const std::string& msg);
+    std::string recv();
 
 private:
-    // Not copiable
-    TCPListener(const TCPListener& rhs);
-    TCPListener& operator=(const TCPListener& rhs);
-    
-    // Private attributes
-    struct sockaddr_in _addr;
-    int _sock;
+    int _fd;
 };
 
 #endif

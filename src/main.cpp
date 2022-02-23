@@ -2,6 +2,7 @@
 #include "HTTPRequest.hpp"
 #include "HTTPResponse.hpp"
 #include "TCPListener.hpp"
+#include "TCPConnection.hpp"
 #include <iostream>
 #include <sstream>
 #include <unistd.h>
@@ -22,23 +23,16 @@ int main(int argc, char *argv[])
     int port;
     std::stringstream ss(argv[1]);
     ss >> port;
+
     TCPListener listener("0.0.0.0", port);
     listener.init();
-    int connection = listener.accept();
-    
-    // read from the socket
-    char buffer[BUFF_SIZE];
-    if (recv(connection, buffer, sizeof(buffer), 0) < 0)
-    {
-        std::cerr << "Could not read from socket" << std::endl;
-        return -1;
-    }
-    //std::cout << buffer << std::endl;
+    TCPConnection connection = listener.accept();
     // parse the request
     HTTPRequest request;
     ss.str("");
     ss.clear();
-    ss << buffer;
+    std::string recv_msg = connection.recv();
+    ss << recv_msg;
     ss >> request;
     std::cout << request << std::endl;
     // write to the socket
@@ -50,13 +44,7 @@ int main(int argc, char *argv[])
     ss.str("");
     ss.clear();
     ss << response;
-    std::string msg = ss.str();
-    if (send(connection, msg.c_str(), msg.length(), 0) < 0)
-    {
-        std::cerr << "Could not write to socket" << std::endl;
-        return -1;
-    }
-    // close the connection
-    close(connection);
+    std::string send_msg = ss.str();
+    connection.send(send_msg);
     return 0;
 }

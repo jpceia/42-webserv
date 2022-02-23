@@ -6,7 +6,7 @@
 /*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/23 02:51:42 by jpceia            #+#    #+#             */
-/*   Updated: 2022/02/23 02:55:09 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/02/23 03:19:35 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,7 +61,7 @@ void TCPListener::init()
     }
 }
 
-int TCPListener::accept()
+TCPConnection TCPListener::accept()
 {
     struct sockaddr_in cli_addr;
     socklen_t cli_len = sizeof(cli_addr);

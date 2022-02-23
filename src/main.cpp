@@ -1,6 +1,7 @@
 #include "webserv.hpp"
 #include "HTTPRequest.hpp"
 #include "HTTPResponse.hpp"
+#include "TCPListener.hpp"
 #include <iostream>
 #include <sstream>
 #include <unistd.h>
@@ -21,35 +22,10 @@ int main(int argc, char *argv[])
     int port;
     std::stringstream ss(argv[1]);
     ss >> port;
+    TCPListener listener("0.0.0.0", port);
+    listener.init();
+    int connection = listener.accept();
     
-    struct sockaddr_in serv_addr;
-    struct sockaddr_in cli_addr;
-
-    serv_addr.sin_family = AF_INET;
-    serv_addr.sin_addr.s_addr = htonl(INADDR_ANY);
-    serv_addr.sin_port = htons(port);
-
-    int sockfd = socket(AF_INET, SOCK_STREAM, 0);
-    if (sockfd < 0)
-    {
-        std::cerr << "Could not create socket" << std::endl;
-        return -1;
-    }
-    if (bind(sockfd, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) < 0)
-    {
-        std::cerr << "Could not bind socket" << std::endl;
-        return -1;
-    }
-
-    listen(sockfd, 256); // not sure about the last parameter
-
-    socklen_t cli_len = sizeof(cli_addr);
-    int connection = accept(sockfd, (struct sockaddr *)&cli_addr, &cli_len);
-    if (connection < 0)
-    {
-        std::cerr << "Could not accept connection" << std::endl;
-        return -1;
-    }
     // read from the socket
     char buffer[BUFF_SIZE];
     if (recv(connection, buffer, sizeof(buffer), 0) < 0)
@@ -82,8 +58,5 @@ int main(int argc, char *argv[])
     }
     // close the connection
     close(connection);
-
-    // close the socket
-    close(sockfd);
     return 0;
 }

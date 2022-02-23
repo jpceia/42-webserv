@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   HTTPResponse.cpp                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jceia <jceia@student.42.fr>                +#+  +:+       +#+        */
+/*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/22 15:33:45 by jceia             #+#    #+#             */
-/*   Updated: 2022/02/22 16:14:56 by jceia            ###   ########.fr       */
+/*   Updated: 2022/02/23 05:45:47 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,10 +56,11 @@ void HTTPResponse::setBody(const std::string& body)
     this->_body = body;
 }
 
-std::ostream &operator<<(std::ostream &out, HTTPResponse &response)
+std::ostream &operator<<(std::ostream &out, const HTTPResponse &response)
 {
     out << response._version << " " << response._status_code << " " << response._status_text << "\r\n";
-    for (std::map<std::string, std::string>::iterator it = response._headers.begin(); it != response._headers.end(); ++it)
+    for (std::map<std::string, std::string>::const_iterator it = response._headers.begin();
+        it != response._headers.end(); ++it)
         out << it->first << ": " << it->second << "\r\n";
     out << "\r\n" << response._body;
     return out;

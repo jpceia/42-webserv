@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   HTTPResponse.hpp                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jceia <jceia@student.42.fr>                +#+  +:+       +#+        */
+/*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/22 15:40:09 by jceia             #+#    #+#             */
-/*   Updated: 2022/02/22 16:13:29 by jceia            ###   ########.fr       */
+/*   Updated: 2022/02/23 05:45:00 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@ public:
 
     HTTPResponse &operator=(const HTTPResponse &rhs);
 
-    friend std::ostream &operator<<(std::ostream &out, HTTPResponse &request);
+    friend std::ostream &operator<<(std::ostream &out, const HTTPResponse &request);
 
     void setStatus(int status_code, const std::string& text);
     void setHeader(const std::string& name, const std::string& value);

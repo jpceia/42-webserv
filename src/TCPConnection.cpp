@@ -6,7 +6,7 @@
 /*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/23 03:04:11 by jpceia            #+#    #+#             */
-/*   Updated: 2022/02/23 04:20:10 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/02/23 04:30:00 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,7 @@ void TCPConnection::send(const std::string& msg)
     {
         int n = ::send(_fd, msg.c_str() + pos, msg.size() - pos, 0);
         if (n < 0)
-            throw std::runtime_error("Error sending message");
+            throw TCPConnection::SendException();
         pos += n;
     }
 }
@@ -52,6 +52,16 @@ std::string TCPConnection::recv()
 
     int n = ::recv(_fd, buff, sizeof(buff), 0);
     if (n < 0)
-        throw std::runtime_error("Could not read from socket");
+        throw TCPConnection::ReadException();
     return std::string(buff, n);
+}
+
+const char* TCPConnection::SendException::what(void) const throw()
+{
+    return "Error sending message";
+}
+
+const char* TCPConnection::ReadException::what(void) const throw()
+{
+    return "Could not read from socket";
 }

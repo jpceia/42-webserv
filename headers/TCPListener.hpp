@@ -6,7 +6,7 @@
 /*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/23 02:48:15 by jpceia            #+#    #+#             */
-/*   Updated: 2022/02/23 03:15:32 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/02/23 04:39:08 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,30 @@ public:
 
     void init();
     TCPConnection accept();
+
+    class CreateException : public std::exception
+    {
+        public:
+            virtual const char* what(void) const throw();
+    };
+
+    class BindException : public std::exception
+    {
+        public:
+            virtual const char* what(void) const throw();
+    };
+
+    class ListenException : public std::exception
+    {
+        public:
+            virtual const char* what(void) const throw();
+    };
+
+    class AcceptException : public std::exception
+    {
+        public:
+            virtual const char* what(void) const throw();
+    };
 
 private:
     // Not copiable

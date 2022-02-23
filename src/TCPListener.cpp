@@ -6,7 +6,7 @@
 /*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/23 02:51:42 by jpceia            #+#    #+#             */
-/*   Updated: 2022/02/23 03:19:35 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/02/23 04:39:39 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,20 +45,11 @@ void TCPListener::init()
 {
     _sock = socket(AF_INET, SOCK_STREAM, 0);
     if (_sock < 0)
-    {
-        std::cerr << "Could not create socket" << std::endl;
-        throw std::exception();
-    }
+        throw TCPListener::CreateException();
     if (bind(_sock, (struct sockaddr *)&_addr, sizeof(_addr)) < 0)
-    {
-        std::cerr << "Could not bind socket" << std::endl;
-        throw std::exception();
-    }
+        throw TCPListener::BindException();
     if (listen(_sock, SOMAXCONN) < 0)
-    {
-        std::cerr << "Could not listen on socket" << std::endl;
-        throw std::exception();
-    }
+        throw TCPListener::ListenException();
 }
 
 TCPConnection TCPListener::accept()
@@ -67,9 +58,26 @@ TCPConnection TCPListener::accept()
     socklen_t cli_len = sizeof(cli_addr);
     int connection = ::accept(_sock, (struct sockaddr *)&cli_addr, &cli_len);
     if (connection < 0)
-    {
-        std::cerr << "Could not accept connection" << std::endl;
-        throw std::exception();
-    }
+        throw TCPListener::AcceptException();
     return connection;
+}
+
+const char* TCPListener::CreateException::what(void) const throw()
+{
+    return "Could not create socket";
+}
+
+const char* TCPListener::BindException::what(void) const throw()
+{
+    return "Could not bind socket";
+}
+
+const char* TCPListener::ListenException::what(void) const throw()
+{
+    return "Could not listen on socket";
+}
+
+const char* TCPListener::AcceptException::what(void) const throw()
+{
+    return "Could not accept connection";
 }

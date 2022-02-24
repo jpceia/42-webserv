@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   utils.hpp                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
+/*   By: jceia <jceia@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/23 20:05:23 by jpceia            #+#    #+#             */
-/*   Updated: 2022/02/24 04:53:43 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/02/24 13:54:13 by jceia            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,10 +15,6 @@
 
 # include <string>
 
-# if __cplusplus < 201103L
-
-int stoi(const std::string& str);
-
-# endif
+int ft_stoi(const std::string& str);
 
 #endif

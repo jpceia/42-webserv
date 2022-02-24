@@ -19,8 +19,8 @@ int main(int argc, char *argv[])
 
     try
     {
-        TCPListener listener("0.0.0.0", stoi(argv[1])); // populates the listener addresss
-        listener.init();                                // creates a socket + bind + listen
+        TCPListener listener("0.0.0.0", ft_stoi(argv[1])); // populates the listener addresss
+        listener.init();                                   // creates a socket + bind + listen
 
 
         // Receiving connections

@@ -105,5 +105,5 @@ void HTTPRequestParser::addHeader(const std::string& key, const std::string& val
 {
     _headers[key] = value;
     if (key == "Content-Length")
-        _content_length = stoi(value);
+        _content_length = ft_stoi(value);
 }

@@ -6,7 +6,7 @@
 /*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/22 15:33:45 by jceia             #+#    #+#             */
-/*   Updated: 2022/02/23 20:09:15 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/02/24 06:53:37 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,31 +14,7 @@
 # include "utils.hpp"
 # include <sstream>
 
-HTTPMethod parseHTTPMethod(std::string const &method)
-{
-    if (method == "GET")
-        return GET;
-    else if (method == "POST")
-        return POST;
-    else if (method == "DELETE")
-        return DELETE;
-    return UNKNOWN;
-}
 
-std::string strHTTPMethod(HTTPMethod method)
-{
-    switch (method)
-    {
-    case GET:
-        return "GET";
-    case POST:
-        return "POST";
-    case DELETE:
-        return "DELETE";
-    default:
-        return "UNKNOWN";
-    }
-}
 
 HTTPRequest::HTTPRequest() :
     _path(""),
@@ -87,9 +63,7 @@ std::istream &operator>>(std::istream &is, HTTPRequest &request)
     ss >> method >> request._path >> request._version;
     if (!ss.eof())
         throw HTTPRequest::ParseException(); // invalid start line
-    request._method = parseHTTPMethod(method);
-    if (request._method == UNKNOWN)
-        throw HTTPRequest::ParseException();
+    request._method = HTTPRequest::parseMethod(method);
     // Parse headers
     while (std::getline(is, line))
     {
@@ -112,7 +86,6 @@ std::istream &operator>>(std::istream &is, HTTPRequest &request)
     return is;
 }
 
-
 ParseStatus HTTPRequest::parse(const std::string& s)
 {
     size_t pos;
@@ -129,9 +102,7 @@ ParseStatus HTTPRequest::parse(const std::string& s)
             ss >> method >> _path >> _version; // parse start line
             if (!ss.eof())
                 throw HTTPRequest::ParseException();
-            _method = parseHTTPMethod(method);
-            if (_method == UNKNOWN)
-                throw HTTPRequest::ParseException();
+            _method = HTTPRequest::parseMethod(method);
             _buf = "";
             return this->parse(s.substr(pos + 2));
         }
@@ -176,10 +147,37 @@ ParseStatus HTTPRequest::parse(const std::string& s)
 
 std::ostream &operator<<(std::ostream &out, const HTTPRequest &request)
 {
-    out << strHTTPMethod(request._method) << " " << request._path << " " << request._version << "\r\n";
+    out << HTTPRequest::strMethod(request._method) << " ";
+    out << request._path << " " << request._version << "\r\n";
     for (std::map<std::string, std::string>::const_iterator it = request._headers.begin();
         it != request._headers.end(); ++it)
         out << it->first << ": " << it->second << "\r\n";
     out << "\r\n" << request._body;
     return out;
+}
+
+HTTPMethod HTTPRequest::parseMethod(std::string const &s)
+{
+    if (s == "GET")
+        return GET;
+    if (s == "POST")
+        return POST;
+    if (s == "DELETE")
+        return DELETE;
+    throw HTTPRequest::ParseException();
+}
+
+std::string HTTPRequest::strMethod(HTTPMethod method)
+{
+    switch (method)
+    {
+    case GET:
+        return "GET";
+    case POST:
+        return "POST";
+    case DELETE:
+        return "DELETE";
+    default:
+        throw std::runtime_error("Unkown HTTP method");
+    }
 }

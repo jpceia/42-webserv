@@ -34,7 +34,6 @@ enum ParseStatus {
 
 class HTTPRequest
 {
-
 public:
     HTTPRequest();
     virtual ~HTTPRequest();
@@ -46,6 +45,8 @@ public:
     friend std::istream &operator>>(std::istream &is, HTTPRequest &request);
     friend std::ostream &operator<<(std::ostream &out, const HTTPRequest &request);
 
+    static HTTPMethod parseMethod(std::string const &s);
+    static std::string strMethod(HTTPMethod method);
     class ParseException : public std::exception
     {
         public:

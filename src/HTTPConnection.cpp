@@ -6,7 +6,7 @@
 /*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/23 06:02:05 by jpceia            #+#    #+#             */
-/*   Updated: 2022/02/23 06:18:48 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/02/23 20:11:21 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,10 +47,10 @@ void HTTPConnection::send(const HTTPResponse& response)
 
 HTTPRequest HTTPConnection::recv()
 {
-    std::string msg = TCPConnection::recv();
-    std::stringstream ss(msg);
-
     HTTPRequest request;
-    ss >> request;
+    ParseStatus status = PARSE_START;
+
+    while (status != PARSE_COMPLETE)
+        status = request.parse(TCPConnection::recv());
     return request;
 }

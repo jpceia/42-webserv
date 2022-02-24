@@ -18,12 +18,6 @@ class TcpListener {
                                                        _port(port)
         {
             _addressLength = sizeof(_address);
-
-            // We fill the sockaddr_in struct
-            _address.sin_family = AF_INET;
-            inet_pton(AF_INET, _ipAddress, &_address.sin_addr);
-            _address.sin_port = htons(port);
-            memset(_address.sin_zero, '\0', sizeof _address.sin_zero);    
         };
 
         ~TcpListener() 
@@ -37,9 +31,14 @@ class TcpListener {
                 exit(EXIT_FAILURE);
             }
 
+            // We fill the sockaddr_in struct
+            _address.sin_family = AF_INET;
+            inet_pton(AF_INET, _ipAddress, &_address.sin_addr);
+            _address.sin_port = htons(_port);
+            memset(_address.sin_zero, '\0', sizeof _address.sin_zero);
+
             // Bind the IP Address and Port to a Socket 
-            if (bind(_socket_fd, (struct sockaddr *)&_address, sizeof(_address)) < 0)
-            {
+            if (bind(_socket_fd, (struct sockaddr *)&_address, sizeof(_address)) < 0) {
                 perror("In bind");
                 exit(EXIT_FAILURE);
             }
@@ -49,11 +48,14 @@ class TcpListener {
             // connection requests using accept(2).
             // Second argument is the max pending connections 
             // SOMAXCONN = Max number of connections allowed to pass on this system
-            if (listen(_socket_fd, SOMAXCONN) < 0)
-            {
+            if (listen(_socket_fd, SOMAXCONN) < 0) {
                 perror("In listen");
                 exit(EXIT_FAILURE);
             }
+
+            // Create the Master File Descriptor and Set it to zero
+            FD_ZERO(&_master);
+            //FD_SET()
         };
 
         // Run the listener
@@ -63,10 +65,12 @@ class TcpListener {
 
 
     private:
-        const char                     *_ipAddress;      // IP Address server will run on
+        const char                      *_ipAddress;      // IP Address server will run on
         int                             _port;           // Port # for the web service
         int                             _socket_fd;       // Internal FD for the listening socket 
         struct sockaddr_in              _address;        // Address struct
         int                             _addressLength;  // Length of the _address
+
+        fd_set                          _master;         // Master File descriptor set
 
 };

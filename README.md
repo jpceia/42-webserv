@@ -169,7 +169,6 @@ https://medium.com/from-the-scratch/http-server-what-do-you-need-to-know-to-buil
         RFC 7235    -   https://www.rfc-editor.org/info/rfc7235
 
 
-
 # Socket
 
 ### What is Socket:
@@ -199,6 +198,97 @@ https://medium.com/from-the-scratch/http-server-what-do-you-need-to-know-to-buil
     socket to communicate with the server.
 
     The client and server can now communicate by writing to or reading from their sockets.
+
+
+# Select()
+
+### What is Select?
+
+    select() allow a program to monitor multiple file descriptors, waiting until one or more of the file
+    descriptors become "ready" for some class of I/O operation (e.g., input possible).
+    A file descriptor is considered ready if it is possible to perform the corresponding I/O operation (e.g., read(2))
+    without blocking.
+
+    It takes a group of File Descriptors. Select() is going to tell you when there is something to read or write 
+    on any of them.
+
+    Select() is destructive. It destroys the fd_set each time, that's why you should keep 2 copies of it. 
+
+### fd_set
+
+    A collection of file descriptors sets.
+
+        {
+            fd_set      current_sockets; // This one goes on Select() and gets destroyed
+            fd_set      ready_sockets;   // This one is a copy of current_sockets. You keep two, because 
+                                         // current_sockets get destroyed.
+        }
+
+### FD_ZERO
+
+    Zero out or initialize a current set.
+
+        {
+            fd_set      current_sockets;
+            fd_set      ready_sockets;
+            
+            FD_ZERO(&current_sockets);            
+        }
+
+### FD_SET
+
+    This macro adds the file descriptor fd to set. Adding a file descriptor that is already present in the set is a
+    no-op, and does not produce an error.
+
+        {
+            int                             server_socket;
+            struct sockaddr_in              _address;
+
+            fd_set                          current_sockets;
+            fd_set                          ready_sockets;
+
+            if ((server_socket = socket(AF_INET, SOCK_STREAM, 0)) < 0)
+                exit(EXIT_FAILURE);
+
+            // We fill the sockaddr_in struct
+            _address.sin_family = AF_INET;
+            inet_pton(AF_INET, _ipAddress, &_address.sin_addr);
+            _address.sin_port = htons(port);
+            memset(_address.sin_zero, '\0', sizeof _address.sin_zero);
+
+            if (bind(server_socket, (struct sockaddr *)&_address, sizeof(_address)) < 0)
+                exit(EXIT_FAILURE);        
+            if (listen(server_socket, SOMAXCONN) < 0)
+                exit(EXIT_FAILURE);
+
+            FD_ZERO(&current_sockets);            
+            FD_SET(server_socket, &current_sockets);
+        }
+
+### Select()
+
+    int select(int nfds,                                // Range of file descriptors to check
+               fd_set *restrict readfds,                // Check file descriptors for Reading
+               fd_set *restrict writefds,               // Check file descriptors for Writing
+               fd_set *restrict exceptfds,              // Check file descriptors for Errors
+               struct timeval *restrict timeout);       // Timeout to wait a certain time for changes
+
+
+# Poll()
+
+### What is Poll?
+
+    The poll() function provides applications with a mechanism for multiplexing input/output over a set of file
+    descriptors. For each member of the array pointed to by fds, poll() shall examine the given file descriptor
+    for the event(s) specified in events.
+    The poll() function shall identify those file descriptors on which an application can read or write data,
+    or on which certain events have occurred.
+
+    It is used to watch for file descriptors and see if any of them are ready for an I/O operation.
+
+
+
+
 
 
 # Research:

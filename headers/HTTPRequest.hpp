@@ -37,7 +37,7 @@ class HTTPRequest
 
 public:
     HTTPRequest();
-    ~HTTPRequest();
+    virtual ~HTTPRequest();
 
     HTTPRequest &operator=(const HTTPRequest &rhs);
 

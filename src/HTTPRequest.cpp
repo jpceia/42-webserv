@@ -6,7 +6,7 @@
 /*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/22 15:33:45 by jceia             #+#    #+#             */
-/*   Updated: 2022/02/24 06:53:37 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/02/24 08:57:23 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,10 +75,7 @@ std::istream &operator>>(std::istream &is, HTTPRequest &request)
         drop_carriage_return(line);
         if (line.empty())
             break;
-        size_t pos = line.find(':');
-        if (pos == std::string::npos)
-            throw HTTPRequest::ParseException(); // invalid header
-        request._headers[line.substr(0, pos)] = line.substr(pos + 2);      
+        request.addHeader(line);
     }
     
     // Body
@@ -184,4 +181,23 @@ std::string HTTPRequest::strMethod(HTTPMethod method)
     default:
         throw std::runtime_error("Unkown HTTP method");
     }
+}
+
+void HTTPRequest::addHeader(const std::string& s)
+{
+    size_t pos = s.find(':');
+    if (pos == std::string::npos)
+        throw HTTPRequest::ParseException();
+    std::string key = s.substr(0, pos);
+    // find first non-whitespace character after ':'
+    pos = s.find_first_not_of(" \t", pos + 1);
+    if (pos == std::string::npos)
+        throw HTTPRequest::ParseException();
+    std::string value = s.substr(pos);
+    this->addHeader(key, value);
+}
+
+void HTTPRequest::addHeader(const std::string& key, const std::string& value)
+{
+    _headers[key] = value;
 }

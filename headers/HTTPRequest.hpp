@@ -47,6 +47,10 @@ public:
 
     static HTTPMethod parseMethod(std::string const &s);
     static std::string strMethod(HTTPMethod method);
+
+    void addHeader(const std::string& s);
+    virtual void addHeader(const std::string& key, const std::string& value);
+
     class ParseException : public std::exception
     {
         public:

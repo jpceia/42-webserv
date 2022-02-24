@@ -6,7 +6,7 @@
 /*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/23 02:51:42 by jpceia            #+#    #+#             */
-/*   Updated: 2022/02/23 04:39:39 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/02/23 16:49:50 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,7 @@ TCPListener::TCPListener(const std::string& host, int port)
     _addr.sin_port = htons(port);
     inet_pton(AF_INET, host.c_str(), &_addr.sin_addr);
 }
+
 TCPListener::TCPListener(const TCPListener& rhs) :
     _addr(rhs._addr),
     _sock(rhs._sock)

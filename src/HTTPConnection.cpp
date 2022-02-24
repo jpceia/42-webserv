@@ -6,12 +6,13 @@
 /*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/23 06:02:05 by jpceia            #+#    #+#             */
-/*   Updated: 2022/02/23 20:11:21 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/02/24 05:40:53 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 # include "HTTPConnection.hpp"
 # include "TCPConnection.hpp"
+# include "HTTPRequestParser.hpp"
 
 HTTPConnection::HTTPConnection(int fd) :
     TCPConnection(fd)
@@ -47,10 +48,10 @@ void HTTPConnection::send(const HTTPResponse& response)
 
 HTTPRequest HTTPConnection::recv()
 {
-    HTTPRequest request;
-    ParseStatus status = PARSE_START;
+    HTTPRequestParser request;
+    ParseState state = PARSE_START;
 
-    while (status != PARSE_COMPLETE)
-        status = request.parse(TCPConnection::recv());
+    while (state != PARSE_COMPLETE)
+        state = request.parse(TCPConnection::recv());
     return request;
 }

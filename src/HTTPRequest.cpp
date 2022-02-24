@@ -19,9 +19,7 @@
 HTTPRequest::HTTPRequest() :
     _path(""),
     _body(""),
-    _version(""),
-    _parse_status(PARSE_START),
-    _buf("")
+    _version("")
 {
 }
 
@@ -87,67 +85,9 @@ std::istream &operator>>(std::istream &is, HTTPRequest &request)
     return is;
 }
 
-ParseStatus HTTPRequest::parse(const std::string& s)
-{
-    size_t pos;
-    
-    if (_parse_status == PARSE_START)
-    {
-        pos = s.find("\r\n");
-        if (pos != std::string::npos)
-        {
-            _buf += s.substr(0, pos);
-            _parse_status = PARSE_HEADER;
-            std::stringstream ss(_buf);
-            std::string method;
-            ss >> method >> _path >> _version; // parse start line
-            if (!ss.eof())
-                throw HTTPRequest::ParseException();
-            _method = HTTPRequest::parseMethod(method);
-            _buf = "";
-            return this->parse(s.substr(pos + 2));
-        }
-        _buf += s;
-    }
-    else if (_parse_status == PARSE_HEADER)
-    {
-        pos = s.find("\r\n");
-        if (pos != std::string::npos)
-        {
-            _buf += s.substr(0, pos);
-            if (_buf.empty())
-            {
-                _parse_status = PARSE_BODY;
-                return this->parse(s.substr(pos + 2));
-            }
-            size_t i = _buf.find(':');
-            if (i == std::string::npos)
-                throw HTTPRequest::ParseException();
-            _headers[_buf.substr(0, i)] = _buf.substr(i + 2);
-            _buf = "";
-            return this->parse(s.substr(pos + 2));
-        }
-        _buf += s;
-    }
-    else if (_parse_status == PARSE_BODY)
-    {
-        if (s.empty())
-            return PARSE_COMPLETE;
-        _body += s;
-        std::map<std::string, std::string>::const_iterator it = _headers.find("Content-Length");
-        if (it == _headers.end())
-            throw HTTPRequest::ParseException();
-        size_t len = stoi(it->second);
-        if (_body.length() > len)
-            throw HTTPRequest::ParseException();
-        if (_body.length() == len)
-            return PARSE_COMPLETE;
-    }
-    return _parse_status;
-}
-
 std::ostream &operator<<(std::ostream &out, const HTTPRequest &request)
 {
+    
     out << HTTPRequest::strMethod(request._method) << " ";
     out << request._path << " " << request._version << "\r\n";
     for (std::map<std::string, std::string>::const_iterator it = request._headers.begin();

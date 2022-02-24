@@ -6,7 +6,7 @@
 /*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/22 13:00:01 by jceia             #+#    #+#             */
-/*   Updated: 2022/02/23 20:04:47 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/02/24 06:55:16 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,15 +21,7 @@
 enum HTTPMethod {
     GET,
     POST,
-    DELETE,
-    UNKNOWN
-};
-
-enum ParseStatus {
-    PARSE_START,
-    PARSE_HEADER,
-    PARSE_BODY,
-    PARSE_COMPLETE
+    DELETE
 };
 
 class HTTPRequest
@@ -39,8 +31,6 @@ public:
     virtual ~HTTPRequest();
 
     HTTPRequest &operator=(const HTTPRequest &rhs);
-
-    ParseStatus parse(const std::string& s);
 
     friend std::istream &operator>>(std::istream &is, HTTPRequest &request);
     friend std::ostream &operator<<(std::ostream &out, const HTTPRequest &request);
@@ -57,15 +47,12 @@ public:
             virtual const char* what(void) const throw();
     };
     
-private:
+protected:
     HTTPMethod _method;
     std::string _path;
     std::string _body;
     std::string _version;
     std::map<std::string, std::string> _headers;
-
-    ParseStatus _parse_status;
-    std::string _buf;
 };
 
 #endif

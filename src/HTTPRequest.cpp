@@ -69,22 +69,31 @@ const char* HTTPRequest::ParseException::what(void) const throw()
     return "Error parsing HTTP Request";
 }
 
+static void drop_carriage_return(std::string& s)
+{
+    size_t pos = s.length() - 1;
+    if (s[pos] != '\r')
+        throw HTTPRequest::ParseException();
+    s = s.substr(0, pos);
+}
+
 std::istream &operator>>(std::istream &is, HTTPRequest &request)
 {
     std::string line;
     std::getline(is, line);
-    std::stringstream ss(line.substr(0, line.length() - 1));
+    drop_carriage_return(line);
+    std::stringstream ss(line);
     std::string method;
-    ss >> method >> request._path >> request._version; // parse start line
+    ss >> method >> request._path >> request._version;
     if (!ss.eof())
         throw HTTPRequest::ParseException(); // invalid start line
     request._method = parseHTTPMethod(method);
     if (request._method == UNKNOWN)
-        throw HTTPRequest::ParseException(); // invalid method
+        throw HTTPRequest::ParseException();
     // Parse headers
     while (std::getline(is, line))
     {
-        line = line.substr(0, line.length() - 1);
+        drop_carriage_return(line);
         if (line.empty())
             break;
         size_t pos = line.find(':');
@@ -95,7 +104,8 @@ std::istream &operator>>(std::istream &is, HTTPRequest &request)
     // Parse body
     while (std::getline(is, line))
     {
-        request._body += line.substr(0, line.length() - 1);
+        drop_carriage_return(line);
+        request._body += line;
         request._body += "\n";
     }
     request._parse_status = PARSE_COMPLETE;

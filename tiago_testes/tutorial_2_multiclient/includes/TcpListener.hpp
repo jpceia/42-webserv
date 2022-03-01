@@ -221,7 +221,7 @@ class TcpListener
 							_fds[_nfds].events = POLLIN;
 							_nfds++;
 
-							//printPollFds();
+							printPollFds();
 						//}
 					}
 					/*********************************************************/
@@ -230,6 +230,8 @@ class TcpListener
       				/*********************************************************/
 					else
 					{
+							printPollFds();
+
 						printf("  Descriptor %d is readable\n", _fds[i].fd);
 						bool		close_client_connection = false;
 

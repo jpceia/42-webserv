@@ -1,6 +1,6 @@
 # HTTP:
 
-### What is HTTP? 
+### What is HTTP?
 
     HTTP stands for Hyper Text Transfer Protocol.
     WWW is about communication between web clients and servers.
@@ -10,7 +10,7 @@
     Clients are often browsers (Chrome, Edge, Safari), but they can be any type of program or device.
     Servers are most often computers in the cloud.
 
-### HTTP Request / Response 
+### HTTP Request / Response
 
     Communication between clients and servers is done by requests and responses:
 
@@ -34,7 +34,7 @@
 # HTML:
 
 ### What is HTML?
-    
+
     HTML stands for Hyper Text Markup Language.
     HTML is the standard markup language for Web pages.
     HTML elements are the building blocks of HTML pages.
@@ -52,10 +52,10 @@ https://medium.com/from-the-scratch/http-server-what-do-you-need-to-know-to-buil
     and standardises the communication functions of a telecommunication or computing system without
     regard to its underlying internal structure and technology (example: Mac to a Windows).
     Its goal is the interoperability of diverse communication systems with standard communication
-    protocols. 
+    protocols.
 
     The OSI model characterizes computing functions into a universal set of rules and requirements in
-    order to support interoperability between different products and software.    
+    order to support interoperability between different products and software.
 
     The communications between a computing system are split into seven different abstraction layers:
     Physical, Data Link, Network, Transport, Session, Presentation, and Application.
@@ -89,7 +89,7 @@ https://medium.com/from-the-scratch/http-server-what-do-you-need-to-know-to-buil
         and also handles error correction from the physical layer. In the networking world, most switches
         operate at Layer 2. But it’s not that simple. Some switches also operate at Layer 3 in order to
         support virtual LANs that may span more than one switch subnet, which requires routing capabilities.
-   
+
     Layer 3 - Network
 
         Here at the Network Layer is where you’ll find most of the router functionality that most networking
@@ -135,19 +135,19 @@ https://medium.com/from-the-scratch/http-server-what-do-you-need-to-know-to-buil
     receiving capabilities) and making sure that segmented data is delivered over the network in the correct sequence.
 
     Layer 4 (the transport layer) uses the transmission control protocol (TCP) & user data protocol (UDP) to
-    carry out its tasks. 
+    carry out its tasks.
 
     TCP:
 
         TCP is a layer 4 protocol which provides acknowledgement of the received packets and is also reliable as it
         resends the lost packets. It is better than UDP but due to these features it has an additional overhead. It is
-        used by application protocols like HTTP and FTP. 
+        used by application protocols like HTTP and FTP.
 
     UDP:
 
         UDP is also a layer 4 protocol but unlike TCP it doesn’t provide acknowledgement of the sent packets. Therefore,
         it isn’t reliable and depends on the higher layer protocols for the same. But on the other hand it is simple,
-        scalable and comes with lesser overhead as compared to TCP. It is used in video and voice streaming. 
+        scalable and comes with lesser overhead as compared to TCP. It is used in video and voice streaming.
 
 
 # RCA (Request for Comments)
@@ -160,7 +160,7 @@ https://medium.com/from-the-scratch/http-server-what-do-you-need-to-know-to-buil
     further comments or changes are permitted.
 
     HTTP server RFC documents are at:
- 
+
         RFC 7230    -   https://www.rfc-editor.org/info/rfc7230
         RFC 7231    -   https://www.rfc-editor.org/info/rfc7231
         RFC 7232    -   https://www.rfc-editor.org/info/rfc7232
@@ -199,6 +199,51 @@ https://medium.com/from-the-scratch/http-server-what-do-you-need-to-know-to-buil
 
     The client and server can now communicate by writing to or reading from their sockets.
 
+### Programming with TCP/IP sockets
+
+    There are a few steps involved in using sockets:
+
+        1- Create the socket
+
+            A socket, is created with the socket system call
+            int socket_fd = socket(domain, type, protocol);
+
+        2- Identify the socket
+
+            When we talk about naming a socket, we are talking about assigning a transport
+            address to the socket (a port number in IP networking). In sockets, this operation
+            is called binding an address and the bind system call is used for this.
+
+            int bind(int socket, const struct sockaddr *address, socklen_t address_len);
+
+            struct sockaddr_in {
+                __uint8_t         sin_len;
+                sa_family_t       sin_family;
+                in_port_t         sin_port;
+                struct in_addr    sin_addr;
+                char              sin_zero[8];
+            };
+
+        3- On the server, wait for an incoming connection
+
+            Before a client can connect to a server, the server should have a socket that is
+			prepared to accept the connections. The listen system call tells a socket that
+			it should be capable of accepting incoming connections.
+
+        4- Send and receive messages
+
+            The same read and write system calls that work on files also work on sockets.
+
+            int valread = read( new_socket , buffer, 1024);
+            printf(“%s\n”,buffer );
+            if(valread < 0)
+            {
+                printf("No bytes are there to read");
+            }
+
+        5- Close the socket
+
+            Close a socket with the close system call — the same close that is used for files.
 
 # Select()
 
@@ -209,10 +254,10 @@ https://medium.com/from-the-scratch/http-server-what-do-you-need-to-know-to-buil
     A file descriptor is considered ready if it is possible to perform the corresponding I/O operation (e.g., read(2))
     without blocking.
 
-    It takes a group of File Descriptors. Select() is going to tell you when there is something to read or write 
+    It takes a group of File Descriptors. Select() is going to tell you when there is something to read or write
     on any of them.
 
-    Select() is destructive. It destroys the fd_set each time, that's why you should keep 2 copies of it. 
+    Select() is destructive. It destroys the fd_set each time, that's why you should keep 2 copies of it.
 
 ### fd_set
 
@@ -220,7 +265,7 @@ https://medium.com/from-the-scratch/http-server-what-do-you-need-to-know-to-buil
 
         {
             fd_set      current_sockets; // This one goes on Select() and gets destroyed
-            fd_set      ready_sockets;   // This one is a copy of current_sockets. You keep two, because 
+            fd_set      ready_sockets;   // This one is a copy of current_sockets. You keep two, because
                                          // current_sockets get destroyed.
         }
 
@@ -231,8 +276,8 @@ https://medium.com/from-the-scratch/http-server-what-do-you-need-to-know-to-buil
         {
             fd_set      current_sockets;
             fd_set      ready_sockets;
-            
-            FD_ZERO(&current_sockets);            
+
+            FD_ZERO(&current_sockets);
         }
 
 ### FD_SET
@@ -257,11 +302,11 @@ https://medium.com/from-the-scratch/http-server-what-do-you-need-to-know-to-buil
             memset(_address.sin_zero, '\0', sizeof _address.sin_zero);
 
             if (bind(server_socket, (struct sockaddr *)&_address, sizeof(_address)) < 0)
-                exit(EXIT_FAILURE);        
+                exit(EXIT_FAILURE);
             if (listen(server_socket, SOMAXCONN) < 0)
                 exit(EXIT_FAILURE);
 
-            FD_ZERO(&current_sockets);            
+            FD_ZERO(&current_sockets);
             FD_SET(server_socket, &current_sockets);
         }
 
@@ -286,9 +331,75 @@ https://medium.com/from-the-scratch/http-server-what-do-you-need-to-know-to-buil
 
     It is used to watch for file descriptors and see if any of them are ready for an I/O operation.
 
+### Format
+
+				int poll(struct pollfd fds[], nfds_t nfds, int timeout);
+
+	fds:
+		An array of pollfd structures.
+
+		struct pollfd
+		{
+			int fd;					/* File descriptor to poll.  */
+			short int events;		/* Types of events poller cares about.  */
+			short int revents;		/* Types of events that actually occurred.  */
+		};
+
+		fd:
+			An open file descriptor. The file descriptor can be a nonsocket file descriptor or
+			a socket descriptor.
+
+		events (Requested Events):
+			Event types that can be polled for.  These bits may be set in `events'
+			to indicate the interesting event types; they will appear in `revents'
+			to indicate the status of the file descriptor.
+
+			POLLIN				/* There is data to read.  */
+			POLLPRI				/* There is urgent data to read.  */
+
+			POLLOUT				/* Writing now will not block.  */
+
+			POLLRDNORM			/* Normal data may be read.  */
+			POLLRDBAND			/* Priority data may be read.  */
+
+			POLLWRNORM			/* Writing now will not block. Equivalent to POLLOUT */
+			POLLWRBAND			/* Priority data may be written.  */
+
+			These events can be together. For instance POLLIN can be POLLRDNORM | POLLRDBAND.
+
+		revents (Returned Events):
+			Returned events. All requested events can be returned events,
+			in addition to following:
+
+			POLLERR
+				An error has occurred. This option has meaning only for sockets.
+
+			POLLHUP
+				A connected socket has shut down on both ends. This option has meaning
+				only for TCP sockets. POLLHUP and POLLOUT (or POLLWRNORM) are mutually
+				exclusive.
+
+			POLLNVAL
+				The specified fd value is not valid.
+
+	nfds:
+		An unsigned integer indicating the number of pollfd structures in the fds array.
+
+	timeout:
+		Maximum time, in milliseconds, to wait for the poll function to complete.
+
+		A value of 0 means poll does not wait before returning to the caller.
+		A value of -1 means poll waits for the requested event to occur or for an interrupt.
 
 
+    Upon successful completion, poll() shall return a non-negative value. A positive value
+	indicates the total number of file descriptors that have been selected (that is, file
+	descriptors for which the revents member is non-zero). A value of 0 indicates that the
+	call timed out and no file descriptors have been selected. Upon failure, poll() shall
+	return -1 and set errno to indicate the error.
 
+	https://www.ibm.com/docs/en/ztpf/1.1.0.15?topic=apis-pollmonitor-activity-file-descriptors
+	https://pubs.opengroup.org/onlinepubs/009696799/functions/poll.html
 
 
 # Research:

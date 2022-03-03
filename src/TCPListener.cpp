@@ -3,14 +3,15 @@
 /*                                                        :::      ::::::::   */
 /*   TCPListener.cpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jceia <jceia@student.42.fr>                +#+  +:+       +#+        */
+/*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/23 02:51:42 by jpceia            #+#    #+#             */
-/*   Updated: 2022/03/03 18:34:46 by jceia            ###   ########.fr       */
+/*   Updated: 2022/03/03 22:12:48 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "TCPListener.hpp"
+#include <cstring>
 
 TCPListener::TCPListener(const std::string& host, int port, int timeout)
 {
@@ -18,12 +19,12 @@ TCPListener::TCPListener(const std::string& host, int port, int timeout)
     //_addr.sin_addr.s_addr = htonl(INADDR_ANY);
     _addr.sin_port = htons(port);
     inet_pton(AF_INET, host.c_str(), &_addr.sin_addr);
-    memset(_addr.sin_zero, '\0', sizeof _addr.sin_zero);
+    std::memset(_addr.sin_zero, '\0', sizeof _addr.sin_zero);
 
     /****************************************/
     /* Initialize the pollfd structure to 0 */
     /****************************************/
-    memset(_fds, 0, sizeof(_fds));
+    std::memset(_fds, 0, sizeof(_fds));
     _timeout = timeout;
 }
 

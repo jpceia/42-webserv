@@ -1,4 +1,5 @@
 #include "includes/MultiClientChat.hpp"
+#include "includes/WebServer.hpp"
 
 int ft_stoi(const std::string& str)
 {
@@ -8,23 +9,39 @@ int ft_stoi(const std::string& str)
     return i;
 }
 
-int main(int argc, char **argv) {
-
-    int PORT = 54000;
-
-    if (argc == 2) 
+int main(int argc, char **argv)
+{
+    if (argc != 3)
     {
-        PORT = ft_stoi(argv[1]);
+        std::cout << "./webserv [web|chat] [port]" << std::endl;
+        return (0);
     }
+    
+    int port;
+    port = ft_stoi(argv[2]);
+    
+    if (!strcmp(argv[1],"web"))
+    {
+	    WebServer		web_server("0.0.0.0", port);
 
-	MultiClientChat		multi_client_chat("0.0.0.0", PORT);
+        if (web_server.init(-1) != 0) {
+            return 1;
+        }
 
-	if (multi_client_chat.init(-1) != 0) {
-		return 1;
-	}
+        web_server.run();
+    }
+    else if (!strcmp(argv[1],"chat")) 
+    {
+	    MultiClientChat		chat_server("0.0.0.0", port);
 
-	multi_client_chat.run();
+        if (chat_server.init(-1) != 0) {
+            return 1;
+        }
 
-	/*while (1)
-	{};*/
+        chat_server.run();
+    }
+    else 
+    {
+        std::cout << "You need to specify [web] or [port]" << std::endl;
+    }
 }

@@ -275,7 +275,8 @@ class TcpListener
 						/*****************************************************/
 						/* Echo the data back to the client                  */
 						/*****************************************************/
-						int send_ret = send(_fds[i].fd, buffer, bytes_recv, 0);
+
+						int send_ret = onMessageReceived(_fds[i].fd, buffer, bytes_recv);
 						if (send_ret < 0)
 						{
 							perror("  send() failed");
@@ -283,6 +284,18 @@ class TcpListener
 							remove_connection(i);							
 							break ;
 						}
+
+						// Temporary to send msg back to client.
+						// This is for chat, to receive it back.
+						/*int send_ret = sendToClient(_fds[i].fd, buffer, bytes_recv);
+						if (send_ret < 0)
+						{
+							perror("  send() failed");
+
+							remove_connection(i);							
+							break ;
+						}*/
+
 
 					}  /* End of existing connection is readable */
 
@@ -315,15 +328,16 @@ class TcpListener
 		/* Virtual because it will be overwritten                     */
 		/* by multiple clients objects.			                      */
 		/**************************************************************/
-		virtual void	onMessageReceived(int clientSocket, const char*msg, int length)
-		{};
+		virtual int	onMessageReceived(int clientSocket, const char*msg, int length)
+		{ return (0); };
 
 		/************************************/
 		/* Send our message to our client.  */
 		/************************************/
-		void	sendToClient(int clientSocket, const char* msg, int length)
+		int		sendToClient(int clientSocket, const char* msg, int length)
 		{
-			send(clientSocket, msg, length, 0);
+			int send_ret = send(clientSocket, msg, length, 0);
+			return (send_ret);
 		};
 
 		/****************************************/

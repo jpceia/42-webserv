@@ -12,7 +12,9 @@ class MultiClientChat : public TcpListener
 
 	protected:
 
-		// Handler for client connections
+		/***************************************/
+		/* Handler for client connections.	   */
+		/***************************************/
 		void	onClientConnected(int clientSocket)
 		{
 			// Send a welcome message to the connected client
@@ -20,14 +22,20 @@ class MultiClientChat : public TcpListener
 			sendToClient(clientSocket, welcomeMsg.c_str(), welcomeMsg.size() + 1);
 		};
 
-		// Handler for client disconnections
+		/*******************************************/
+		/* Handler for client disconnections.	   */
+		/*******************************************/
 		void	onClientDisconnected(int clientSocket)
 		{};
 
-		// Handler for when the message is received from the client
-		void	onMessageReceived(int clientSocket, const char *msg, int length)
+		/*********************************************/
+		/* Handler for when the message is received  */
+		/* from the client.                          */
+		/*********************************************/
+		int	onMessageReceived(int clientSocket, const char *msg, int length)
 		{
-			broadcastToClients(clientSocket, msg, length);
+			return 0;
+			//broadcastToClients(clientSocket, msg, length);
 		};
 
 	private:

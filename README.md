@@ -3,6 +3,9 @@
 ### What is HTTP?
 
     HTTP stands for Hyper Text Transfer Protocol.
+    Hyper Text = It's the HTML part of the Hyper Text.
+    Transfer Protocol = How a message is formated when sent back. 
+
     WWW is about communication between web clients and servers.
     Communication between client computers and web servers is done by sending HTTP Requests and
     receiving HTTP Responses.

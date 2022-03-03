@@ -235,11 +235,6 @@ class TcpListener
 
 						printf("  Descriptor %d is readable\n", _fds[i].fd);
 
-						/*******************************************************/
-						/* Receive all incoming data on this socket            */
-						/* before we loop back and call poll again.            */
-						/*******************************************************/
-
 						/*****************************************************/
 						/* Receive data on this connection until the         */
 						/* recv fails with EWOULDBLOCK. If any other         */

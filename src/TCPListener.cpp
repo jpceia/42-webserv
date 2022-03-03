@@ -6,13 +6,11 @@
 /*   By: jceia <jceia@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/23 02:51:42 by jpceia            #+#    #+#             */
-/*   Updated: 2022/03/03 17:16:46 by jceia            ###   ########.fr       */
+/*   Updated: 2022/03/03 18:14:24 by jceia            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "TCPListener.hpp"
-#include <errno.h>
-
 
 TCPListener::TCPListener(const std::string& host, int port, int timeout)
 {
@@ -90,11 +88,7 @@ TCPConnection TCPListener::accept()
     socklen_t cli_len = sizeof(cli_addr);
     int connection = ::accept(_sock, (struct sockaddr *)&cli_addr, &cli_len);
     if (connection < 0)
-    {
-        if (errno == EWOULDBLOCK)
-            throw TCPListener::WouldBlockException();
         throw TCPListener::AcceptException();
-    }
     _fds[_nfds].fd = connection;
     _fds[_nfds].events = POLLIN;
     _fds[_nfds].revents = 0;

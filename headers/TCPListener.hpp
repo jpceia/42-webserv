@@ -6,7 +6,7 @@
 /*   By: jceia <jceia@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/23 02:48:15 by jpceia            #+#    #+#             */
-/*   Updated: 2022/03/03 16:14:50 by jceia            ###   ########.fr       */
+/*   Updated: 2022/03/03 18:13:16 by jceia            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@ class TCPListener
 {
 public:
     TCPListener(const std::string& host, int port, int timeout);
-    ~TCPListener();
+    virtual ~TCPListener();
 
     void init();
     TCPConnection accept();
@@ -67,6 +67,10 @@ public:
             virtual const char* what(void) const throw();
     };
 
+protected:
+    void _close_fd(int fd);
+    virtual void _handle_client_request(int fd) = 0;
+
 private:
 
     void	printPollFds()
@@ -83,8 +87,6 @@ private:
     }
 
     void _poll_loop(int i);
-
-    void _close_fd(int i);
 
     // Not copiable
     TCPListener(const TCPListener& rhs);

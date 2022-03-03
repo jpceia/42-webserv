@@ -2,7 +2,7 @@
 #include "utils.hpp"
 #include "HTTPRequest.hpp"
 #include "HTTPResponse.hpp"
-#include "TCPListener.hpp"
+#include "HTTPListener.hpp"
 #include "HTTPConnection.hpp"
 #include <iostream>
 #include <sstream>
@@ -19,8 +19,7 @@ int main(int argc, char *argv[])
 
     try
     {
-        TCPListener listener("0.0.0.0", ft_stoi(argv[1]), -1); // populates the listener addresss
-        listener.init();                                        // creates a socket + bind + listen
+        HTTPListener listener("0.0.0.0", ft_stoi(argv[1]), -1); // populates the listener addresss
         listener.run();
     }
     catch (std::exception& e)
@@ -28,25 +27,5 @@ int main(int argc, char *argv[])
         std::cout << e.what() << std::endl;
         return -1;
     }
-
-
- /*       // Receiving connections
-        HTTPConnection connection = listener.accept();
-
-        // Read and parse the request
-        HTTPRequest request = connection.recv();
-        std::cout << request << std::endl;
-
-        // Build the response
-        HTTPResponse response;
-        response.setVersion("HTTP/1.1");
-        response.setStatus(200, "OK");
-        response.setHeader("Content-Type", "text/html");
-        response.setBody("<html><body><h1>Hello World</h1></body></html>");
-
-        // Send the response
-        connection.send(response);
-    }
-*/
     return 0;
 }

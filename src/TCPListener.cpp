@@ -6,7 +6,7 @@
 /*   By: jceia <jceia@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/23 02:51:42 by jpceia            #+#    #+#             */
-/*   Updated: 2022/03/03 18:14:24 by jceia            ###   ########.fr       */
+/*   Updated: 2022/03/03 18:34:46 by jceia            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -147,45 +147,32 @@ void TCPListener::_poll_loop(int i)
     if(revents & POLLHUP)
     {
         std::cerr << "  Error: revents = " << revents << std::endl;
-        _close_fd(i);
+        _close_fd(fd);
         throw TCPListener::PollHungUpException();
     }
-
-    // If the _fds[i].fd is the listener [0]
-    if (fd == _sock)
-    {
-        std::cout << "  Listening socket is readable." << std::endl;
+    if (fd == _sock) // Accept a new connection
         TCPConnection client_connection = this->accept();
-        client_connection.send("Connection accepted"); // check exceptions    
-    }
-    
     else  // Not the listener socket, but an accepted (connected) socket. _fds[ >0].
-    {
+    {   
         try
         {
-            std::cout << "  Descriptor " << fd << " is readable" << std::endl;
-            TCPConnection connection(fd);
-            std::string msg = connection.recv();
-            std::cout << msg.size() << " bytes received = " << std::endl;
-            std::cout << msg << std::endl;
-            if (msg.empty())
-            {
-                // connection closed by client
-                _close_fd(i);
-                return ;
-            }
-            connection.send(msg);
+            _handle_client_request(fd);
         }
         catch (const TCPConnection::ConnectionException& e)
         {
-            std::cerr << e.what() << '\n';
-            _close_fd(i);
+            std::cerr << e.what() << std::endl;
+            _close_fd(fd);
         }
     }
 }
 
-void TCPListener::_close_fd(int index)
+void TCPListener::_close_fd(int fd)
 {
+    int index = 0;
+    while (_fds[index].fd != fd)
+        ++index;
+    if (index == _nfds)
+        throw std::runtime_error("TCPListener::_close_fd() - index not found");
     close(_fds[index].fd);
     --_nfds;
     _fds[index] = _fds[_nfds];

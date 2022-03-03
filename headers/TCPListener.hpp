@@ -18,15 +18,18 @@
 # include <sys/socket.h>
 # include <arpa/inet.h>
 # include <unistd.h>
+# include <stdio.h>
+#include <sys/poll.h>
 
 class TCPListener
 {
 public:
-    TCPListener(const std::string& host, int port);
+    TCPListener(const std::string& host, int port, int timeout);
     ~TCPListener();
 
     void init();
     TCPConnection accept();
+    void run();
 
     class CreateException : public std::exception
     {
@@ -53,13 +56,38 @@ public:
     };
 
 private:
+
+    void	printPollFds()
+    {
+        for (int i = 0; i < _nfds; i++)
+        {
+            std::cout << "fds[" << i << "]" << std::endl;
+            std::cout << "fd = " << _fds[i].fd << std::endl;
+            std::cout << "events = " << _fds[i].events << std::endl;
+            std::cout << "revents = " << _fds[i].revents << std::endl;
+
+            std::cout << std::endl;
+        }
+    }
+
+
     // Not copiable
     TCPListener(const TCPListener& rhs);
     TCPListener& operator=(const TCPListener& rhs);
     
     // Private attributes
     struct sockaddr_in _addr;
-    int _sock;
+    int _sock;                      // listener sock
+
+
+    /********************/
+    /* poll() Variables */
+    /********************/
+    struct pollfd					_fds[1000];			// An array of pollfd structures.
+                                                        // Containing the Listener at _fds[0]
+                                                        // and clients at > 0
+    int								_nfds;				// Number of connected clients
+    int								_timeout;			// Maximum time, in milliseconds,
 };
 
 #endif

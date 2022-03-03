@@ -8,16 +8,32 @@
 #include <arpa/inet.h>
 #include <string.h>
 #include <string>
+#include <sstream>
 
-#define PORT 54000
+//#define PORT 54000
 
-int main()
+int ft_stoi(const std::string& str)
 {
+    std::stringstream ss(str);
+    int i;
+    ss >> i;
+    return i;
+}
+
+int main(int argc, char **argv)
+{
+    int PORT = 54000;
+
     //	Create a socket
     int sock = socket(AF_INET, SOCK_STREAM, 0);
     if (sock == -1)
     {
         return 1;
+    }
+
+    if (argc == 2) 
+    {
+        PORT = ft_stoi(argv[1]);
     }
 
     //	Create a hint structure for the server we're connecting with

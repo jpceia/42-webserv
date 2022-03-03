@@ -3,15 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   HTTPResponse.cpp                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
+/*   By: jceia <jceia@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/22 15:33:45 by jceia             #+#    #+#             */
-/*   Updated: 2022/02/23 05:45:47 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/03/03 18:22:08 by jceia            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 # include "HTTPResponse.hpp"
 # include <sstream>
+# include <fstream>
 
 HTTPResponse::HTTPResponse() :
     _status_code(0),
@@ -54,6 +55,17 @@ void HTTPResponse::setVersion(const std::string& version)
 void HTTPResponse::setBody(const std::string& body)
 {
     this->_body = body;
+    // set content length
+    std::stringstream ss;
+    ss << body.size();
+    this->_headers["Content-Length"] = ss.str();
+}
+
+void HTTPResponse::setBody(const std::ifstream& f)
+{
+    std::stringstream ss;
+    ss << f.rdbuf();
+    this->setBody(ss.str());
 }
 
 std::ostream &operator<<(std::ostream &out, const HTTPResponse &response)

@@ -19,6 +19,7 @@ TCPListener::TCPListener(const std::string& host, int port, int timeout)
     //_addr.sin_addr.s_addr = htonl(INADDR_ANY);
     _addr.sin_port = htons(port);
     inet_pton(AF_INET, host.c_str(), &_addr.sin_addr);
+    memset(_addr.sin_zero, '\0', sizeof _addr.sin_zero);
 
     /****************************************/
     /* Initialize the pollfd structure to 0 */

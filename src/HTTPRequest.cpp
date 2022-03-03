@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   HTTPRequest.cpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
+/*   By: jceia <jceia@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/22 15:33:45 by jceia             #+#    #+#             */
-/*   Updated: 2022/02/24 08:57:23 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/03/03 18:52:14 by jceia            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -140,4 +140,9 @@ void HTTPRequest::addHeader(const std::string& s)
 void HTTPRequest::addHeader(const std::string& key, const std::string& value)
 {
     _headers[key] = value;
+}
+
+std::string getPath() const
+{
+    return _path;
 }

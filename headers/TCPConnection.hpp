@@ -6,7 +6,7 @@
 /*   By: jceia <jceia@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/23 03:04:11 by jpceia            #+#    #+#             */
-/*   Updated: 2022/03/03 16:17:38 by jceia            ###   ########.fr       */
+/*   Updated: 2022/03/03 18:50:54 by jceia            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,7 @@ public:
     void send(const std::string& msg);
     std::string recv();
 
-    int getFd() { return _fd; }
+    int getFd();
 
     class ConnectionException : public std::exception
     {

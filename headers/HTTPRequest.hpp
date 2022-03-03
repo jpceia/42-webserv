@@ -6,7 +6,7 @@
 /*   By: jceia <jceia@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/22 13:00:01 by jceia             #+#    #+#             */
-/*   Updated: 2022/03/03 17:45:54 by jceia            ###   ########.fr       */
+/*   Updated: 2022/03/03 18:51:57 by jceia            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,7 @@ public:
     void addHeader(const std::string& s);
     virtual void addHeader(const std::string& key, const std::string& value);
 
-    std::string getPath() const { return _path; }
+    std::string getPath() const;
 
     class ParseException : public std::exception
     {

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   TCPListener.hpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
+/*   By: jceia <jceia@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/23 02:48:15 by jpceia            #+#    #+#             */
-/*   Updated: 2022/02/23 04:39:08 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/03/03 16:14:50 by jceia            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,6 +82,9 @@ private:
         }
     }
 
+    void _poll_loop(int i);
+
+    void _close_fd(int i);
 
     // Not copiable
     TCPListener(const TCPListener& rhs);

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   HTTPListener.cpp                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jceia <jceia@student.42.fr>                +#+  +:+       +#+        */
+/*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/03 17:30:40 by jceia             #+#    #+#             */
-/*   Updated: 2022/03/03 18:44:31 by jceia            ###   ########.fr       */
+/*   Updated: 2022/03/03 22:49:34 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,7 @@
 # include <fstream>
 # include <sstream>
 # include <vector>
+# include "utils.hpp"
 
 HTTPListener::HTTPListener(const std::string& host, int port, int timeout) :
     TCPListener(host, port, timeout),
@@ -35,47 +36,73 @@ HTTPListener::~HTTPListener()
 
 void HTTPListener::_handle_client_request(int fd)
 {
-    // handle message
-    std::cout << "  Descriptor " << fd << " is readable" << std::endl;
     HTTPConnection connection(fd);
 
     // Read and parse the request
     HTTPRequest request = connection.recv();
-    std::cout << "  Request: " << std::endl;
     std::cout << request << std::endl;
 
     // Build the response
-    std::cout << "Building response" << std::endl;
+    connection.send(_build_response(request));
+}
+
+HTTPResponse HTTPListener::_build_response(const HTTPRequest& request)
+{
+    std::string path = _root + request.getPath();
+    if (is_dir(path))
+    {
+        std::cout << "path is a directory" << std::endl;
+        bool found = false;
+        for (std::vector<std::string>::const_iterator it = _index.begin();
+            it != _index.end(); ++it)
+        {
+            if (is_readable_file(path + *it))
+            {
+                path += *it;
+                found = true;
+                break;
+            }
+        }
+        if (!found)
+            return _not_found_response();
+    }
+    std::cout << "path is " << path << std::endl;
+
     HTTPResponse response;
     response.setVersion("HTTP/1.1");
     response.setHeader("Content-Type", "text/html");
-
-    std::string path = _root + request.getPath();
-
     // get the file content using open
-    std::ifstream file(path.c_str(), std::ifstream::in);
-    if (file.good())
+    std::ifstream ifs(path.c_str(), std::ifstream::in);
+    if (ifs.good())
     {
         response.setStatus(200, "OK");
-        response.setBody(file);
-        file.close();
+        response.setBody(ifs);
+        ifs.close();
     }
     else
     {
-        std::cout << "File not found: " << path << std::endl;
         response.setStatus(404, "Not Found");
-        path = _root + "/404.html";
-        std::ifstream file_not_found(path.c_str(), std::ifstream::in);
-        if (file_not_found)
-        {
-            response.setBody(file_not_found);
-            file_not_found.close();
-        }
-        else
-            response.setBody("<h1>404 Not Found</h1>"); // backup
+        response.setBody("<h1>404 Not Found</h1>");
     }
-
-    // Send the response
-    connection.send(response);
+    return response;
 }
 
+HTTPResponse HTTPListener::_not_found_response()
+{
+    HTTPResponse response;
+    response.setVersion("HTTP/1.1");
+    response.setHeader("Content-Type", "text/html");
+    response.setStatus(404, "Not Found");
+    
+    std::string path = _root + "/404.html";
+    std::ifstream ifs(path.c_str(), std::ifstream::in);
+    if (ifs.good())
+    {
+        response.setBody(ifs);
+        ifs.close();
+    }
+    else
+        response.setBody("<h1>404 Not Found</h1>"); // backup
+
+    return response;
+}

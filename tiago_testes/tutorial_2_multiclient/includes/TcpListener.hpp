@@ -20,8 +20,7 @@ class TcpListener
     public:
 
         TcpListener(const char* ipAddress, int port) : _ipAddress(ipAddress),
-                                                       _port(port),
-													   _remove_connection(false)
+                                                       _port(port)
         {};
 
         ~TcpListener()
@@ -154,12 +153,23 @@ class TcpListener
 					if(_fds[i].revents == 0)
 						continue;
 
+					/**************************/
+					/* If client used ctrl+c. */
+					/**************************/
+					if(_fds[i].revents & POLLHUP) 
+					{
+						printf("  Client ctrl+c / Hang UP! revents = %d\n", _fds[i].revents);						
+						
+						printPollFds();						
+						remove_connection(i);
+						break ;
+					}
 					/********************************************************/
 					/* If revents is not POLLIN, it's an unexpected result, */
 					/* log and end the server.								*/
 					/* POLLIN is data to read.								*/
 					/********************************************************/
-					if(_fds[i].revents != POLLIN)
+					else if(_fds[i].revents != POLLIN)
 					{
 						printPollFds();
 						printf("  Error! revents = %d\n", _fds[i].revents);
@@ -182,47 +192,38 @@ class TcpListener
 						/*****************************/
 						int new_client_socket = 0;
 
-						/*******************************************************/
-						/* Accept all incoming connections that are            */
-						/* queued up on the listening socket before we         */
-						/* loop back and call poll again.                      */
-						/*******************************************************/
-
-						//while (new_client_socket != -1)
-						//{
-
-							/*****************************************************/
-							/* Accept each incoming connection. If               */
-							/* accept fails with EWOULDBLOCK, then we            */
-							/* have accepted all of them. Any other              */
-							/* failure on accept will cause us to end the        */
-							/* server.                                           */
-							/*****************************************************/
-							new_client_socket = accept(_listening_socket_fd, NULL, NULL);
-							if (new_client_socket < 0)
+						/*****************************************************/
+						/* Accept each incoming connection. If               */
+						/* accept fails with EWOULDBLOCK, then we            */
+						/* have accepted all of them. Any other              */
+						/* failure on accept will cause us to end the        */
+						/* server.                                           */
+						/*****************************************************/
+						new_client_socket = accept(_listening_socket_fd, NULL, NULL);
+						if (new_client_socket < 0)
+						{
+							if (errno != EWOULDBLOCK)
 							{
-								if (errno != EWOULDBLOCK)
-								{
-									perror("  accept() failed");
-									running = false;
-								}
-								break;
+								perror("  accept() failed");
+								running = false;
 							}
+							break;
+						}
 
-							/*****************************************************/
-							/* Add the new incoming connection to the            */
-							/* pollfd structure                                  */
-							/*****************************************************/
-							printf("  New incoming connection - %d\n", new_client_socket);
+						/*****************************************************/
+						/* Add the new incoming connection to the            */
+						/* pollfd structure                                  */
+						/*****************************************************/
+						printf("  New incoming connection - %d\n", new_client_socket);
 
-							onClientConnected(new_client_socket);
+						onClientConnected(new_client_socket);
 
-							_fds[_nfds].fd = new_client_socket;
-							_fds[_nfds].events = POLLIN;
-							_nfds++;
+						_fds[_nfds].fd = new_client_socket;
+						_fds[_nfds].events = POLLIN;
+						_nfds++;
 
-							printPollFds();
-						//}
+						printPollFds();
+					
 					}
 					/*********************************************************/
       				/* This is not the listening socket, therefore an        */
@@ -230,130 +231,71 @@ class TcpListener
       				/*********************************************************/
 					else
 					{
-							printPollFds();
+						printPollFds();
 
 						printf("  Descriptor %d is readable\n", _fds[i].fd);
-						bool		close_client_connection = false;
 
 						/*******************************************************/
 						/* Receive all incoming data on this socket            */
 						/* before we loop back and call poll again.            */
 						/*******************************************************/
 
-						while(1)
+						/*****************************************************/
+						/* Receive data on this connection until the         */
+						/* recv fails with EWOULDBLOCK. If any other         */
+						/* failure occurs, we will close the                 */
+						/* connection.                                       */
+						/*****************************************************/
+						char buffer[4096];
+						int bytes_recv = recv(_fds[i].fd, buffer, sizeof(buffer), 0);
+						if (bytes_recv < 0)
 						{
-
-							/*****************************************************/
-							/* Receive data on this connection until the         */
-							/* recv fails with EWOULDBLOCK. If any other         */
-							/* failure occurs, we will close the                 */
-							/* connection.                                       */
-							/*****************************************************/
-							char buffer[4096];
-							int bytes_recv = recv(_fds[i].fd, buffer, sizeof(buffer), 0);
-							if (bytes_recv < 0)
+							if (errno != EWOULDBLOCK)
 							{
-								if (errno != EWOULDBLOCK)
-								{
-									perror("  recv() failed");
-									close_client_connection = true;
-								}
-								break;
+								perror("  recv() failed");
+								remove_connection(i);
 							}
-
-							/*****************************************************/
-							/* Check to see if the connection has been           */
-							/* closed by the client                              */
-							/*****************************************************/
-							if (bytes_recv == 0)
-							{
-								printf("  Connection closed\n");
-								close_client_connection = true;
-								break;
-							}
-
-							/*****************************************************/
-							/* Data was received                                 */
-							/*****************************************************/
-							printf("  %d bytes received = ", bytes_recv);
-							printf("%s \n", buffer);
-
-							/*****************************************************/
-							/* Echo the data back to the client                  */
-							/*****************************************************/
-
-							//onMessageReceived(_fds[i].fd, buffer, bytes_recv);
-							//close_client_connection = true;
-
-							int send_ret = send(_fds[i].fd, buffer, bytes_recv, 0);
-							if (send_ret < 0)
-							{
-								perror("  send() failed");
-								close_client_connection = true;
-								break;
-							}
-
-							break;
-
+							
+							break ;
 						}
 
-						/*******************************************************/
-						/* If the close_client_connection flag was turned on,  */
-						/* we need to clean up this active connection. This    */
-						/* clean up process includes removing the              */
-						/* descriptor.                                         */
-						/*******************************************************/
-						if (close_client_connection == true)
+						/*****************************************************/
+						/* Check to see if the connection has been           */
+						/* closed by the client                              */
+						/*****************************************************/
+						if (bytes_recv == 0)
 						{
-							onClientDisconnected(_fds[i].fd);
-							close(_fds[i].fd);
-							_fds[i].fd = -1;
-							_remove_connection = true;
+							printf("  Connection closed\n");
+							remove_connection(i);
+							
+							break ;
+						}
+
+						/*****************************************************/
+						/* Data was received                                 */
+						/*****************************************************/
+						printf("  %d bytes received = ", bytes_recv);
+						printf("%s \n", buffer);
+
+						/*****************************************************/
+						/* Echo the data back to the client                  */
+						/*****************************************************/
+						int send_ret = send(_fds[i].fd, buffer, bytes_recv, 0);
+						if (send_ret < 0)
+						{
+							perror("  send() failed");
+
+							remove_connection(i);							
+							break ;
 						}
 
 					}  /* End of existing connection is readable */
 
 				} /* End of loop through pollable descriptors */
-
-				/***********************************************************/
-				/* If the _remove_connection flag was turned on, we need   */
-				/* to squeeze together the array and decrement the number  */
-				/* of file descriptors.                                    */
-				/***********************************************************/
-				if (_remove_connection)
-				{
-					_remove_connection = false;
-					for (int i = 0; i < _nfds; i++)
-					{
-						if (_fds[i].fd == -1)
-						{
-							for(int j = i; j < _nfds; j++)
-							{
-								_fds[j].fd = _fds[j+1].fd;
-								_fds[j].events = _fds[j+1].events;
-								_fds[j].revents = _fds[j+1].revents;
-							}
-						i--;
-						_nfds--;
-						}
-					}
-				}
 			}
 
 			close_all_open_sockets();
 		};
-
-		/*************************************************************/
-		/* Clean up all of the sockets that are open                 */
-		/*************************************************************/
-		void	close_all_open_sockets()
-		{
-			for (int i = 0; i < _nfds; i++)
-			{
-				if(_fds[i].fd >= 0)
-				close(_fds[i].fd);
-			}
-		}
 
 	protected:
 
@@ -419,7 +361,10 @@ class TcpListener
 		/********************/
 		/* Helper Functions */
 		/********************/
-
+		
+		/**********************************************/
+		/* Print all poll struct to check for changes */
+		/**********************************************/
 		void	printPollFds()
 		{
 			for (int i = 0; i < _nfds; i++)
@@ -430,6 +375,44 @@ class TcpListener
 				std::cout << "revents = " << _fds[i].revents << std::endl;
 
 				std::cout << std::endl;
+			}
+		}
+
+		/***********************************************************/
+		/* If remove connection function was called, we need to    */
+		/* squeeze together the array and decrement the number     */
+		/* of file descriptors.                                    */
+		/***********************************************************/
+		void remove_connection(int i) 
+		{
+			close(_fds[i].fd);
+			_fds[i].fd = -1;
+
+			for (int i = 0; i < _nfds; i++)
+			{
+				if (_fds[i].fd == -1)
+				{
+					for(int j = i; j < _nfds; j++)
+					{
+						_fds[j].fd = _fds[j+1].fd;
+						_fds[j].events = _fds[j+1].events;
+						_fds[j].revents = _fds[j+1].revents;
+					}
+				i--;
+				_nfds--;
+				}
+			}
+		};
+
+		/*************************************************************/
+		/* Clean up all of the sockets that are open                 */
+		/*************************************************************/
+		void	close_all_open_sockets()
+		{
+			for (int i = 0; i < _nfds; i++)
+			{
+				if(_fds[i].fd >= 0)
+				close(_fds[i].fd);
 			}
 		}
 
@@ -452,7 +435,4 @@ class TcpListener
 		int								_timeout;			// Maximum time, in milliseconds,
 															// to wait for the poll function
 															// to complete.
-		bool							_remove_connection; // If client closed connection,
-															// we remove it from pollfd (_fds)
-
 };

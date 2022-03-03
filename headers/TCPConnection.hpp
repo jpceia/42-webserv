@@ -34,6 +34,8 @@ public:
     void send(const std::string& msg);
     std::string recv();
 
+    int getFd() { return _fd; }
+
     class SendException : public std::exception
     {
         public:
@@ -48,11 +50,6 @@ public:
 
 private:
     int _fd;
-
-    // File descriptor reference count
-    static std::map<int, size_t> _ref_count;
-    static void _increase_ref_count(int fd);
-    static void _decrease_ref_count(int fd);
 };
 
 #endif

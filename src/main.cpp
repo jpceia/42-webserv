@@ -19,11 +19,18 @@ int main(int argc, char *argv[])
 
     try
     {
-        TCPListener listener("0.0.0.0", ft_stoi(argv[1])); // populates the listener addresss
-        listener.init();                                   // creates a socket + bind + listen
+        TCPListener listener("0.0.0.0", ft_stoi(argv[1]), -1); // populates the listener addresss
+        listener.init();                                        // creates a socket + bind + listen
+        listener.run();
+    }
+    catch (std::exception& e)
+    {
+        std::cout << e.what() << std::endl;
+        return -1;
+    }
 
 
-        // Receiving connections
+ /*       // Receiving connections
         HTTPConnection connection = listener.accept();
 
         // Read and parse the request
@@ -40,11 +47,6 @@ int main(int argc, char *argv[])
         // Send the response
         connection.send(response);
     }
-    catch (std::exception& e)
-    {
-        std::cout << e.what() << std::endl;
-        return -1;
-    }
-
+*/
     return 0;
 }

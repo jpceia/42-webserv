@@ -276,3 +276,13 @@ const char* TCPListener::AcceptException::what(void) const throw()
 {
     return "Could not accept connection";
 }
+
+const char* TCPListener::PollHungUpException::what(void) const throw()
+{
+    return "Poll hung up";
+}
+
+const char* TCPListener::WouldBlockException::what(void) const throw()
+{
+    return "Would block Exception";
+}

@@ -55,6 +55,18 @@ public:
             virtual const char* what(void) const throw();
     };
 
+    class PollHungUpException : public std::exception
+    {
+        public:
+            virtual const char* what(void) const throw();
+    };
+
+    class WouldBlockException : public std::exception
+    {
+        public:
+            virtual const char* what(void) const throw();
+    };
+
 private:
 
     void	printPollFds()

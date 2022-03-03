@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   TCPConnection.cpp                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
+/*   By: jceia <jceia@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/23 03:04:11 by jpceia            #+#    #+#             */
-/*   Updated: 2022/02/23 07:11:07 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/03/03 16:18:15 by jceia            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,12 +60,17 @@ std::string TCPConnection::recv()
     return std::string(buff, n);
 }
 
-const char* TCPConnection::SendException::what(void) const throw()
+const char* TCPConnection::ConnectionException::what() const throw()
+{
+    return "Connection error";
+}
+
+const char* TCPConnection::SendException::what() const throw()
 {
     return "Error sending message";
 }
 
-const char* TCPConnection::ReadException::what(void) const throw()
+const char* TCPConnection::ReadException::what() const throw()
 {
     return "Could not read from socket";
 }

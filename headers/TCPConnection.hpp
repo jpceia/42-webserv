@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   TCPConnection.hpp                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
+/*   By: jceia <jceia@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/23 03:04:11 by jpceia            #+#    #+#             */
-/*   Updated: 2022/02/23 07:18:31 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/03/03 16:17:38 by jceia            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,13 +36,19 @@ public:
 
     int getFd() { return _fd; }
 
-    class SendException : public std::exception
+    class ConnectionException : public std::exception
+    {
+        public:
+            virtual const char* what(void) const throw();
+    };
+
+    class SendException : public TCPConnection::ConnectionException
     {
         public:
             virtual const char* what(void) const throw();
     };
     
-    class ReadException : public std::exception
+    class ReadException : public TCPConnection::ConnectionException
     {
         public:
             virtual const char* what(void) const throw();

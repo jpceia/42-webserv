@@ -63,12 +63,18 @@ void TCPListener::init()
     _sock = socket(AF_INET, SOCK_STREAM, 0);
     if (_sock < 0)
         throw TCPListener::CreateException();
+
+    int on = 1; //char yes='1'; // Solaris people use this
+    // lose the pesky "Address already in use" error message
+    if (setsockopt(_sock, SOL_SOCKET, SO_REUSEADDR, &on, sizeof on) < 0)
+        throw TCPListener::CreateException();
+
     if (bind(_sock, (struct sockaddr *)&_addr, sizeof(_addr)) < 0)
         throw TCPListener::BindException();
+
     if (listen(_sock, SOMAXCONN) < 0)
         throw TCPListener::ListenException();
     
-
     /************************************************/
     /* Setting the _fds[0] for the listening socket */
     /************************************************/

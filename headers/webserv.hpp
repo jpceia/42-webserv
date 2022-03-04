@@ -6,11 +6,7 @@
 /*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/22 06:58:31 by jpceia            #+#    #+#             */
-/*   Updated: 2022/01/22 07:12:00 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/03/04 12:50:28 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#define FD_SET 0
-#define FD_CLR 0
-#define FD_ISSET 0
-#define FD_ZERO 0

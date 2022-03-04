@@ -6,7 +6,7 @@
 /*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/23 02:51:42 by jpceia            #+#    #+#             */
-/*   Updated: 2022/03/04 13:44:38 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/03/04 14:04:09 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -107,13 +107,10 @@ void TCPListener::run()
 
             try
             {
-                for (std::vector<struct pollfd>::iterator it = _fds.begin();
-                     it != _fds.end(); ++it)
-                {
-                    if(!it->revents) // If there's no activity skip _fds;
-                        continue ;
-                    _handle_revent(it->fd, it->revents);  // call the poll loop for each fd
-                }
+                std::vector<struct pollfd>::iterator it = _fds.begin();
+                for (;it != _fds.end() && !it->revents; ++it) ; // find the first ready fd
+                if (it != _fds.end())  // If there's no activity skip _fds;
+                    _handle_revent(it->fd, it->revents);
             }
             catch (TCPListener::PollHungUpException& e)
             {
@@ -132,6 +129,7 @@ void TCPListener::run()
  */
 void TCPListener::_handle_revent(int fd, int revents)
 {
+    std::cout << "Handling revents for fd " << fd << std::endl;
     if(revents & POLLHUP)
     {
         std::cerr << "  Error: revents = " << revents << std::endl;

@@ -6,7 +6,7 @@
 /*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/03 17:30:40 by jceia             #+#    #+#             */
-/*   Updated: 2022/03/03 22:49:34 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/03/04 10:57:44 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,6 +50,8 @@ void HTTPListener::_handle_client_request(int fd)
 
     // Build the response
     connection.send(_build_response(request));
+    if (request.getHeader("Connection") != "keep-alive") // close connection
+        _close_fd(fd);
 }
 
 HTTPResponse HTTPListener::_build_response(const HTTPRequest& request)

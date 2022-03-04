@@ -6,7 +6,7 @@
 /*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/23 02:51:42 by jpceia            #+#    #+#             */
-/*   Updated: 2022/03/04 14:04:09 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/03/04 14:14:07 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,13 +65,8 @@ void TCPListener::init()
     if (listen(_sock, SOMAXCONN) < 0)
         throw TCPListener::ListenException();
 
-    /************************************************/
-    /* Setting the _fds[0] for the listening socket */
-    /************************************************/
-    struct pollfd pfd;
-    pfd.fd = _sock;
-    pfd.events = POLLIN;
-    _fds.push_back(pfd);  
+    // Adding the listening socket to the pollfd vector
+    _fds.push_back(create_pollfd(pfd, POLLIN));
 }
 
 TCPConnection TCPListener::accept()
@@ -81,11 +76,7 @@ TCPConnection TCPListener::accept()
     int connection = ::accept(_sock, (struct sockaddr *)&cli_addr, &cli_len);
     if (connection < 0)
         throw TCPListener::AcceptException();
-    struct pollfd pfd;
-    pfd.fd = connection;
-    pfd.events = POLLIN;
-    pfd.revents = 0;
-    _fds.push_back(pfd);
+    _fds.push_back(create_pollfd(connection, POLLIN));
     return connection;
 }
 

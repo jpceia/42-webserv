@@ -6,7 +6,7 @@
 /*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/23 20:06:03 by jpceia            #+#    #+#             */
-/*   Updated: 2022/03/04 13:03:57 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/03/04 14:12:39 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/wait.h>
+#include <sys/poll.h>
 #include <unistd.h>
 
 int ft_stoi(const std::string& str)
@@ -36,6 +37,16 @@ bool is_readable_file(const std::string& path)
     struct stat s;
     return (stat(path.c_str(), &s) == 0 && S_ISREG(s.st_mode) &&
             (s.st_mode & S_IRUSR));
+}
+
+struct pollfd create_pollfd(int fd, short int events)
+{
+    struct pollfd pfd;
+
+    pfd.fd = fd;
+    pfd.events = events;
+    pfd.revents = 0;
+    return pfd;
 }
 
 std::string exec_cmd(

@@ -6,7 +6,7 @@
 /*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/03 17:30:40 by jceia             #+#    #+#             */
-/*   Updated: 2022/03/04 12:08:58 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/03/04 14:29:54 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,6 +39,7 @@ private:
     HTTPResponse _build_cgi_response(const HTTPRequest& request, const std::string& path);
 
     std::string _root;
+    std::string _name;
     std::vector<std::string> _index;
     std::vector<HTTPMethod> _allowed_methods;
 };

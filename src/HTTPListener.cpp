@@ -24,7 +24,8 @@
 
 HTTPListener::HTTPListener(const std::string& host, int port, int timeout) :
     TCPListener(host, port, timeout),
-    _root("./www")
+    _root("./www"),
+    _name("")
 {
     _index.push_back("index.html");
     _index.push_back("index.htm");

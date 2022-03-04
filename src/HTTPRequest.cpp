@@ -152,6 +152,14 @@ std::string HTTPRequest::getPath() const
     return _path;
 }
 
+std::string HTTPRequest::getQueryString() const
+{
+    size_t pos = _path.find('?');
+    if (pos == std::string::npos)
+        return "";
+    return _path.substr(pos + 1);
+}
+
 HTTPMethod HTTPRequest::getMethod() const
 {
     return _method;

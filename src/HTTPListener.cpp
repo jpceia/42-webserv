@@ -6,7 +6,7 @@
 /*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/03 17:30:40 by jceia             #+#    #+#             */
-/*   Updated: 2022/03/04 10:57:44 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/03/04 11:03:09 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,9 +56,12 @@ void HTTPListener::_handle_client_request(int fd)
 
 HTTPResponse HTTPListener::_build_response(const HTTPRequest& request)
 {
+    // checking if the method is allowed
     if (std::find(_allowed_methods.begin(), _allowed_methods.end(),
         request.getMethod()) == _allowed_methods.end())
         return _method_not_allowed_response();
+
+    // checking if the file exists
     std::string path = _root + request.getPath();
     if (is_dir(path))
     {
@@ -77,24 +80,21 @@ HTTPResponse HTTPListener::_build_response(const HTTPRequest& request)
         if (!found)
             return _not_found_response();
     }
+    else if (!is_readable_file(path))
+        return _not_found_response();
+
+    std::ifstream ifs(path.c_str(), std::ifstream::in);
+    if (!ifs.good())
+        return _not_found_response();
+
     std::cout << "path is " << path << std::endl;
 
     HTTPResponse response;
     response.setVersion("HTTP/1.1");
     response.setHeader("Content-Type", "text/html");
-    // get the file content using open
-    std::ifstream ifs(path.c_str(), std::ifstream::in);
-    if (ifs.good())
-    {
-        response.setStatus(200, "OK");
-        response.setBody(ifs);
-        ifs.close();
-    }
-    else
-    {
-        response.setStatus(404, "Not Found");
-        response.setBody("<h1>404 Not Found</h1>");
-    }
+    response.setStatus(200, "OK");
+    response.setBody(ifs);
+    ifs.close();
     return response;
 }
 

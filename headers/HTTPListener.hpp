@@ -6,7 +6,7 @@
 /*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/03 17:30:40 by jceia             #+#    #+#             */
-/*   Updated: 2022/03/03 22:42:00 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/03/04 10:27:00 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,10 +33,13 @@ protected:
 
 private:
     HTTPResponse _not_found_response();
+    HTTPResponse _method_not_allowed_response();
+
     HTTPResponse _build_response(const HTTPRequest& request);
 
     std::string _root;
     std::vector<std::string> _index;
+    std::vector<HTTPMethod> _allowed_methods;
 };
 
 #endif

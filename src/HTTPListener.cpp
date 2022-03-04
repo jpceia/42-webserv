@@ -19,6 +19,7 @@
 # include <fstream>
 # include <sstream>
 # include <vector>
+# include <algorithm>
 # include "utils.hpp"
 
 HTTPListener::HTTPListener(const std::string& host, int port, int timeout) :
@@ -27,6 +28,11 @@ HTTPListener::HTTPListener(const std::string& host, int port, int timeout) :
 {
     _index.push_back("index.html");
     _index.push_back("index.htm");
+
+    _allowed_methods.push_back(GET);
+    _allowed_methods.push_back(POST);
+    _allowed_methods.push_back(DELETE);
+    
     this->init();
 }
 
@@ -48,6 +54,9 @@ void HTTPListener::_handle_client_request(int fd)
 
 HTTPResponse HTTPListener::_build_response(const HTTPRequest& request)
 {
+    if (std::find(_allowed_methods.begin(), _allowed_methods.end(),
+        request.getMethod()) == _allowed_methods.end())
+        return _method_not_allowed_response();
     std::string path = _root + request.getPath();
     if (is_dir(path))
     {
@@ -104,5 +113,15 @@ HTTPResponse HTTPListener::_not_found_response()
     else
         response.setBody("<h1>404 Not Found</h1>"); // backup
 
+    return response;
+}
+
+HTTPResponse HTTPListener::_method_not_allowed_response()
+{
+    HTTPResponse response;
+    response.setVersion("HTTP/1.1");
+    response.setHeader("Content-Type", "text/html");
+    response.setStatus(405, "Method Not Allowed");
+    response.setBody("<h1>405 Method Not Allowed</h1>");
     return response;
 }

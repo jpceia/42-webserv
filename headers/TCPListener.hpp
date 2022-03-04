@@ -6,7 +6,7 @@
 /*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/23 02:48:15 by jpceia            #+#    #+#             */
-/*   Updated: 2022/03/04 12:34:10 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/03/04 13:50:35 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,7 @@
 # include <unistd.h>
 # include <stdio.h>
 # include <sys/poll.h>
+# include <vector>
 
 class TCPListener
 {
@@ -71,7 +72,7 @@ private:
 
     void	printPollFds()
     {
-        for (int i = 0; i < _nfds; i++)
+        for (size_t i = 0; i < _fds.size(); ++i)
         {
             std::cout << "fds[" << i << "]" << std::endl;
             std::cout << "fd = " << _fds[i].fd << std::endl;
@@ -82,7 +83,7 @@ private:
         }
     }
 
-    void _poll_loop(int i);
+    void _handle_revent(int fd, int revevents);
 
     // Not copiable
     TCPListener(const TCPListener& rhs);
@@ -97,11 +98,10 @@ private:
     /********************/
     /* poll() Variables */
     /********************/
-    struct pollfd					_fds[1000];			// An array of pollfd structures.
-                                                        // Containing the Listener at _fds[0]
-                                                        // and clients at > 0
-    int								_nfds;				// Number of connected clients
-    int								_timeout;			// Maximum time, in milliseconds,
+    std::vector<struct pollfd>  _fds;       // An array of pollfd structures.
+                                            // Containing the Listener at _fds[0]
+                                            // and clients at > 0
+    int						    _timeout;	// Maximum time, in milliseconds,
 };
 
 #endif

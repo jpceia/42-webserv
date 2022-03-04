@@ -6,12 +6,13 @@
 /*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/23 02:51:42 by jpceia            #+#    #+#             */
-/*   Updated: 2022/03/04 10:37:00 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/03/04 13:44:38 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "TCPListener.hpp"
 #include <cstring>
+#include <sstream>
 
 TCPListener::TCPListener(const std::string& host, int port, int timeout) :
     _port(port)
@@ -21,11 +22,6 @@ TCPListener::TCPListener(const std::string& host, int port, int timeout) :
     _addr.sin_port = htons(_port);
     inet_pton(AF_INET, host.c_str(), &_addr.sin_addr);
     std::memset(_addr.sin_zero, '\0', sizeof _addr.sin_zero);
-
-    /****************************************/
-    /* Initialize the pollfd structure to 0 */
-    /****************************************/
-    std::memset(_fds, 0, sizeof(_fds));
     _timeout = timeout;
 }
 
@@ -36,11 +32,9 @@ TCPListener::TCPListener(const TCPListener& rhs)
 
 TCPListener::~TCPListener()
 {
-    for (int i = 0; i < _nfds; i++)
-    {
-        if(_fds[i].fd >= 0)
-            close(_fds[i].fd);
-    }
+    for (std::vector<struct pollfd>::iterator it = _fds.begin();
+        it != _fds.end(); ++it)
+        close(it->fd);
 }
 
 TCPListener& TCPListener::operator=(const TCPListener& rhs)
@@ -49,12 +43,7 @@ TCPListener& TCPListener::operator=(const TCPListener& rhs)
     {
         _addr = rhs._addr;
         _sock = rhs._sock;
-        for (size_t i=0; i < 1000; i++) 
-        {
-            _fds[i].fd = rhs._fds[i].fd;
-            _fds[i].events = rhs._fds[i].events;
-            _fds[i].revents = rhs._fds[i].revents;
-        }
+        _fds = rhs._fds;
     }
     return *this;
 }
@@ -79,9 +68,10 @@ void TCPListener::init()
     /************************************************/
     /* Setting the _fds[0] for the listening socket */
     /************************************************/
-    _fds[0].fd = _sock;
-    _fds[0].events = POLLIN;
-    _nfds = 1;   
+    struct pollfd pfd;
+    pfd.fd = _sock;
+    pfd.events = POLLIN;
+    _fds.push_back(pfd);  
 }
 
 TCPConnection TCPListener::accept()
@@ -91,10 +81,11 @@ TCPConnection TCPListener::accept()
     int connection = ::accept(_sock, (struct sockaddr *)&cli_addr, &cli_len);
     if (connection < 0)
         throw TCPListener::AcceptException();
-    _fds[_nfds].fd = connection;
-    _fds[_nfds].events = POLLIN;
-    _fds[_nfds].revents = 0;
-    ++_nfds;
+    struct pollfd pfd;
+    pfd.fd = connection;
+    pfd.events = POLLIN;
+    pfd.revents = 0;
+    _fds.push_back(pfd);
     return connection;
 }
 
@@ -105,10 +96,10 @@ void TCPListener::run()
         while (true)
         {
             std::cout << "Waiting on poll()..." << std::endl;
-            printPollFds();
-            std::cout << " -----------------------------------------" << std::endl;
+            //printPollFds();
+            //std::cout << " -----------------------------------------" << std::endl;
 
-            int poll_ret = poll(_fds, _nfds, _timeout);
+            int poll_ret = poll(&_fds[0], _fds.size(), _timeout);
             if (poll_ret < 0)  // poll failed
                 throw std::runtime_error("Pool exception"); //TCPListener::PollException();
             if (poll_ret == 0) // timeout failed
@@ -116,8 +107,13 @@ void TCPListener::run()
 
             try
             {
-                for (int i = 0; i < _nfds; i++)
-                    _poll_loop(i);  // call the poll loop for each fd
+                for (std::vector<struct pollfd>::iterator it = _fds.begin();
+                     it != _fds.end(); ++it)
+                {
+                    if(!it->revents) // If there's no activity skip _fds;
+                        continue ;
+                    _handle_revent(it->fd, it->revents);  // call the poll loop for each fd
+                }
             }
             catch (TCPListener::PollHungUpException& e)
             {
@@ -134,14 +130,8 @@ void TCPListener::run()
 /**
  * returns true if the loop should continue
  */
-void TCPListener::_poll_loop(int i)
+void TCPListener::_handle_revent(int fd, int revents)
 {
-    int fd = _fds[i].fd;
-    int revents = _fds[i].revents;
-    
-    if(revents == 0) // If there's no activity skip _fds;
-        return ;
-
     if(revents & POLLHUP)
     {
         std::cerr << "  Error: revents = " << revents << std::endl;
@@ -171,14 +161,19 @@ int TCPListener::getPort() const
 
 void TCPListener::_close_fd(int fd)
 {
-    int index = 0;
-    while (_fds[index].fd != fd)
-        ++index;
-    if (index == _nfds)
-        throw std::runtime_error("TCPListener::_close_fd() - index not found");
-    close(_fds[index].fd);
-    --_nfds;
-    _fds[index] = _fds[_nfds];
+    std::vector<struct pollfd>::iterator it = _fds.begin();
+    while (it != _fds.end() && it->fd != fd)
+        ++it;
+    if (it == _fds.end())
+    {
+        std::stringstream ss;
+        ss << "TCPListener::_close_fd: fd " << fd << " not found";
+        throw std::runtime_error(ss.str());
+    }
+    close(it->fd);
+    _fds.erase(it);
+    // *it = _fds.back();
+    //_fds.pop_back();
 }
 
 const char* TCPListener::CreateException::what(void) const throw()

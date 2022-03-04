@@ -6,7 +6,7 @@
 /*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/23 02:51:42 by jpceia            #+#    #+#             */
-/*   Updated: 2022/03/04 10:26:50 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/03/04 10:37:00 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -120,7 +120,7 @@ void TCPListener::run()
             }
             catch (TCPListener::PollHungUpException& e)
             {
-                std::cout << e.what() << std::endl;
+                std::cerr << e.what() << std::endl;
             }
         }   /* End of loop through pollable descriptors */
     }

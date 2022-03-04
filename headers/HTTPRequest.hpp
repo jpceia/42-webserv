@@ -6,7 +6,7 @@
 /*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/22 13:00:01 by jceia             #+#    #+#             */
-/*   Updated: 2022/03/04 10:47:25 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/03/04 12:32:14 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,6 +41,7 @@ public:
     void addHeader(const std::string& s);
     virtual void addHeader(const std::string& key, const std::string& value);
 
+    std::string getVersion() const;
     std::string getPath() const;
     HTTPMethod getMethod() const;
     std::string getHeader(const std::string& key) const;

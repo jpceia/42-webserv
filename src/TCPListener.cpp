@@ -13,11 +13,12 @@
 #include "TCPListener.hpp"
 #include <cstring>
 
-TCPListener::TCPListener(const std::string& host, int port, int timeout)
+TCPListener::TCPListener(const std::string& host, int port, int timeout) :
+    _port(port)
 {
     _addr.sin_family = AF_INET;
     //_addr.sin_addr.s_addr = htonl(INADDR_ANY);
-    _addr.sin_port = htons(port);
+    _addr.sin_port = htons(_port);
     inet_pton(AF_INET, host.c_str(), &_addr.sin_addr);
     std::memset(_addr.sin_zero, '\0', sizeof _addr.sin_zero);
 
@@ -161,6 +162,11 @@ void TCPListener::_poll_loop(int i)
             _close_fd(fd);
         }
     }
+}
+
+int TCPListener::getPort() const
+{
+    return _port;
 }
 
 void TCPListener::_close_fd(int fd)

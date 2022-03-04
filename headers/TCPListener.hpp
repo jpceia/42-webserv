@@ -6,7 +6,7 @@
 /*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/23 02:48:15 by jpceia            #+#    #+#             */
-/*   Updated: 2022/03/04 10:27:07 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/03/04 12:34:10 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@
 # include <arpa/inet.h>
 # include <unistd.h>
 # include <stdio.h>
-#include <sys/poll.h>
+# include <sys/poll.h>
 
 class TCPListener
 {
@@ -30,6 +30,8 @@ public:
     void init();
     TCPConnection accept();
     void run();
+
+    int getPort() const;
 
     class CreateException : public std::exception
     {
@@ -89,6 +91,7 @@ private:
     // Private attributes
     struct sockaddr_in _addr;
     int _sock;                      // listener sock
+    int _port;                      // port
 
 
     /********************/

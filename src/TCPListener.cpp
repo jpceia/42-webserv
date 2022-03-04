@@ -6,7 +6,7 @@
 /*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/23 02:51:42 by jpceia            #+#    #+#             */
-/*   Updated: 2022/03/03 22:12:48 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/03/04 10:26:50 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -122,11 +122,7 @@ void TCPListener::run()
             {
                 std::cout << e.what() << std::endl;
             }
-            catch (TCPListener::WouldBlockException& e)
-            {
-                std::cout << e.what() << std::endl;
-            }
-        }    /* End of loop through pollable descriptors */
+        }   /* End of loop through pollable descriptors */
     }
     catch(const std::exception& e)
     {
@@ -202,9 +198,4 @@ const char* TCPListener::AcceptException::what(void) const throw()
 const char* TCPListener::PollHungUpException::what(void) const throw()
 {
     return "Poll hung up";
-}
-
-const char* TCPListener::WouldBlockException::what(void) const throw()
-{
-    return "Would block Exception";
 }

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   TCPListener.hpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jceia <jceia@student.42.fr>                +#+  +:+       +#+        */
+/*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/23 02:48:15 by jpceia            #+#    #+#             */
-/*   Updated: 2022/03/03 18:13:16 by jceia            ###   ########.fr       */
+/*   Updated: 2022/03/04 10:27:07 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,12 +56,6 @@ public:
     };
 
     class PollHungUpException : public std::exception
-    {
-        public:
-            virtual const char* what(void) const throw();
-    };
-
-    class WouldBlockException : public std::exception
     {
         public:
             virtual const char* what(void) const throw();

@@ -6,7 +6,7 @@
 /*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/03 17:30:40 by jceia             #+#    #+#             */
-/*   Updated: 2022/03/04 13:04:26 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/03/04 14:37:13 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -112,8 +112,18 @@ HTTPResponse HTTPListener::_build_cgi_response(const HTTPRequest& request, const
     args.push_back(path);
 
     std::map<std::string, std::string> env;
-    env["SERVER_PROTOCOL"] = request.getVersion();
+    env["SERVER_NAME"] = _name;
     env["SERVER_PORT"] = this->getPort();
+    env["SERVER_PROTOCOL"] = request.getVersion();
+    env["SERVER_SOFTWARE"] = "webserv";
+    env["AUTH_TYPE"] = "";
+    env["CONTENT_LENGTH"] = request.getHeader("Content-Length");
+    env["CONTENT_TYPE"] = request.getHeader("Content-Type");
+    env["DOCUMENT_ROOT"] = _root;
+    env["GATEWAY_INTERFACE"] = "CGI/1.1";
+    env["HTTP_COOKIE"] = request.getHeader("Cookie");
+    env["HTTP_USER_AGENT"] = request.getHeader("User-Agent");
+    env["QUERY_STRING"] = request.getQueryString();
     env["REQUEST_METHOD"] = request.getMethod();
     env["PATH_INFO"] = request.getPath();
 

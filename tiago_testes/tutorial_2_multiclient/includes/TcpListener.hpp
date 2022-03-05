@@ -14,6 +14,11 @@
 #include <sys/poll.h>
 #include <sys/time.h>
 #include <errno.h>
+#include <istream>
+#include <sstream>
+#include <fstream>
+#include <vector>
+#include <iterator>
 
 class TcpListener
 {
@@ -40,12 +45,39 @@ class TcpListener
                 exit(EXIT_FAILURE);
             }
 
+			/*************************************************************/
+			/* Allow socket descriptor to be reuseable                   */
+			/*************************************************************/
+			int nOptVal = 0;
+			int nOptLen = sizeof(nOptVal);
+			if ((setsockopt(_listening_socket_fd, SOL_SOCKET, SO_REUSEADDR,
+							(char *)&nOptVal, nOptLen)) < 0)
+			{
+				perror("setsockopt() failed");
+				close(_listening_socket_fd);
+				exit(EXIT_FAILURE);
+			}
+
+			/*************************************************************/
+			/* Set socket to be nonblocking. All of the sockets for      */
+			/* the incoming connections will also be nonblocking since   */
+			/* they will inherit that state from the listening socket.   */
+			/*************************************************************/
+			nOptVal = 0;
+			if ((ioctl(_listening_socket_fd, FIONBIO, (char *)&nOptVal)) < 0)
+			{
+				perror("ioctl() failed");
+				close(_listening_socket_fd);
+				exit(EXIT_FAILURE);
+			}
+
+
 			/**********************************/
             /* We fill the sockaddr_in struct */
 			/**********************************/
             _address.sin_family = AF_INET;
-            inet_pton(AF_INET, _ipAddress, &_address.sin_addr);
             _address.sin_port = htons(_port);
+            inet_pton(AF_INET, _ipAddress, &_address.sin_addr);
             memset(_address.sin_zero, '\0', sizeof _address.sin_zero);
 
 			/*********************************************************************/
@@ -156,11 +188,11 @@ class TcpListener
 					/**************************/
 					/* If client used ctrl+c. */
 					/**************************/
-					if(_fds[i].revents & POLLHUP) 
+					if(_fds[i].revents & POLLHUP)
 					{
-						printf("  Client ctrl+c / Hang UP! revents = %d\n", _fds[i].revents);						
-						
-						printPollFds();						
+						printf("  Client ctrl+c / Hang UP! revents = %d\n", _fds[i].revents);
+
+						printPollFds();
 						remove_connection(i);
 						break ;
 					}
@@ -223,7 +255,7 @@ class TcpListener
 						_nfds++;
 
 						printPollFds();
-					
+
 					}
 					/*********************************************************/
       				/* This is not the listening socket, therefore an        */
@@ -250,7 +282,7 @@ class TcpListener
 								perror("  recv() failed");
 								remove_connection(i);
 							}
-							
+
 							break ;
 						}
 
@@ -262,15 +294,15 @@ class TcpListener
 						{
 							printf("  Connection closed\n");
 							remove_connection(i);
-							
+
 							break ;
 						}
 
 						/*****************************************************/
 						/* Data was received                                 */
 						/*****************************************************/
-						printf("  %d bytes received = ", bytes_recv);
-						printf("%s \n", buffer);
+						printf("\n%d bytes received\n", bytes_recv);
+						printf("\n%s \n", buffer);
 
 						/*****************************************************/
 						/* Echo the data back to the client                  */
@@ -281,7 +313,7 @@ class TcpListener
 						{
 							perror("  send() failed");
 
-							remove_connection(i);							
+							remove_connection(i);
 							break ;
 						}
 
@@ -292,7 +324,7 @@ class TcpListener
 						{
 							perror("  send() failed");
 
-							remove_connection(i);							
+							remove_connection(i);
 							break ;
 						}*/
 
@@ -370,7 +402,7 @@ class TcpListener
 		/********************/
 		/* Helper Functions */
 		/********************/
-		
+
 		/**********************************************/
 		/* Print all poll struct to check for changes */
 		/**********************************************/
@@ -392,7 +424,7 @@ class TcpListener
 		/* squeeze together the array and decrement the number     */
 		/* of file descriptors.                                    */
 		/***********************************************************/
-		void remove_connection(int i) 
+		void remove_connection(int i)
 		{
 			close(_fds[i].fd);
 			_fds[i].fd = -1;

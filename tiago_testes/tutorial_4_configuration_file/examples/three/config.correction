@@ -1,0 +1,60 @@
+server 
+{
+	listen 127.0.0.1:8080;
+	server_name localhost example.com;
+	client_max_body_size 1m;
+
+	location /
+	{
+		root www;
+		index index.html;
+        client_max_body_size 1m
+		methods GET DELETE;
+	}
+
+    location /redirect
+    {
+        return 308 /;
+    }
+
+    location /loop1
+    {
+        return 308 loop2;
+    }
+
+    location /loop2
+    {
+        return 308 loop1;
+    }
+
+    location /message
+    {
+        root www;
+        index post.html;
+        autoindex off;
+        methods GET;
+    }
+
+    location /send
+    {
+        root www/php;
+        index post.php;
+        autoindex off;
+        methods POST GET;
+        cgi_handler .php cgi_binary/cgi_binary;
+    }
+
+    location /input
+    {
+        root www;
+        index upload.html;
+        autoindex off;
+        methods GET POST;
+    }
+
+    location /upload
+    {
+        methods POST;
+        upload_dest www/upload;
+    }
+}

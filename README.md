@@ -4,7 +4,7 @@
 
     HTTP stands for Hyper Text Transfer Protocol.
     Hyper Text = It's the HTML part of the Hyper Text.
-    Transfer Protocol = How a message is formated when sent back. 
+    Transfer Protocol = How a message is formated when sent back.
 
     WWW is about communication between web clients and servers.
     Communication between client computers and web servers is done by sending HTTP Requests and
@@ -405,6 +405,114 @@ https://medium.com/from-the-scratch/http-server-what-do-you-need-to-know-to-buil
 	https://pubs.opengroup.org/onlinepubs/009696799/functions/poll.html
 
 
+# NGINX:
+
+### What is NGINX?
+
+	NGINX is open source software for web serving, reverse proxying, caching, load balancing,
+	media streaming, and more. It started out as a web server designed for maximum performance
+	and stability. In addition to its HTTP server capabilities, NGINX can also function as a
+	proxy server for email (IMAP, POP3, and SMTP) and a reverse proxy and load balancer for
+	HTTP, TCP, and UDP servers.
+
+### NGINX Configuration File
+
+	NGINX consists of modules which are controlled by directives specified in the configuration
+	file. Directives are divided into simple directives and block directives. A block directive
+	has the same structure as a simple directive, but instead of the semicolon it ends with
+	a set of additional instructions surrounded by braces ({ and }). If a block directive can
+	have other directives inside braces, it is called a context (examples: events, http,
+	server, and location).
+
+	Directives placed in the configuration file outside of any contexts are considered to
+	be in the main context. The events and http directives reside in the main context, server
+	in http, and location in server.
+
+### Server Block and Location Block
+
+	A server block is a subset of Nginx’s configuration that defines a virtual server used
+	to handle requests of a defined type. Administrators often configure multiple server
+	blocks and decide which block should handle which connection based on the requested
+	domain name, port, and IP address.
+
+	A location block lives within a server block and is used to define how Nginx should
+	handle requests for different resources and URIs for the parent server. The URI space
+	can be subdivided in whatever way the administrator likes using these blocks. It is an
+	extremely flexible model.
+
+### Example of Server Block
+
+	server {
+		listen		443;
+		error 		PWD/www/errorPages;
+		location / {
+			methods 	GET, POST;
+			root 		PWD/www/content;
+			index 		oldindex.html;
+		}
+	}
+
+	server {
+		listen 		80;
+		server_name	test;
+		error 		PWD/www/errorPages;
+		location / {
+			index 	oldindex.html;
+			methods GET;
+			root 	PWD/www/content;
+		}
+		location /directory {
+			methods		GET, POST;
+			root 		PWD/www/YoupiBanane;
+			index 		youpi.bad_extension;
+			CGI 		.bla;
+			exec 		PWD/cgi_tester;
+		}
+		location /put_test {
+			methods		PUT;
+			root 		PWD/www/content;
+		}
+		location /post_body {
+			methods 	POST;
+			root 		PWD/www/content;
+			index 		oldindex.html;
+			max_body 	100;
+		}
+	}
+
+# Subjects Configuration File
+
+### What it accepts
+
+	If the server block is missing, then the configuration file is invalid.
+	You can have more than one server block in the configuration file.
+	You can have an empty server block, if it has an empty server block it will be
+	filled with the default values.
+
+	Built-in:
+
+		- listen ( http://nginx.org/en/docs/http/ngx_http_core_module.html#listen )
+		- server_name ( http://nginx.org/en/docs/http/ngx_http_core_module.html#server_name )
+		- error_page ( http://nginx.org/en/docs/http/ngx_http_core_module.html#error_page )
+		- client_max_body_size ( http://nginx.org/en/docs/http/ngx_http_core_module.			html#client_max_body_size )
+		- root ( http://nginx.org/en/docs/http/ngx_http_core_module.html#root )
+		- index ( http://nginx.org/en/docs/http/ngx_http_index_module.html#index )
+		- auto-index ( http://nginx.org/en/docs/http/ngx_http_autoindex_module.html#autoindex )
+
+	Not Built-in:
+
+		- methods ( GET, POST, DELETE )
+		- redirect ( first arg a 300 status code, second arg the path to redirect )
+		- cgi
+		- upload ( bool if it accepted or not, and the path )
+
+
+
+	// https://github-com.translate.goog/GuDimz/Webserver?_x_tr_sl=auto&_x_tr_tl=en&_x_tr_hl=pt-PT&_x_tr_pto=wapp
+
+	// https://github.com/tvacherat/42_webserv
+
+
 # Research:
 
     https://medium.com/from-the-scratch/http-server-what-do-you-need-to-know-to-build-a-simple-http-server-from-scratch-d1ef8945e4fa
@@ -412,6 +520,13 @@ https://medium.com/from-the-scratch/http-server-what-do-you-need-to-know-to-buil
 
     https://www.youtube.com/watch?v=Kc1kwm1WyVM
     https://www.youtube.com/watch?v=YqEqjODUkWY
+
+	https://www.digitalocean.com/community/tutorials/understanding-the-nginx-configuration-file-structure-and-configuration-contexts
+
+
+	https://www.digitalocean.com/community/tutorials/understanding-nginx-server-and-location-block-selection-algorithms
+
+	http://nginx.org/en/docs/dirindex.html
 
 
 

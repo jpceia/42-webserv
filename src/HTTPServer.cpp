@@ -1,17 +1,17 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   HTTPListener.cpp                                   :+:      :+:    :+:   */
+/*   HTTPServer.cpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
+/*   By: jceia <jceia@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/03 17:30:40 by jceia             #+#    #+#             */
-/*   Updated: 2022/03/04 14:37:13 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/03/07 15:57:02 by jceia            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-
-# include "HTTPListener.hpp"
+# include "TCPServer.hpp"
+# include "HTTPServer.hpp"
 # include "HTTPRequest.hpp"
 # include "HTTPResponse.hpp"
 # include "HTTPConnection.hpp"
@@ -22,8 +22,8 @@
 # include <algorithm>
 # include "utils.hpp"
 
-HTTPListener::HTTPListener(const std::string& host, int port, int timeout) :
-    TCPListener(host, port, timeout),
+HTTPServer::HTTPServer(int timeout) :
+    TCPServer(timeout),
     _root("./www"),
     _name("")
 {
@@ -34,17 +34,21 @@ HTTPListener::HTTPListener(const std::string& host, int port, int timeout) :
     _allowed_methods.push_back(POST);
     _allowed_methods.push_back(DELETE);
     
-    this->init();
+    //this->init();
 }
 
-HTTPListener::~HTTPListener()
+HTTPServer::~HTTPServer()
 {
 }
 
-void HTTPListener::_handle_client_request(int fd)
+void HTTPServer::_handle_client_request(int fd)
 {
-    HTTPConnection connection(fd);
+    std::set<TCPConnection>::iterator it = _connections.find(TCPConnection(fd));
+    
+    if (it == _connections.end())
+        throw std::runtime_error("Connection not found");
 
+    HTTPConnection connection = *it;
     // Read and parse the request
     HTTPRequest request = connection.recv();
     std::cout << request << std::endl;
@@ -52,10 +56,13 @@ void HTTPListener::_handle_client_request(int fd)
     // Build the response
     connection.send(_build_response(request));
     if (request.getHeader("Connection") != "keep-alive") // close connection
-        _close_fd(fd);
+    {
+        _connections.erase(it);
+        _close_fd(it->getSock());
+    }
 }
 
-HTTPResponse HTTPListener::_build_response(const HTTPRequest& request)
+HTTPResponse HTTPServer::_build_response(const HTTPRequest& request)
 {
     // checking if the method is allowed
     if (std::find(_allowed_methods.begin(), _allowed_methods.end(),
@@ -104,7 +111,7 @@ HTTPResponse HTTPListener::_build_response(const HTTPRequest& request)
     return response;
 }
 
-HTTPResponse HTTPListener::_build_cgi_response(const HTTPRequest& request, const std::string& path)
+HTTPResponse HTTPServer::_build_cgi_response(const HTTPRequest& request, const std::string& path)
 {
     // calling the CGI script using execvpe
     std::vector<std::string> args;
@@ -113,7 +120,7 @@ HTTPResponse HTTPListener::_build_cgi_response(const HTTPRequest& request, const
 
     std::map<std::string, std::string> env;
     env["SERVER_NAME"] = _name;
-    env["SERVER_PORT"] = this->getPort();
+    // env["SERVER_PORT"] = this->getPort();
     env["SERVER_PROTOCOL"] = request.getVersion();
     env["SERVER_SOFTWARE"] = "webserv";
     env["AUTH_TYPE"] = "";
@@ -139,7 +146,7 @@ HTTPResponse HTTPListener::_build_cgi_response(const HTTPRequest& request, const
     return response;
 }
 
-HTTPResponse HTTPListener::_not_found_response()
+HTTPResponse HTTPServer::_not_found_response()
 {
     HTTPResponse response;
     response.setVersion("HTTP/1.1");
@@ -159,7 +166,7 @@ HTTPResponse HTTPListener::_not_found_response()
     return response;
 }
 
-HTTPResponse HTTPListener::_method_not_allowed_response()
+HTTPResponse HTTPServer::_method_not_allowed_response()
 {
     HTTPResponse response;
     response.setVersion("HTTP/1.1");

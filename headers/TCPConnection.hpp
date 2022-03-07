@@ -6,7 +6,7 @@
 /*   By: jceia <jceia@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/23 03:04:11 by jpceia            #+#    #+#             */
-/*   Updated: 2022/03/03 18:50:54 by jceia            ###   ########.fr       */
+/*   Updated: 2022/03/07 14:59:00 by jceia            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,19 @@
 class TCPConnection
 {
 public:
-    TCPConnection(int fd);
+    class socket_compare
+    {
+    public:
+        bool operator()(const TCPConnection& lhs, const TCPConnection& rhs) const
+        {
+            return lhs._sock < rhs._sock;
+        }
+    private:
+        friend class TCPConnection;
+    };
+
+    TCPConnection(int sock);
+    TCPConnection(int sock, const struct sockaddr_in& host_addr, const struct sockaddr_in& client_addr);
     TCPConnection(const TCPConnection& rhs);
 
     virtual ~TCPConnection();
@@ -34,7 +46,7 @@ public:
     void send(const std::string& msg);
     std::string recv();
 
-    int getFd();
+    int getSock() const;
 
     class ConnectionException : public std::exception
     {
@@ -55,7 +67,9 @@ public:
     };
 
 private:
-    int _fd;
+    int _sock;
+    struct sockaddr_in _host_addr;
+    struct sockaddr_in _client_addr;
 };
 
 #endif

@@ -1,8 +1,7 @@
 #include "webserv.hpp"
 #include "utils.hpp"
-#include "HTTPRequest.hpp"
-#include "HTTPResponse.hpp"
-#include "HTTPListener.hpp"
+#include "HTTPServer.hpp"
+#include "TCPListener.hpp"
 #include "HTTPConnection.hpp"
 #include <iostream>
 #include <sstream>
@@ -11,16 +10,18 @@
 
 int main(int argc, char *argv[])
 {
-    if (argc != 2)
+    if (argc < 2)
     {
-        std::cout << "Usage: ./webserv <port>" << std::endl;
+        std::cout << "Usage: ./webserv <port1> <port2> ..." << std::endl;
         return -1;
     }
 
     try
     {
-        HTTPListener listener("0.0.0.0", ft_stoi(argv[1]), -1); // populates the listener addresss
-        listener.run();
+        HTTPServer webserv(-1);
+        for (int i=1; i<argc; i++)
+            webserv.add_listener(TCPListener("0.0.0.0", atoi(argv[i])));
+        webserv.run();
     }
     catch (std::exception& e)
     {

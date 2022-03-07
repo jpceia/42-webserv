@@ -1,14 +1,3 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   TCPListener.hpp                                    :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/02/23 02:48:15 by jpceia            #+#    #+#             */
-/*   Updated: 2022/03/04 13:50:35 by jpceia           ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
 
 #ifndef TCPLISTENER_HPP
 # define TCPLISTENER_HPP
@@ -25,14 +14,26 @@
 class TCPListener
 {
 public:
-    TCPListener(const std::string& host, int port, int timeout);
+    class socket_compare
+    {
+    public:
+        bool operator()(const TCPListener& lhs, const TCPListener& rhs) const
+        {
+            return lhs._sock < rhs._sock;
+        }
+    private:
+        friend class TCPListener;
+    };
+
+    TCPListener(int sock);
+    TCPListener(const std::string& host, int port);
+    TCPListener(const TCPListener& rhs);
+    TCPListener& operator=(const TCPListener& rhs);
     virtual ~TCPListener();
 
-    void init();
-    TCPConnection accept();
-    void run();
+    TCPConnection accept() const;
 
-    int getPort() const;
+    int getSock() const;
 
     class CreateException : public std::exception
     {
@@ -58,50 +59,10 @@ public:
             virtual const char* what(void) const throw();
     };
 
-    class PollHungUpException : public std::exception
-    {
-        public:
-            virtual const char* what(void) const throw();
-    };
-
-protected:
-    void _close_fd(int fd);
-    virtual void _handle_client_request(int fd) = 0;
-
 private:
 
-    void	printPollFds()
-    {
-        for (size_t i = 0; i < _fds.size(); ++i)
-        {
-            std::cout << "fds[" << i << "]" << std::endl;
-            std::cout << "fd = " << _fds[i].fd << std::endl;
-            std::cout << "events = " << _fds[i].events << std::endl;
-            std::cout << "revents = " << _fds[i].revents << std::endl;
-
-            std::cout << std::endl;
-        }
-    }
-
-    void _handle_revent(int fd, int revevents);
-
-    // Not copiable
-    TCPListener(const TCPListener& rhs);
-    TCPListener& operator=(const TCPListener& rhs);
-    
-    // Private attributes
+    int _sock;
     struct sockaddr_in _addr;
-    int _sock;                      // listener sock
-    int _port;                      // port
-
-
-    /********************/
-    /* poll() Variables */
-    /********************/
-    std::vector<struct pollfd>  _fds;       // An array of pollfd structures.
-                                            // Containing the Listener at _fds[0]
-                                            // and clients at > 0
-    int						    _timeout;	// Maximum time, in milliseconds,
 };
 
 #endif

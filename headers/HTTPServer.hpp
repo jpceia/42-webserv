@@ -1,19 +1,19 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   HTTPListener.hpp                                   :+:      :+:    :+:   */
+/*   HTTPServer.hpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
+/*   By: jceia <jceia@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/03 17:30:40 by jceia             #+#    #+#             */
-/*   Updated: 2022/03/04 14:29:54 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/03/07 15:05:43 by jceia            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef HTTPLISTENER_CPP
-# define HTTPLISTENER_CPP
+#ifndef HTTPSERVER_CPP
+# define HTTPSERVER_CPP
 
-# include "TCPListener.hpp"
+# include "TCPServer.hpp"
 # include "HTTPRequest.hpp"
 # include "HTTPResponse.hpp"
 # include "HTTPConnection.hpp"
@@ -22,11 +22,11 @@
 # include <sstream>
 # include <vector>
 
-class HTTPListener : public TCPListener
+class HTTPServer : public TCPServer
 {
 public:
-    HTTPListener(const std::string& host, int port, int timeout);
-    virtual ~HTTPListener();
+    HTTPServer(int timeout);
+    virtual ~HTTPServer();
 
 protected:
     void _handle_client_request(int fd);

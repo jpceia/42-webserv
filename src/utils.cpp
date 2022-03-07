@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   utils.cpp                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jceia <jceia@student.42.fr>                +#+  +:+       +#+        */
+/*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/23 20:06:03 by jpceia            #+#    #+#             */
-/*   Updated: 2022/03/07 13:48:38 by jceia            ###   ########.fr       */
+/*   Updated: 2022/03/07 21:23:00 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,8 @@
 #include <sys/wait.h>
 #include <sys/poll.h>
 #include <unistd.h>
+#include <limits.h>
+#include <cstdlib>
 
 int ft_stoi(const std::string& str)
 {
@@ -70,7 +72,7 @@ std::string lookup_full_path(const std::string& path)
     {
         // get PATH from environment variable
         std::stringstream env_paths;
-        env_paths << std::getenv("PATH");
+        env_paths << getenv("PATH");
 
         // split PATH into directories
         for (std::string dir; std::getline(env_paths, dir, ':'); )

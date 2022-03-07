@@ -6,7 +6,7 @@
 /*   By: jceia <jceia@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/03 17:30:40 by jceia             #+#    #+#             */
-/*   Updated: 2022/03/07 15:57:02 by jceia            ###   ########.fr       */
+/*   Updated: 2022/03/07 16:35:17 by jceia            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,7 +54,13 @@ void HTTPServer::_handle_client_request(int fd)
     std::cout << request << std::endl;
 
     // Build the response
-    connection.send(_build_response(request));
+    Context ctx;
+    ctx.server_addr = it->getServerIP();
+    ctx.client_addr = it->getClientIP();
+    ctx.server_port = it->getServerPort();
+    ctx.client_port = it->getClientPort();
+
+    connection.send(_build_response(request, ctx));
     if (request.getHeader("Connection") != "keep-alive") // close connection
     {
         _connections.erase(it);
@@ -62,7 +68,7 @@ void HTTPServer::_handle_client_request(int fd)
     }
 }
 
-HTTPResponse HTTPServer::_build_response(const HTTPRequest& request)
+HTTPResponse HTTPServer::_build_response(const HTTPRequest& request, Context& ctx)
 {
     // checking if the method is allowed
     if (std::find(_allowed_methods.begin(), _allowed_methods.end(),
@@ -70,17 +76,17 @@ HTTPResponse HTTPServer::_build_response(const HTTPRequest& request)
         return _method_not_allowed_response();
 
     // checking if the file exists
-    std::string path = _root + request.getPath();
-    if (is_dir(path))
+    ctx.path = _root + request.getPath();
+    if (is_dir(ctx.path))
     {
         std::cout << "path is a directory" << std::endl;
         bool found = false;
         for (std::vector<std::string>::const_iterator it = _index.begin();
             it != _index.end(); ++it)
         {
-            if (is_readable_file(path + *it))
+            if (is_readable_file(ctx.path + *it))
             {
-                path += *it;
+                ctx.path += *it;
                 found = true;
                 break;
             }
@@ -88,19 +94,19 @@ HTTPResponse HTTPServer::_build_response(const HTTPRequest& request)
         if (!found)
             return _not_found_response();
     }
-    else if (!is_readable_file(path))
+    else if (!is_readable_file(ctx.path))
         return _not_found_response();
-        
+
     // CGI
-    if(path.substr(path.find_last_of(".") + 1) == "php")
-        return _build_cgi_response(request, path);
+    if(ctx.path.substr(ctx.path.find_last_of(".") + 1) == "php")
+        return _build_cgi_response(request, ctx);
     
     // Static page
-    std::ifstream ifs(path.c_str(), std::ifstream::in);
+    std::ifstream ifs(ctx.path.c_str(), std::ifstream::in);
     if (!ifs.good())
         return _not_found_response();
 
-    std::cout << "path is " << path << std::endl;
+    std::cout << "path is " << ctx.path << std::endl;
 
     HTTPResponse response;
     response.setVersion("HTTP/1.1");
@@ -111,16 +117,16 @@ HTTPResponse HTTPServer::_build_response(const HTTPRequest& request)
     return response;
 }
 
-HTTPResponse HTTPServer::_build_cgi_response(const HTTPRequest& request, const std::string& path)
+HTTPResponse HTTPServer::_build_cgi_response(const HTTPRequest& request, const Context& ctx)
 {
     // calling the CGI script using execvpe
     std::vector<std::string> args;
     args.push_back("php");
-    args.push_back(path);
+    args.push_back(ctx.path);
 
     std::map<std::string, std::string> env;
+
     env["SERVER_NAME"] = _name;
-    // env["SERVER_PORT"] = this->getPort();
     env["SERVER_PROTOCOL"] = request.getVersion();
     env["SERVER_SOFTWARE"] = "webserv";
     env["AUTH_TYPE"] = "";
@@ -128,11 +134,29 @@ HTTPResponse HTTPServer::_build_cgi_response(const HTTPRequest& request, const s
     env["CONTENT_TYPE"] = request.getHeader("Content-Type");
     env["DOCUMENT_ROOT"] = _root;
     env["GATEWAY_INTERFACE"] = "CGI/1.1";
-    env["HTTP_COOKIE"] = request.getHeader("Cookie");
-    env["HTTP_USER_AGENT"] = request.getHeader("User-Agent");
-    env["QUERY_STRING"] = request.getQueryString();
-    env["REQUEST_METHOD"] = request.getMethod();
     env["PATH_INFO"] = request.getPath();
+
+    // HTTP info
+    env["HTTP_ACCEPT"] = request.getHeader("Accept");
+    env["HTTP_ACCEPT_ENCODING"] = request.getHeader("Accept-Encoding");
+    env["HTTP_ACCEPT_LANGUAGE"] = request.getHeader("Accept-Language");
+    env["HTTP_CONNECTION"] = request.getHeader("Connection");
+    env["HTTP_HOST"] = _name; // TODO: get the hostname from config
+    env["HTTP_USER_AGENT"] = request.getHeader("User-Agent");
+    env["HTTP_COOKIE"] = request.getHeader("Cookie");
+    
+    env["QUERY_STRING"] = request.getQueryString();
+    env["REQUEST_METHOD"] = HTTPRequest::strMethod(request.getMethod());
+    
+    env["SERVER_ADDR"] = ctx.server_addr;
+    env["REMOTE_ADDR"] = ctx.client_addr;
+
+    std::stringstream ss;
+    ss << ctx.server_port;
+    ss >> env["SERVER_PORT"];
+    ss.clear();
+    ss << ctx.client_port;
+    ss >> env["REMOTE_PORT"];
 
     std::string body = exec_cmd("php", args, env);
 

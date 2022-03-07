@@ -6,7 +6,7 @@
 /*   By: jceia <jceia@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/23 03:04:11 by jpceia            #+#    #+#             */
-/*   Updated: 2022/03/07 15:07:42 by jceia            ###   ########.fr       */
+/*   Updated: 2022/03/07 16:08:42 by jceia            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,10 +21,10 @@ TCPConnection::TCPConnection(int sock) :
 }
 
 TCPConnection::TCPConnection(int sock,
-    const struct sockaddr_in& host_addr,
+    const struct sockaddr_in& server_addr,
     const struct sockaddr_in& client_addr) :
     _sock(sock),
-    _host_addr(host_addr),
+    _server_addr(server_addr),
     _client_addr(client_addr)
 {
     if (_sock < 0)
@@ -33,7 +33,7 @@ TCPConnection::TCPConnection(int sock,
 
 TCPConnection::TCPConnection(const TCPConnection& rhs) :
     _sock(rhs._sock),
-    _host_addr(rhs._host_addr),
+    _server_addr(rhs._server_addr),
     _client_addr(rhs._client_addr)
 {
 }
@@ -47,7 +47,7 @@ TCPConnection& TCPConnection::operator=(const TCPConnection& rhs)
     if (this != &rhs)
     {
         _sock = rhs._sock;
-        _host_addr = rhs._host_addr;
+        _server_addr = rhs._server_addr;
         _client_addr = rhs._client_addr;
     }
     return *this;
@@ -78,6 +78,26 @@ std::string TCPConnection::recv()
 int TCPConnection::getSock() const
 {
     return _sock;
+}
+
+std::string TCPConnection::getServerIP() const
+{
+    return inet_ntoa(_server_addr.sin_addr);
+}
+
+std::string TCPConnection::getClientIP() const
+{
+    return inet_ntoa(_client_addr.sin_addr);
+}
+
+int TCPConnection::getServerPort() const
+{
+    return ntohs(_server_addr.sin_port);
+}
+
+int TCPConnection::getClientPort() const
+{
+    return ntohs(_client_addr.sin_port);
 }
 
 const char* TCPConnection::ConnectionException::what() const throw()

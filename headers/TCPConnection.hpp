@@ -6,7 +6,7 @@
 /*   By: jceia <jceia@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/23 03:04:11 by jpceia            #+#    #+#             */
-/*   Updated: 2022/03/07 14:59:00 by jceia            ###   ########.fr       */
+/*   Updated: 2022/03/07 16:06:52 by jceia            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,7 @@ public:
     };
 
     TCPConnection(int sock);
-    TCPConnection(int sock, const struct sockaddr_in& host_addr, const struct sockaddr_in& client_addr);
+    TCPConnection(int sock, const struct sockaddr_in& server_addr, const struct sockaddr_in& client_addr);
     TCPConnection(const TCPConnection& rhs);
 
     virtual ~TCPConnection();
@@ -47,6 +47,11 @@ public:
     std::string recv();
 
     int getSock() const;
+
+    std::string getServerIP() const;
+    std::string getClientIP() const;
+    int getServerPort() const;
+    int getClientPort() const;
 
     class ConnectionException : public std::exception
     {
@@ -68,7 +73,7 @@ public:
 
 private:
     int _sock;
-    struct sockaddr_in _host_addr;
+    struct sockaddr_in _server_addr;
     struct sockaddr_in _client_addr;
 };
 

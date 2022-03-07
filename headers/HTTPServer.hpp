@@ -6,7 +6,7 @@
 /*   By: jceia <jceia@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/03 17:30:40 by jceia             #+#    #+#             */
-/*   Updated: 2022/03/07 15:05:43 by jceia            ###   ########.fr       */
+/*   Updated: 2022/03/07 16:34:32 by jceia            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,15 @@
 # include <sstream>
 # include <vector>
 
+struct Context
+{
+    std::string path;
+    std::string server_addr;
+    std::string client_addr;
+    int server_port;
+    int client_port;
+};
+
 class HTTPServer : public TCPServer
 {
 public:
@@ -35,8 +44,8 @@ private:
     HTTPResponse _not_found_response();
     HTTPResponse _method_not_allowed_response();
 
-    HTTPResponse _build_response(const HTTPRequest& request);
-    HTTPResponse _build_cgi_response(const HTTPRequest& request, const std::string& path);
+    HTTPResponse _build_response(const HTTPRequest& request, Context& ctx);
+    HTTPResponse _build_cgi_response(const HTTPRequest& request, const Context& ctx);
 
     std::string _root;
     std::string _name;

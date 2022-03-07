@@ -515,7 +515,7 @@ https://medium.com/from-the-scratch/http-server-what-do-you-need-to-know-to-buil
         server_name "";
         (If no server_name is defined in a server block then nginx uses the empty name as the server name.)
     - error_page
-        error_page = { -- }
+        error_page { -- };
     - client_max_body_size
         client_max_body_size 1m;
     - root
@@ -525,6 +525,14 @@ https://medium.com/from-the-scratch/http-server-what-do-you-need-to-know-to-buil
     - auto-index
         autoindex off;
     
+    - methods
+        methods GET;
+    - redirect 
+        redirect { -- }
+    - cgi
+        cgi { -- }
+    - upload
+        off
 
 
 

@@ -6,7 +6,7 @@
 /*   By: jceia <jceia@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/22 13:00:01 by jceia             #+#    #+#             */
-/*   Updated: 2022/03/07 17:06:32 by jceia            ###   ########.fr       */
+/*   Updated: 2022/03/07 18:00:05 by jceia            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,11 +42,14 @@ public:
     virtual void addHeader(const std::string& key, const std::string& value);
 
     std::string getVersion() const;
-    std::string getPath() const;
+    std::string getUrl() const;
     HTTPMethod getMethod() const;
     std::string getHeader(const std::string& key) const;
     std::string getQueryString() const;
+    std::string getEndpoint() const;
     std::string getBody() const;
+
+    void setUrl(const std::string& url);
 
     class ParseException : public std::exception
     {
@@ -56,7 +59,8 @@ public:
     
 protected:
     HTTPMethod _method;
-    std::string _path;
+    std::string _endpoint;
+    std::string _query;
     std::string _body;
     std::string _version;
     std::map<std::string, std::string> _headers;

@@ -57,7 +57,9 @@ ParseState HTTPRequestParser::parse(const std::string& s = "")
             std::stringstream ss(_buf.substr(0, pos));
             _buf = _buf.substr(pos + 2);
             std::string method;
-            ss >> method >> _path >> _version; // parse start line
+            std::string url;
+            ss >> method >> url >> _version; // parse start line
+            this->setUrl(url);
             if (!ss.eof())
                 throw HTTPRequest::ParseException();
             _method = HTTPRequestParser::parseMethod(method);

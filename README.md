@@ -494,7 +494,7 @@ https://medium.com/from-the-scratch/http-server-what-do-you-need-to-know-to-buil
 		- listen ( http://nginx.org/en/docs/http/ngx_http_core_module.html#listen )
 		- server_name ( http://nginx.org/en/docs/http/ngx_http_core_module.html#server_name )
 		- error_page ( http://nginx.org/en/docs/http/ngx_http_core_module.html#error_page )
-		- client_max_body_size ( http://nginx.org/en/docs/http/ngx_http_core_module.			html#client_max_body_size )
+		- client_max_body_size ( http://nginx.org/en/docs/http/ngx_http_core_module.html#client_max_body_size )
 		- root ( http://nginx.org/en/docs/http/ngx_http_core_module.html#root )
 		- index ( http://nginx.org/en/docs/http/ngx_http_index_module.html#index )
 		- auto-index ( http://nginx.org/en/docs/http/ngx_http_autoindex_module.html#autoindex )
@@ -505,6 +505,27 @@ https://medium.com/from-the-scratch/http-server-what-do-you-need-to-know-to-buil
 		- redirect ( first arg a 300 status code, second arg the path to redirect )
 		- cgi
 		- upload ( bool if it accepted or not, and the path )
+
+### Defaults
+
+    - listen
+        ip = 0.0.0.0
+        port = 80
+    - server_name
+        server_name "";
+        (If no server_name is defined in a server block then nginx uses the empty name as the server name.)
+    - error_page
+        error_page = { -- }
+    - client_max_body_size
+        client_max_body_size 1m;
+    - root
+        The path where wwwroot is.
+    - index
+        index index.html;
+    - auto-index
+        autoindex off;
+    
+
 
 
 

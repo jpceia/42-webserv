@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   utils.cpp                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
+/*   By: jceia <jceia@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/23 20:06:03 by jpceia            #+#    #+#             */
-/*   Updated: 2022/03/04 14:12:39 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/03/07 13:48:38 by jceia            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,6 +39,13 @@ bool is_readable_file(const std::string& path)
             (s.st_mode & S_IRUSR));
 }
 
+bool is_executable_file(const std::string& path)
+{
+    struct stat s;
+    return (stat(path.c_str(), &s) == 0 && S_ISREG(s.st_mode) &&
+            (s.st_mode & S_IXUSR));
+}
+
 struct pollfd create_pollfd(int fd, short int events)
 {
     struct pollfd pfd;
@@ -49,8 +56,36 @@ struct pollfd create_pollfd(int fd, short int events)
     return pfd;
 }
 
+std::string lookup_full_path(const std::string& path)
+{
+    if (path[0] == '/') // path is already absolute
+        return path;
+    if (path[0] == '.') // path is relative to current directory
+    {
+        char buff[PATH_MAX];
+        getcwd(buff, PATH_MAX);
+        return std::string(buff) + "/" + path.substr(1);
+    }
+    else // needs to iterate over the path to find the first executable
+    {
+        // get PATH from environment variable
+        std::stringstream env_paths;
+        env_paths << std::getenv("PATH");
+
+        // split PATH into directories
+        for (std::string dir; std::getline(env_paths, dir, ':'); )
+        {
+            std::string full_path = dir + "/" + path;
+            if (is_executable_file(full_path))
+                return full_path;
+        }
+        throw std::runtime_error("Could not find executable " + path);
+    }
+}
+
+
 std::string exec_cmd(
-    const std::string &cmd,
+    const std::string &path,
     const std::vector<std::string>& args,
     const std::map<std::string, std::string>& env)
 {
@@ -77,7 +112,8 @@ std::string exec_cmd(
         dup2(fd[1], STDOUT_FILENO);
         close(fd[0]);
         close(fd[1]);
-        execvpe(cmd.c_str(), &argv[0], &envp[0]);
+        std::string full_path = lookup_full_path(path);
+        execve(full_path.c_str(), &argv[0], &envp[0]);
         throw std::runtime_error("execvpe failed");
     }
     // pid > 0 (parent)

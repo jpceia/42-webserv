@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   HTTPRequest.cpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
+/*   By: jceia <jceia@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/22 15:33:45 by jceia             #+#    #+#             */
-/*   Updated: 2022/03/04 12:32:37 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/03/07 17:07:14 by jceia            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -150,6 +150,11 @@ std::string HTTPRequest::getVersion() const
 std::string HTTPRequest::getPath() const
 {
     return _path;
+}
+
+std::string HTTPRequest::getBody() const
+{
+    return _body;
 }
 
 std::string HTTPRequest::getQueryString() const

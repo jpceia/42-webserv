@@ -6,7 +6,7 @@
 /*   By: jceia <jceia@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/03 17:30:40 by jceia             #+#    #+#             */
-/*   Updated: 2022/03/07 16:35:17 by jceia            ###   ########.fr       */
+/*   Updated: 2022/03/07 17:07:46 by jceia            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,8 @@
 HTTPServer::HTTPServer(int timeout) :
     TCPServer(timeout),
     _root("./www"),
-    _name("")
+    _name(""),
+    _max_body_size(1024 * 1024) // 1MB
 {
     _index.push_back("index.html");
     _index.push_back("index.htm");
@@ -53,13 +54,14 @@ void HTTPServer::_handle_client_request(int fd)
     HTTPRequest request = connection.recv();
     std::cout << request << std::endl;
 
-    // Build the response
+    // Construct the context
     Context ctx;
     ctx.server_addr = it->getServerIP();
     ctx.client_addr = it->getClientIP();
     ctx.server_port = it->getServerPort();
     ctx.client_port = it->getClientPort();
 
+    // Build the response
     connection.send(_build_response(request, ctx));
     if (request.getHeader("Connection") != "keep-alive") // close connection
     {
@@ -74,6 +76,10 @@ HTTPResponse HTTPServer::_build_response(const HTTPRequest& request, Context& ct
     if (std::find(_allowed_methods.begin(), _allowed_methods.end(),
         request.getMethod()) == _allowed_methods.end())
         return _method_not_allowed_response();
+
+    // checking the body size
+    if (request.getBody().size() > _max_body_size)
+        return _body_too_large_response();
 
     // checking if the file exists
     ctx.path = _root + request.getPath();
@@ -197,5 +203,15 @@ HTTPResponse HTTPServer::_method_not_allowed_response()
     response.setHeader("Content-Type", "text/html");
     response.setStatus(405, "Method Not Allowed");
     response.setBody("<h1>405 Method Not Allowed</h1>");
+    return response;
+}
+
+HTTPResponse HTTPServer::_body_too_large_response()
+{
+    HTTPResponse response;
+    response.setVersion("HTTP/1.1");
+    response.setHeader("Content-Type", "text/html");
+    response.setStatus(413, "Request Entity Too Large");
+    response.setBody("<h1>413 Request Entity Too Large</h1>");
     return response;
 }

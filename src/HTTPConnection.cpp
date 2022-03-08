@@ -52,6 +52,11 @@ HTTPRequest HTTPConnection::recv() const
     ParseState state = PARSE_START;
 
     while (state != PARSE_COMPLETE)
-        state = request.parse(TCPConnection::recv());
+    {
+        std::string chunk = TCPConnection::recv();
+        if (chunk.empty())
+            throw TCPConnection::EmptyMessageException();
+        state = request.parse(chunk);
+    }
     return request;
 }

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   TCPServer.hpp                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jceia <jceia@student.42.fr>                +#+  +:+       +#+        */
+/*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/07 14:23:33 by jceia             #+#    #+#             */
-/*   Updated: 2022/03/07 15:17:02 by jceia            ###   ########.fr       */
+/*   Updated: 2022/03/08 23:27:30 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,9 +40,10 @@ public:
     };
 
 protected:
-    void _close_fd(int fd);
-    virtual void _handle_client_request(int fd) = 0;
-    
+    virtual void _handle_client_request(const TCPConnection& connection) = 0;
+    virtual void _close_connection(const TCPConnection& connection);
+    virtual void _close_listener(const TCPListener& listener);
+        
     // Private attributes
     std::set<TCPListener, TCPListener::socket_compare>      _listeners;
     std::set<TCPConnection, TCPConnection::socket_compare>  _connections;
@@ -63,6 +64,7 @@ private:
     }
 
     void _handle_revent(int fd, int revevents);
+    void _close_fd(int fd);
 
     // Not copiable
     TCPServer(const TCPServer& rhs);

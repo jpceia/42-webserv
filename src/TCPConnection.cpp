@@ -6,7 +6,7 @@
 /*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/23 03:04:11 by jpceia            #+#    #+#             */
-/*   Updated: 2022/03/08 23:23:18 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/03/08 23:38:56 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -113,4 +113,9 @@ const char* TCPConnection::SendException::what() const throw()
 const char* TCPConnection::ReadException::what() const throw()
 {
     return "Could not read from socket";
+}
+
+const char* TCPConnection::EmptyMessageException::what() const throw()
+{
+    return "Received empty message";
 }

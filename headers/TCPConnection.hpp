@@ -71,6 +71,12 @@ public:
             virtual const char* what(void) const throw();
     };
 
+    class EmptyMessageException : public TCPConnection::ConnectionException
+    {
+        public:
+            virtual const char* what(void) const throw();
+    };
+
 private:
     int _sock;
     struct sockaddr_in _server_addr;

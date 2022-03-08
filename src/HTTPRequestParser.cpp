@@ -48,57 +48,61 @@ HTTPRequestParser& HTTPRequestParser::operator=(const HTTPRequestParser& rhs)
 
 ParseState HTTPRequestParser::parse(const std::string& s = "")
 {
-    _buf += s;
+    _buf += s;  // append last received chunk to buffer
     if (_state == PARSE_START)
     {
         size_t pos = _buf.find("\r\n");
+
+        // only parsing if we have the first line complete
         if (pos != std::string::npos)
         {
-            std::stringstream ss(_buf.substr(0, pos));
-            _buf = _buf.substr(pos + 2);
+            std::stringstream ss(_buf.substr(0, pos));  // pass first line to stream
+            _buf = _buf.substr(pos + 2);                // remove first line from buffer
             std::string method;
-            std::string url;
-            ss >> method >> url >> _version; // parse start line
-            this->setUrl(url);
+            std::string path;
+            ss >> method >> path >> _version;           // parse start line
             if (!ss.eof())
                 throw HTTPRequest::ParseException();
-            _method = HTTPRequestParser::parseMethod(method);
+            this->setPath(path);
+            this->setMethod(method);
             _state = PARSE_HEADER;
-            return this->parse();
+            this->parse();                              // Consume buffer
         }
     }
     else if (_state == PARSE_HEADER)
     {
         size_t pos = _buf.find("\r\n");
+
+        // only parsing if we have at least one header line complete
         if (pos != std::string::npos)
         {
-            std::string line = _buf.substr(0, pos);
-            _buf = _buf.substr(pos + 2);
-            if (line.empty())
+            std::string line = _buf.substr(0, pos);     // get first available line
+            _buf = _buf.substr(pos + 2);                // remove first line from buffer
+            
+            // if the line is empty the header section is over
+            if (line.empty())                           
             {
-                if (_method == POST)
-                {
-                    _state = PARSE_BODY;
-                    return this->parse();
-                }
+                if (_content_length > 0)                // if we have a content length
+                    _state = PARSE_BODY;                // we are now parsing the body
                 else
-                    return PARSE_COMPLETE;
+                {
+                    _state = PARSE_COMPLETE;            // otherwise we are done
+                    return _state;
+                }
             }
-            HTTPRequest::addHeader(line);
-            return this->parse();
+            else
+                HTTPRequest::addHeader(line);
+            return this->parse();                       // Consume buffer
         }
     }
     else if (_state == PARSE_BODY)
     {
-        if (_buf.empty())
-            return PARSE_COMPLETE;
         _body += _buf;
-        _buf = "";
-        std::stringstream ss;
+        _buf = "";                                      // clear buffer
         if (_body.length() > _content_length)
             throw HTTPRequest::ParseException();
         if (_body.length() == _content_length)
-            return PARSE_COMPLETE;
+            _state = PARSE_COMPLETE;
     }
     return _state;
 }

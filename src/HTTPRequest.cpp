@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   HTTPRequest.cpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jceia <jceia@student.42.fr>                +#+  +:+       +#+        */
+/*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/22 15:33:45 by jceia             #+#    #+#             */
-/*   Updated: 2022/03/07 18:03:30 by jceia            ###   ########.fr       */
+/*   Updated: 2022/03/08 22:48:39 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,12 +63,12 @@ std::istream &operator>>(std::istream &is, HTTPRequest &request)
         std::getline(is, line);
         std::stringstream ss(drop_carriage_return(line));
         std::string method;
-        std::string url;
-        ss >> method >> url >> request._version;
-        request.setUrl(url);
+        std::string path;
+        ss >> method >> path >> request._version;
+        request.setPath(path);
+        request.setMethod(method);
         if (!ss.eof())
             throw HTTPRequest::ParseException();
-        request._method = HTTPRequest::parseMethod(method);
     }
     
     // Headers
@@ -92,7 +92,7 @@ std::istream &operator>>(std::istream &is, HTTPRequest &request)
 std::ostream &operator<<(std::ostream &out, const HTTPRequest &request)
 {
     out << HTTPRequest::strMethod(request._method) << " ";
-    out << request.getUrl() << " " << request._version << "\r\n";
+    out << request.getPath() << " " << request._version << "\r\n";
     for (std::map<std::string, std::string>::const_iterator it = request._headers.begin();
         it != request._headers.end(); ++it)
         out << it->first << ": " << it->second << "\r\n";
@@ -150,7 +150,7 @@ std::string HTTPRequest::getVersion() const
     return _version;
 }
 
-std::string HTTPRequest::getUrl() const
+std::string HTTPRequest::getPath() const
 {
     if (_query.empty())
         return _endpoint;
@@ -185,17 +185,22 @@ std::string HTTPRequest::getHeader(const std::string& key) const
     return it->second;
 }
 
-void HTTPRequest::setUrl(const std::string& url)
+void HTTPRequest::setPath(const std::string& path)
 {
-    size_t pos = url.find('?');
+    size_t pos = path.find('?');
     if (pos != std::string::npos)
     {
-        _endpoint = url.substr(0, pos);
-        _query = url.substr(pos + 1);
+        _endpoint = path.substr(0, pos);
+        _query = path.substr(pos + 1);
     }
     else
     {
-        _endpoint = url;
+        _endpoint = path;
         _query = "";
     }
+}
+
+void HTTPRequest::setMethod(const std::string& method)
+{
+    _method = parseMethod(method);
 }

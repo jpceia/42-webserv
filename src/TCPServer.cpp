@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   TCPServer.cpp                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jceia <jceia@student.42.fr>                +#+  +:+       +#+        */
+/*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/23 02:51:42 by jpceia            #+#    #+#             */
-/*   Updated: 2022/03/07 15:14:25 by jceia            ###   ########.fr       */
+/*   Updated: 2022/03/08 21:54:54 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -100,7 +100,7 @@ void TCPServer::_handle_revent(int fd, int revents)
         _close_fd(fd);
         throw TCPServer::PollHungUpException();
     }
-    std::set<TCPListener>::iterator it = _listeners.find(TCPListener(fd));
+    std::set<TCPListener, TCPListener::socket_compare>::iterator it = _listeners.find(TCPListener(fd));
     if (it != _listeners.end())
     {
         TCPConnection connection = it->accept();

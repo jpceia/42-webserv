@@ -44,7 +44,7 @@ HTTPServer::~HTTPServer()
 
 void HTTPServer::_handle_client_request(int fd)
 {
-    std::set<TCPConnection>::iterator it = _connections.find(TCPConnection(fd));
+    std::set<TCPConnection, TCPConnection::socket_compare>::iterator it = _connections.find(TCPConnection(fd));
     
     if (it == _connections.end())
         throw std::runtime_error("Connection not found");

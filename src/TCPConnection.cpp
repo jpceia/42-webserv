@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   TCPConnection.cpp                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jceia <jceia@student.42.fr>                +#+  +:+       +#+        */
+/*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/23 03:04:11 by jpceia            #+#    #+#             */
-/*   Updated: 2022/03/07 16:08:42 by jceia            ###   ########.fr       */
+/*   Updated: 2022/03/08 23:23:18 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,7 +53,7 @@ TCPConnection& TCPConnection::operator=(const TCPConnection& rhs)
     return *this;
 }
 
-void TCPConnection::send(const std::string& msg)
+void TCPConnection::send(const std::string& msg) const
 {
     size_t pos = 0;
     while (pos < msg.size())
@@ -65,7 +65,7 @@ void TCPConnection::send(const std::string& msg)
     }
 }
 
-std::string TCPConnection::recv()
+std::string TCPConnection::recv() const
 {
     char buff[BUFF_SIZE];
 

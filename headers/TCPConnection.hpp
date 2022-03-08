@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   TCPConnection.hpp                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jceia <jceia@student.42.fr>                +#+  +:+       +#+        */
+/*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/23 03:04:11 by jpceia            #+#    #+#             */
-/*   Updated: 2022/03/07 16:06:52 by jceia            ###   ########.fr       */
+/*   Updated: 2022/03/08 23:23:08 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,8 +43,8 @@ public:
     virtual ~TCPConnection();
     TCPConnection& operator=(const TCPConnection& rhs);
 
-    void send(const std::string& msg);
-    std::string recv();
+    void send(const std::string& msg) const;
+    std::string recv() const;
 
     int getSock() const;
 

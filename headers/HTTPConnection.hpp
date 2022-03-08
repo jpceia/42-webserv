@@ -6,7 +6,7 @@
 /*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/23 05:15:40 by jpceia            #+#    #+#             */
-/*   Updated: 2022/02/23 07:13:13 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/03/08 23:22:45 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,8 +32,8 @@ public:
     ~HTTPConnection();
     HTTPConnection& operator=(const HTTPConnection& rhs);
 
-    void send(const HTTPResponse& response);
-    HTTPRequest recv();
+    void send(const HTTPResponse& response) const;
+    HTTPRequest recv() const;
 };
 
 #endif

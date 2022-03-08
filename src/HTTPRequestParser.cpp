@@ -39,9 +39,9 @@ HTTPRequestParser& HTTPRequestParser::operator=(const HTTPRequestParser& rhs)
     HTTPRequest::operator=(rhs);
     if (this != &rhs)
     {
-        this->_state = rhs._state;
-        this->_buf = rhs._buf;
-        this->_content_length = rhs._content_length;
+        _state = rhs._state;
+        _buf = rhs._buf;
+        _content_length = rhs._content_length;
     }
     return *this;
 }

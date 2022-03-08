@@ -6,7 +6,7 @@
 /*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/22 15:33:45 by jceia             #+#    #+#             */
-/*   Updated: 2022/03/08 22:48:39 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/03/08 22:52:12 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,10 +32,10 @@ HTTPRequest& HTTPRequest::operator=(const HTTPRequest &rhs)
 {
     if (this != &rhs)
     {
-        this->_method = rhs._method;
-        this->_endpoint = rhs._endpoint;
-        this->_query = rhs._query;
-        this->_body = rhs._body;
+        _method = rhs._method;
+        _endpoint = rhs._endpoint;
+        _query = rhs._query;
+        _body = rhs._body;
     }
     return *this;
 }

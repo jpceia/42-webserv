@@ -42,32 +42,24 @@ HTTPServer::~HTTPServer()
 {
 }
 
-void HTTPServer::_handle_client_request(int fd)
+void HTTPServer::_handle_client_request(const TCPConnection& connection)
 {
-    std::set<TCPConnection, TCPConnection::socket_compare>::iterator it = _connections.find(TCPConnection(fd));
-    
-    if (it == _connections.end())
-        throw std::runtime_error("Connection not found");
-
-    HTTPConnection connection = *it;
+    const HTTPConnection& http_conn = static_cast<const HTTPConnection&>(connection);
     // Read and parse the request
-    HTTPRequest request = connection.recv();
+    HTTPRequest request = http_conn.recv();
     std::cout << request << std::endl;
 
     // Construct the context
     Context ctx;
-    ctx.server_addr = it->getServerIP();
-    ctx.client_addr = it->getClientIP();
-    ctx.server_port = it->getServerPort();
-    ctx.client_port = it->getClientPort();
+    ctx.server_addr = connection.getServerIP();
+    ctx.client_addr = connection.getClientIP();
+    ctx.server_port = connection.getServerPort();
+    ctx.client_port = connection.getClientPort();
 
     // Build the response
-    connection.send(_build_response(request, ctx));
+    http_conn.send(_build_response(request, ctx));
     if (request.getHeader("Connection") != "keep-alive") // close connection
-    {
-        _connections.erase(it);
-        _close_fd(it->getSock());
-    }
+        _close_connection(connection);
 }
 
 HTTPResponse HTTPServer::_build_response(const HTTPRequest& request, Context& ctx)

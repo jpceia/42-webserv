@@ -6,7 +6,7 @@
 /*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/23 02:51:42 by jpceia            #+#    #+#             */
-/*   Updated: 2022/03/08 21:54:54 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/03/08 23:34:00 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -121,14 +121,22 @@ void TCPServer::_handle_revent(int fd, int revents)
     }
     else  // Not the listener socket, but an accepted (connected) socket. _fds[ >0].
     {   
+        std::set<TCPConnection, TCPConnection::socket_compare>::iterator it = \
+            _connections.find(TCPConnection(fd));
+        if (it == _connections.end())
+        {
+            std::cerr << "Connection not found" << std::endl;
+            _close_fd(fd);
+            return ;
+        }
         try
         {
-            _handle_client_request(fd);
+            _handle_client_request(*it);
         }
         catch (const TCPConnection::ConnectionException& e)
         {
             std::cerr << e.what() << std::endl;
-            _close_fd(fd);
+            _close_connection(*it);
         }
     }
 }

@@ -1,7 +1,7 @@
 #include "webserv.hpp"
 #include "utils.hpp"
 #include "HTTPServer.hpp"
-#include "TCPListener.hpp"
+#include "HTTPListener.hpp"
 #include "HTTPConnection.hpp"
 #include <iostream>
 #include <sstream>
@@ -20,7 +20,7 @@ int main(int argc, char *argv[])
     {
         HTTPServer webserv(-1);
         for (int i=1; i<argc; i++)
-            webserv.add_listener(TCPListener("0.0.0.0", ft_stoi(argv[i])));
+            webserv.add_listener(new HTTPListener("0.0.0.0", ft_stoi(argv[i])));
         webserv.run();
     }
     catch (std::exception& e)

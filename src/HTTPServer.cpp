@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   HTTPServer.cpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jceia <jceia@student.42.fr>                +#+  +:+       +#+        */
+/*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/03 17:30:40 by jceia             #+#    #+#             */
-/*   Updated: 2022/03/07 17:53:35 by jceia            ###   ########.fr       */
+/*   Updated: 2022/03/09 16:29:49 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,22 +42,24 @@ HTTPServer::~HTTPServer()
 {
 }
 
-void HTTPServer::_handle_client_request(const TCPConnection& connection)
+void HTTPServer::_handle_client_request(TCPConnection* connection)
 {
-    const HTTPConnection& http_conn = static_cast<const HTTPConnection&>(connection);
+    HTTPConnection* http_conn = dynamic_cast<HTTPConnection*>(connection);
+    if (http_conn == NULL)
+        throw std::runtime_error("HTTPServer::_handle_client_request: dynamic_cast failed");
     // Read and parse the request
-    HTTPRequest request = http_conn.recv();
+    HTTPRequest request = http_conn->fetchRequest();
     std::cout << request << std::endl;
 
     // Construct the context
     Context ctx;
-    ctx.server_addr = connection.getServerIP();
-    ctx.client_addr = connection.getClientIP();
-    ctx.server_port = connection.getServerPort();
-    ctx.client_port = connection.getClientPort();
+    ctx.server_addr = connection->getServerIP();
+    ctx.client_addr = connection->getClientIP();
+    ctx.server_port = connection->getServerPort();
+    ctx.client_port = connection->getClientPort();
 
     // Build the response
-    http_conn.send(_build_response(request, ctx));
+    http_conn->sendResponse(_build_response(request, ctx));
     if (request.getHeader("Connection") != "keep-alive") // close connection
         _close_connection(connection);
 }

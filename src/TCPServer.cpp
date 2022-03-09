@@ -6,7 +6,7 @@
 /*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/23 02:51:42 by jpceia            #+#    #+#             */
-/*   Updated: 2022/03/09 00:01:30 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/03/09 02:23:56 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,12 @@ TCPServer::~TCPServer()
     for (std::vector<struct pollfd>::iterator it = _fds.begin();
         it != _fds.end(); ++it)
         close(it->fd);
+    for (listeners_t::iterator it = _listeners.begin();
+        it != _listeners.end(); ++it)
+        delete *it;
+    for (connections_t::iterator it = _connections.begin();
+        it != _connections.end(); ++it)
+        delete *it;
 }
 
 TCPServer& TCPServer::operator=(const TCPServer& rhs)
@@ -45,12 +51,12 @@ TCPServer& TCPServer::operator=(const TCPServer& rhs)
     return *this;
 }
 
-void TCPServer::add_listener(const TCPListener& listener)
+void TCPServer::add_listener(TCPListener* listener)
 {
     _listeners.insert(listener); // check if already exists (?)
     
     // Adding the listening socket to the pollfd vector
-    _fds.push_back(create_pollfd(listener.getSock(), POLLIN));
+    _fds.push_back(create_pollfd(listener->getSock(), POLLIN));
 }
 
 void TCPServer::run() 
@@ -88,16 +94,18 @@ void TCPServer::run()
     }
 }
 
-void TCPServer::_close_connection(const TCPConnection& connection)
+void TCPServer::_close_connection(TCPConnection* connection)
 {
-    _close_fd(connection.getSock());
+    _close_fd(connection->getSock());
     _connections.erase(connection);
+    delete connection;
 }
 
-void TCPServer::_close_listener(const TCPListener& listener)
+void TCPServer::_close_listener(TCPListener* listener)
 {
-    _close_fd(listener.getSock());
+    _close_fd(listener->getSock());
     _listeners.erase(listener);
+    delete listener;
 }
 
 /**
@@ -109,25 +117,32 @@ void TCPServer::_handle_revent(int fd, int revents)
     if(revents & POLLHUP)
     {
         std::cerr << "Poll Hung Up" << std::endl;
-        connections_t::const_iterator it = _connections.find(TCPConnection(fd));
-        if (it == _connections.end())
+        connections_t::const_iterator it = _find_connection(fd);
+        if (it != _connections.end())
         {
-            std::cerr << "Connection not found" << std::endl;
-            _close_fd(fd);
+            _close_connection(*it);
             return ;
         }
-        _close_connection(*it);
+        listeners_t::const_iterator it2 = _find_listener(fd);
+        if (it2 != _listeners.end())
+        {
+            _close_listener(*it2);
+            return ;
+        }
+        std::cerr << "Connection not found" << std::endl;
+        _close_fd(fd);
     }
-    listeners_t::const_iterator it = _listeners.find(TCPListener(fd));
+
+    listeners_t::const_iterator it = _find_listener(fd);
     if (it != _listeners.end())
     {
-        TCPConnection connection = it->accept();
-        _fds.push_back(create_pollfd(connection.getSock(), POLLIN));
+        TCPConnection* connection = (*it)->accept();
+        _fds.push_back(create_pollfd(connection->getSock(), POLLIN));
         _connections.insert(connection);
     }
     else  // Not the listener socket, but an accepted (connected) socket. _fds[ >0].
-    {   
-        connections_t::const_iterator it = _connections.find(TCPConnection(fd));
+    {
+        connections_t::const_iterator it = _find_connection(fd);
         if (it == _connections.end())
         {
             std::cerr << "Connection not found" << std::endl;
@@ -144,6 +159,30 @@ void TCPServer::_handle_revent(int fd, int revents)
             _close_connection(*it);
         }
     }
+}
+
+TCPServer::connections_t::iterator TCPServer::_find_connection(int fd)
+{
+    TCPConnection tmp(fd);
+    return _connections.find(&tmp);
+}
+
+TCPServer::connections_t::const_iterator TCPServer::_find_connection(int fd) const
+{
+    TCPConnection tmp(fd);
+    return _connections.find(&tmp);
+}
+
+TCPServer::listeners_t::iterator TCPServer::_find_listener(int fd)
+{
+    TCPListener tmp(fd);
+    return _listeners.find(&tmp);
+}
+
+TCPServer::listeners_t::const_iterator TCPServer::_find_listener(int fd) const
+{
+    TCPListener tmp(fd);
+    return _listeners.find(&tmp);
 }
 
 void TCPServer::_close_fd(int fd)

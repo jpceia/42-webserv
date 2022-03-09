@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   TCPListener.cpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jceia <jceia@student.42.fr>                +#+  +:+       +#+        */
+/*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/23 02:51:42 by jpceia            #+#    #+#             */
-/*   Updated: 2022/03/07 15:30:04 by jceia            ###   ########.fr       */
+/*   Updated: 2022/03/09 02:20:47 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,14 +64,19 @@ TCPListener& TCPListener::operator=(const TCPListener& rhs)
     return *this;
 }
 
-TCPConnection TCPListener::accept() const
+TCPConnection* TCPListener::accept() const
 {
-    struct sockaddr_in cli_addr;
-    socklen_t cli_len = sizeof(cli_addr);
-    int client_sock = ::accept(_sock, (struct sockaddr *)&cli_addr, &cli_len);
-    if (client_sock < 0)
+    return new TCPConnection(_accept());
+}
+
+TCPConnectionArgs TCPListener::_accept() const
+{
+    TCPConnectionArgs args;
+    socklen_t cli_len = sizeof(args.client_addr);
+    args.sock = ::accept(_sock, (struct sockaddr *)&args.client_addr, &cli_len);
+    if (args.sock < 0)
         throw TCPListener::AcceptException();
-    return TCPConnection(client_sock, _addr, cli_addr);
+    return args;
 }
 
 int TCPListener::getSock() const

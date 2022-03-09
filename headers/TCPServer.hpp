@@ -6,7 +6,7 @@
 /*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/07 14:23:33 by jceia             #+#    #+#             */
-/*   Updated: 2022/03/09 21:08:49 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/03/09 21:24:28 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,29 +41,12 @@ protected:
     virtual int _handle_client_recv(TCPConnection* connection) = 0; // return event to set in pollfd
     virtual void _close_connection(TCPConnection* connection);
     virtual void _close_listener(TCPListener* listener);
+
+private:
     connections_t::iterator _find_connection(int fd);
     connections_t::const_iterator _find_connection(int fd) const;
     listeners_t::iterator _find_listener(int fd);
     listeners_t::const_iterator _find_listener(int fd) const;
-
-    // Private attributes
-    listeners_t     _listeners;
-    connections_t   _connections;
-
-private:
-
-    void	printPollFds()
-    {
-        for (size_t i = 0; i < _fds.size(); ++i)
-        {
-            std::cout << "fds[" << i << "]" << std::endl;
-            std::cout << "fd = " << _fds[i].fd << std::endl;
-            std::cout << "events = " << _fds[i].events << std::endl;
-            std::cout << "revents = " << _fds[i].revents << std::endl;
-
-            std::cout << std::endl;
-        }
-    }
 
     void _handle_revent(int fd, short &events, short revevents);
     void _handle_listener_revent(TCPListener* listener, short revents);
@@ -73,6 +56,10 @@ private:
     // Not copiable
     TCPServer(const TCPServer& rhs);
     TCPServer& operator=(const TCPServer& rhs);
+
+    // Private attributes
+    listeners_t     _listeners;
+    connections_t   _connections;
 
     /* poll() Variables */
     std::vector<struct pollfd>  _fds;       // An array of pollfd structures.

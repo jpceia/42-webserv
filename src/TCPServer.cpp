@@ -6,7 +6,7 @@
 /*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/23 02:51:42 by jpceia            #+#    #+#             */
-/*   Updated: 2022/03/09 20:45:50 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/03/09 20:58:56 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -108,9 +108,6 @@ void TCPServer::_close_listener(TCPListener* listener)
     delete listener;
 }
 
-/**
- * returns true if the loop should continue
- */
 void TCPServer::_handle_revent(int fd, short &events, short revents)
 {
     std::cout << "Handling revents for fd " << fd << std::endl;

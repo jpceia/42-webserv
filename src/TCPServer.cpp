@@ -6,7 +6,7 @@
 /*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/23 02:51:42 by jpceia            #+#    #+#             */
-/*   Updated: 2022/03/09 20:29:07 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/03/09 20:45:50 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -114,31 +114,32 @@ void TCPServer::_close_listener(TCPListener* listener)
 void TCPServer::_handle_revent(int fd, short &events, short revents)
 {
     std::cout << "Handling revents for fd " << fd << std::endl;
-    if(revents & POLLHUP)
-    {
-        std::cerr << "Poll Hung Up" << std::endl;
-        connections_t::const_iterator it = _find_connection(fd);
-        if (it != _connections.end())
-        {
-            _close_connection(*it);
-            return ;
-        }
-        listeners_t::const_iterator it2 = _find_listener(fd);
-        if (it2 != _listeners.end())
-        {
-            _close_listener(*it2);
-            return ;
-        }
-        std::cerr << "Connection not found" << std::endl;
-        _close_fd(fd);
-    }
-
+    
     listeners_t::const_iterator it = _find_listener(fd);
-    if (it != _listeners.end())
+    if (it != _listeners.end()) // the fd is from a listener
     {
-        TCPConnection* connection = (*it)->accept();
-        _fds.push_back(create_pollfd(connection->getSock(), POLLIN));
-        _connections.insert(connection);
+        if (revents & POLLIN)
+        {
+            std::cout << "POLLIN" << std::endl;
+            TCPConnection* connection = (*it)->accept();
+            _fds.push_back(create_pollfd(connection->getSock(), POLLIN));
+            _connections.insert(connection);
+        }
+        else if (revents & POLLERR)
+        {
+            std::cerr << "POLLERR" << std::endl;
+            _close_listener(*it);
+        }
+        else if (revents & POLLHUP)
+        {
+            std::cerr << "POLLHUP" << std::endl;
+            _close_listener(*it);
+        }
+        else
+        {
+            std::cerr << "Unexpected revents for listener:" << revents << std::endl;
+            _close_listener(*it);
+        }
     }
     else  // Not the listener socket, but an accepted (connected) socket. _fds[ >0].
     {
@@ -161,6 +162,11 @@ void TCPServer::_handle_revent(int fd, short &events, short revents)
                 std::cout << "POLLOUT" << std::endl;
                 events = _handle_client_send(*it);
             }
+            else if (revents & POLLHUP)
+            {
+                std::cerr << "POLLHUP" << std::endl;
+                _close_connection(*it);
+            }
             else if (revents & POLLERR)
             {
                 std::cerr << "POLLERR" << std::endl;
@@ -173,7 +179,7 @@ void TCPServer::_handle_revent(int fd, short &events, short revents)
             }
             else
             {
-                std::cerr << "Unknown revents" << std::endl;
+                std::cerr << "Unknown revents for connection: " << revents << std::endl;
                 _close_connection(*it);
             }
         }

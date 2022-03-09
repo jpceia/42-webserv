@@ -6,7 +6,7 @@
 /*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/23 03:04:11 by jpceia            #+#    #+#             */
-/*   Updated: 2022/03/09 02:25:58 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/03/09 20:33:16 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,7 +56,7 @@ public:
     virtual ~TCPConnection();
     virtual TCPConnection& operator=(const TCPConnection& rhs);
 
-    virtual void send(const std::string& msg) const;
+    virtual void send(std::string& msg) const;
     virtual std::string recv() const;
 
     int getSock() const;
@@ -84,7 +84,7 @@ public:
             virtual const char* what(void) const throw();
     };
 
-    class EmptyMessageException : public TCPConnection::ConnectionException
+    class DisconnectedException : public TCPConnection::ConnectionException
     {
         public:
             virtual const char* what(void) const throw();

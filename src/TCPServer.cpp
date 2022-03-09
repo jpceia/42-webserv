@@ -6,7 +6,7 @@
 /*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/23 02:51:42 by jpceia            #+#    #+#             */
-/*   Updated: 2022/03/09 02:23:56 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/03/09 20:29:07 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,7 +80,7 @@ void TCPServer::run()
                 std::vector<struct pollfd>::iterator it = _fds.begin();
                 for (;it != _fds.end() && !it->revents; ++it) ; // find the first ready fd
                 if (it != _fds.end())  // If there's no activity skip _fds;
-                    _handle_revent(it->fd, it->revents);
+                    _handle_revent(it->fd, it->events, it->revents);
             }
             catch (TCPServer::PollHungUpException& e)
             {
@@ -111,7 +111,7 @@ void TCPServer::_close_listener(TCPListener* listener)
 /**
  * returns true if the loop should continue
  */
-void TCPServer::_handle_revent(int fd, int revents)
+void TCPServer::_handle_revent(int fd, short &events, short revents)
 {
     std::cout << "Handling revents for fd " << fd << std::endl;
     if(revents & POLLHUP)
@@ -151,7 +151,31 @@ void TCPServer::_handle_revent(int fd, int revents)
         }
         try
         {
-            _handle_client_request(*it);
+            if (revents & POLLIN)
+            {
+                std::cout << "POLLIN" << std::endl;
+                events = _handle_client_recv(*it);
+            }
+            else if (revents & POLLOUT)
+            {
+                std::cout << "POLLOUT" << std::endl;
+                events = _handle_client_send(*it);
+            }
+            else if (revents & POLLERR)
+            {
+                std::cerr << "POLLERR" << std::endl;
+                _close_connection(*it);
+            }
+            else if (revents & POLLNVAL)
+            {
+                std::cerr << "POLLNVAL" << std::endl;
+                _close_connection(*it);
+            }
+            else
+            {
+                std::cerr << "Unknown revents" << std::endl;
+                _close_connection(*it);
+            }
         }
         catch (const TCPConnection::ConnectionException& e)
         {

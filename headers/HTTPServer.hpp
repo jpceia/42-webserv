@@ -6,7 +6,7 @@
 /*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/03 17:30:40 by jceia             #+#    #+#             */
-/*   Updated: 2022/03/09 01:58:14 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/03/09 18:53:37 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,8 @@ public:
     virtual ~HTTPServer();
 
 protected:
-    void _handle_client_request(TCPConnection* connection);
+    int _handle_client_recv(TCPConnection* connection);
+    int _handle_client_send(TCPConnection* connection);
 
 private:
     HTTPResponse _not_found_response();

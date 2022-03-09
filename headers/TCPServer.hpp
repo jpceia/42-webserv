@@ -6,7 +6,7 @@
 /*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/07 14:23:33 by jceia             #+#    #+#             */
-/*   Updated: 2022/03/09 02:39:37 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/03/09 18:51:23 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,8 @@ public:
     };
 
 protected:
-    virtual void _handle_client_request(TCPConnection* connection) = 0;
+    virtual int _handle_client_send(TCPConnection* connection) = 0; // return event to set in pollfd
+    virtual int _handle_client_recv(TCPConnection* connection) = 0; // return event to set in pollfd
     virtual void _close_connection(TCPConnection* connection);
     virtual void _close_listener(TCPListener* listener);
     connections_t::iterator _find_connection(int fd);
@@ -70,7 +71,7 @@ private:
         }
     }
 
-    void _handle_revent(int fd, int revevents);
+    void _handle_revent(int fd, short &events, short revevents);
     void _close_fd(int fd);
 
     // Not copiable

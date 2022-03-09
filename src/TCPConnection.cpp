@@ -6,7 +6,7 @@
 /*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/23 03:04:11 by jpceia            #+#    #+#             */
-/*   Updated: 2022/03/09 02:21:23 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/03/09 16:58:36 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,16 +51,14 @@ TCPConnection& TCPConnection::operator=(const TCPConnection& rhs)
     return *this;
 }
 
-void TCPConnection::send(const std::string& msg) const
+void TCPConnection::send(std::string& msg) const
 {
-    size_t pos = 0;
-    while (pos < msg.size())
-    {
-        int n = ::send(_sock, msg.c_str() + pos, msg.size() - pos, 0);
-        if (n < 0)
-            throw TCPConnection::SendException();
-        pos += n;
-    }
+    int n = ::send(_sock, msg.c_str(), msg.size(), 0);
+    if (n < 0)
+        throw TCPConnection::SendException();
+    if (n == 0)
+        throw TCPConnection::DisconnectedException();
+    msg = msg.substr(n);
 }
 
 std::string TCPConnection::recv() const
@@ -113,7 +111,7 @@ const char* TCPConnection::ReadException::what() const throw()
     return "Could not read from socket";
 }
 
-const char* TCPConnection::EmptyMessageException::what() const throw()
+const char* TCPConnection::DisconnectedException::what() const throw()
 {
-    return "Received empty message";
+    return "Disconnected";
 }

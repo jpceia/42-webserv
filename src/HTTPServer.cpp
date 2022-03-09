@@ -15,12 +15,15 @@
 # include "HTTPRequest.hpp"
 # include "HTTPResponse.hpp"
 # include "HTTPConnection.hpp"
+# include "HTTPStatefulConnection.hpp"
 # include <iostream>
 # include <fstream>
 # include <sstream>
 # include <vector>
 # include <algorithm>
+# include <sys/poll.h>
 # include "utils.hpp"
+
 
 HTTPServer::HTTPServer(int timeout) :
     TCPServer(timeout),
@@ -42,26 +45,45 @@ HTTPServer::~HTTPServer()
 {
 }
 
-void HTTPServer::_handle_client_request(TCPConnection* connection)
+int HTTPServer::_handle_client_recv(TCPConnection* connection)
 {
-    HTTPConnection* http_conn = dynamic_cast<HTTPConnection*>(connection);
-    if (http_conn == NULL)
+    HTTPStatefulConnection* conn = dynamic_cast<HTTPStatefulConnection*>(connection);
+    if (conn == NULL)
         throw std::runtime_error("HTTPServer::_handle_client_request: dynamic_cast failed");
-    // Read and parse the request
-    HTTPRequest request = http_conn->fetchRequest();
-    std::cout << request << std::endl;
 
-    // Construct the context
-    Context ctx;
-    ctx.server_addr = connection->getServerIP();
-    ctx.client_addr = connection->getClientIP();
-    ctx.server_port = connection->getServerPort();
-    ctx.client_port = connection->getClientPort();
+    bool finished = conn->recvChunk();
+    if (finished) // Finished receiving the request
+    {
+        // Construct the context
+        Context ctx;
+        ctx.server_addr = connection->getServerIP();
+        ctx.client_addr = connection->getClientIP();
+        ctx.server_port = connection->getServerPort();
+        ctx.client_port = connection->getClientPort();
 
-    // Build the response
-    http_conn->sendResponse(_build_response(request, ctx));
-    if (request.getHeader("Connection") != "keep-alive") // close connection
-        _close_connection(connection);
+        // build the response
+        HTTPResponse response = _build_response(conn->getRequest(), ctx);
+        conn->setResponse(response);
+        return POLLOUT;
+    }
+    return POLLIN;
+}
+
+int HTTPServer::_handle_client_send(TCPConnection* connection)
+{
+    HTTPStatefulConnection* conn = dynamic_cast<HTTPStatefulConnection*>(connection);
+    if (conn == NULL)
+        throw std::runtime_error("HTTPServer::_handle_client_request: dynamic_cast failed");
+
+    bool finished = conn->sendChuck();
+    if (finished)
+    {
+        if (conn->getRequest().getHeader("Connection") != "keep-alive") // close connection
+            _close_connection(connection);
+        conn->clear();  // Clear the buffers
+        return POLLIN;
+    }
+    return POLLOUT;
 }
 
 HTTPResponse HTTPServer::_build_response(const HTTPRequest& request, Context& ctx)

@@ -90,14 +90,14 @@ void TCPServer::run()
 
 void TCPServer::_close_connection(const TCPConnection& connection)
 {
-    _connections.erase(connection);
     _close_fd(connection.getSock());
+    _connections.erase(connection);
 }
 
 void TCPServer::_close_listener(const TCPListener& listener)
 {
-    _listeners.erase(listener);
     _close_fd(listener.getSock());
+    _listeners.erase(listener);
 }
 
 /**

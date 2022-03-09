@@ -6,7 +6,7 @@
 /*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/23 02:51:42 by jpceia            #+#    #+#             */
-/*   Updated: 2022/03/08 23:34:00 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/03/09 00:01:30 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -108,11 +108,17 @@ void TCPServer::_handle_revent(int fd, int revents)
     std::cout << "Handling revents for fd " << fd << std::endl;
     if(revents & POLLHUP)
     {
-        std::cerr << "  Error: revents = " << revents << std::endl;
-        _close_fd(fd);
-        throw TCPServer::PollHungUpException();
+        std::cerr << "Poll Hung Up" << std::endl;
+        connections_t::const_iterator it = _connections.find(TCPConnection(fd));
+        if (it == _connections.end())
+        {
+            std::cerr << "Connection not found" << std::endl;
+            _close_fd(fd);
+            return ;
+        }
+        _close_connection(*it);
     }
-    std::set<TCPListener, TCPListener::socket_compare>::iterator it = _listeners.find(TCPListener(fd));
+    listeners_t::const_iterator it = _listeners.find(TCPListener(fd));
     if (it != _listeners.end())
     {
         TCPConnection connection = it->accept();
@@ -121,12 +127,11 @@ void TCPServer::_handle_revent(int fd, int revents)
     }
     else  // Not the listener socket, but an accepted (connected) socket. _fds[ >0].
     {   
-        std::set<TCPConnection, TCPConnection::socket_compare>::iterator it = \
-            _connections.find(TCPConnection(fd));
+        connections_t::const_iterator it = _connections.find(TCPConnection(fd));
         if (it == _connections.end())
         {
             std::cerr << "Connection not found" << std::endl;
-            _close_fd(fd);
+            _close_fd(fd); // remove fd from pollfd vector
             return ;
         }
         try

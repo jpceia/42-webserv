@@ -6,7 +6,7 @@
 /*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/07 14:23:33 by jceia             #+#    #+#             */
-/*   Updated: 2022/03/08 23:27:30 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/03/08 23:52:18 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,9 @@
 class TCPServer
 {
 public:
+    typedef std::set<TCPConnection, TCPConnection::socket_compare>  connections_t;
+    typedef std::set<TCPListener, TCPListener::socket_compare>      listeners_t;
+
     TCPServer(int timeout);
     virtual ~TCPServer();
 
@@ -43,10 +46,10 @@ protected:
     virtual void _handle_client_request(const TCPConnection& connection) = 0;
     virtual void _close_connection(const TCPConnection& connection);
     virtual void _close_listener(const TCPListener& listener);
-        
+
     // Private attributes
-    std::set<TCPListener, TCPListener::socket_compare>      _listeners;
-    std::set<TCPConnection, TCPConnection::socket_compare>  _connections;
+    listeners_t     _listeners;
+    connections_t   _connections;
 
 private:
 

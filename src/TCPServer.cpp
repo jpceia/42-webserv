@@ -6,7 +6,7 @@
 /*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/23 02:51:42 by jpceia            #+#    #+#             */
-/*   Updated: 2022/03/09 20:58:56 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/03/09 21:10:36 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -111,33 +111,10 @@ void TCPServer::_close_listener(TCPListener* listener)
 void TCPServer::_handle_revent(int fd, short &events, short revents)
 {
     std::cout << "Handling revents for fd " << fd << std::endl;
-    
+
     listeners_t::const_iterator it = _find_listener(fd);
     if (it != _listeners.end()) // the fd is from a listener
-    {
-        if (revents & POLLIN)
-        {
-            std::cout << "POLLIN" << std::endl;
-            TCPConnection* connection = (*it)->accept();
-            _fds.push_back(create_pollfd(connection->getSock(), POLLIN));
-            _connections.insert(connection);
-        }
-        else if (revents & POLLERR)
-        {
-            std::cerr << "POLLERR" << std::endl;
-            _close_listener(*it);
-        }
-        else if (revents & POLLHUP)
-        {
-            std::cerr << "POLLHUP" << std::endl;
-            _close_listener(*it);
-        }
-        else
-        {
-            std::cerr << "Unexpected revents for listener:" << revents << std::endl;
-            _close_listener(*it);
-        }
-    }
+        _handle_listener_revent(*it, revents);
     else  // Not the listener socket, but an accepted (connected) socket. _fds[ >0].
     {
         connections_t::const_iterator it = _find_connection(fd);
@@ -149,42 +126,73 @@ void TCPServer::_handle_revent(int fd, short &events, short revents)
         }
         try
         {
-            if (revents & POLLIN)
-            {
-                std::cout << "POLLIN" << std::endl;
-                events = _handle_client_recv(*it);
-            }
-            else if (revents & POLLOUT)
-            {
-                std::cout << "POLLOUT" << std::endl;
-                events = _handle_client_send(*it);
-            }
-            else if (revents & POLLHUP)
-            {
-                std::cerr << "POLLHUP" << std::endl;
-                _close_connection(*it);
-            }
-            else if (revents & POLLERR)
-            {
-                std::cerr << "POLLERR" << std::endl;
-                _close_connection(*it);
-            }
-            else if (revents & POLLNVAL)
-            {
-                std::cerr << "POLLNVAL" << std::endl;
-                _close_connection(*it);
-            }
-            else
-            {
-                std::cerr << "Unknown revents for connection: " << revents << std::endl;
-                _close_connection(*it);
-            }
+            _handle_connection_revent(*it, events, revents);
         }
         catch (const TCPConnection::ConnectionException& e)
         {
             std::cerr << e.what() << std::endl;
             _close_connection(*it);
         }
+    }
+}
+
+void TCPServer::_handle_listener_revent(TCPListener* listener, short revents)
+{
+    if (revents & POLLIN)
+    {
+        std::cout << "POLLIN" << std::endl;
+        TCPConnection* connection = listener->accept();
+        _fds.push_back(create_pollfd(connection->getSock(), POLLIN));
+        _connections.insert(connection);
+    }
+    else if (revents & POLLERR)
+    {
+        std::cerr << "POLLERR" << std::endl;
+        _close_listener(listener);
+    }
+    else if (revents & POLLHUP)
+    {
+        std::cerr << "POLLHUP" << std::endl;
+        _close_listener(listener);
+    }
+    else
+    {
+        std::cerr << "Unexpected revents for listener:" << revents << std::endl;
+        _close_listener(listener);
+    }
+}
+
+void TCPServer::_handle_connection_revent(TCPConnection* connection, short& events, short revents)
+{
+    if (revents & POLLIN)
+    {
+        std::cout << "POLLIN" << std::endl;
+        events = _handle_client_recv(connection);
+    }
+    else if (revents & POLLOUT)
+    {
+        std::cout << "POLLOUT" << std::endl;
+        events = _handle_client_send(connection);
+    }
+    else if (revents & POLLHUP)
+    {
+        std::cerr << "POLLHUP" << std::endl;
+        _close_connection(connection);
+    }
+    else if (revents & POLLERR)
+    {
+        std::cerr << "POLLERR" << std::endl;
+        _close_connection(connection);
+    }
+    else if (revents & POLLNVAL)
+    {
+        std::cerr << "POLLNVAL" << std::endl;
+        _close_connection(connection);
+    }
+    else
+    {
+        std::cerr << "Unknown revents for connection: " << revents << std::endl;
+        _close_connection(connection);
     }
 }
 

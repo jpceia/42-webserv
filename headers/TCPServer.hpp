@@ -6,7 +6,7 @@
 /*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/07 14:23:33 by jceia             #+#    #+#             */
-/*   Updated: 2022/03/09 18:51:23 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/03/09 21:08:49 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,6 +72,8 @@ private:
     }
 
     void _handle_revent(int fd, short &events, short revevents);
+    void _handle_listener_revent(TCPListener* listener, short revents);
+    void _handle_connection_revent(TCPConnection* connection, short &events, short revents);
     void _close_fd(int fd);
 
     // Not copiable

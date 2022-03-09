@@ -46,6 +46,11 @@ HTTPRequestParser& HTTPRequestParser::operator=(const HTTPRequestParser& rhs)
     return *this;
 }
 
+ParseState HTTPRequestParser::getState() const
+{
+    return _state;
+}
+
 ParseState HTTPRequestParser::parse(const std::string& s = "")
 {
     _buf += s;  // append last received chunk to buffer

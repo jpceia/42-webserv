@@ -6,7 +6,7 @@
 /*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/23 03:04:11 by jpceia            #+#    #+#             */
-/*   Updated: 2022/03/09 02:15:12 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/03/09 02:25:58 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,6 +39,12 @@ public:
         {
             return lhs._sock < rhs._sock;
         }
+
+        bool operator()(const TCPConnection* lhs, const TCPConnection* rhs) const
+        {
+            return lhs->_sock < rhs->_sock;
+        }
+
     private:
         friend class TCPConnection;
     };

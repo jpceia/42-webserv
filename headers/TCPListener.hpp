@@ -21,6 +21,12 @@ public:
         {
             return lhs._sock < rhs._sock;
         }
+
+        bool operator()(const TCPListener* lhs, const TCPListener* rhs) const
+        {
+            return lhs->_sock < rhs->_sock;
+        }
+
     private:
         friend class TCPListener;
     };
@@ -31,7 +37,7 @@ public:
     TCPListener& operator=(const TCPListener& rhs);
     virtual ~TCPListener();
 
-    TCPConnection accept() const;
+    virtual TCPConnection* accept() const;
 
     int getSock() const;
 
@@ -58,6 +64,9 @@ public:
         public:
             virtual const char* what(void) const throw();
     };
+
+protected:
+    TCPConnectionArgs _accept() const;
 
 private:
 

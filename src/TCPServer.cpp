@@ -6,7 +6,7 @@
 /*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/23 02:51:42 by jpceia            #+#    #+#             */
-/*   Updated: 2022/03/09 21:10:36 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/03/09 21:21:35 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,26 +66,16 @@ void TCPServer::run()
         while (true)
         {
             std::cout << "Waiting on poll()..." << std::endl;
-            //printPollFds();
-            //std::cout << " -----------------------------------------" << std::endl;
-
             int poll_ret = poll(&_fds[0], _fds.size(), _timeout);
-            if (poll_ret < 0)  // poll failed
-                throw std::runtime_error("Pool exception"); //TCPServer::PollException();
-            if (poll_ret == 0) // timeout failed
-                throw std::runtime_error("Timeout exception"); //TCPServer::TimeoutException();
+            if (poll_ret < 0)
+                throw std::runtime_error("Pool exception");
+            if (poll_ret == 0)
+                throw std::runtime_error("Timeout exception");
 
-            try
-            {
-                std::vector<struct pollfd>::iterator it = _fds.begin();
-                for (;it != _fds.end() && !it->revents; ++it) ; // find the first ready fd
-                if (it != _fds.end())  // If there's no activity skip _fds;
-                    _handle_revent(it->fd, it->events, it->revents);
-            }
-            catch (TCPServer::PollHungUpException& e)
-            {
-                std::cerr << e.what() << std::endl;
-            }
+            std::vector<struct pollfd>::iterator it = _fds.begin();
+            for (;it != _fds.end() && !it->revents; ++it) ; // find the first ready fd
+            if (it != _fds.end())  // If there's no activity skip _fds;
+                _handle_revent(it->fd, it->events, it->revents);
         }   /* End of loop through pollable descriptors */
     }
     catch(const std::exception& e)
@@ -115,7 +105,7 @@ void TCPServer::_handle_revent(int fd, short &events, short revents)
     listeners_t::const_iterator it = _find_listener(fd);
     if (it != _listeners.end()) // the fd is from a listener
         _handle_listener_revent(*it, revents);
-    else  // Not the listener socket, but an accepted (connected) socket. _fds[ >0].
+    else  
     {
         connections_t::const_iterator it = _find_connection(fd);
         if (it == _connections.end())
@@ -124,6 +114,7 @@ void TCPServer::_handle_revent(int fd, short &events, short revents)
             _close_fd(fd); // remove fd from pollfd vector
             return ;
         }
+        // Not the listener socket, but an accepted (connected) socket. _fds[ >0].
         try
         {
             _handle_connection_revent(*it, events, revents);
@@ -235,9 +226,4 @@ void TCPServer::_close_fd(int fd)
     _fds.erase(it);
     // *it = _fds.back();
     //_fds.pop_back();
-}
-
-const char* TCPServer::PollHungUpException::what(void) const throw()
-{
-    return "Poll hung up";
 }

@@ -36,12 +36,6 @@ public:
     void add_listener(TCPListener* listener);
     void run();
 
-    class PollHungUpException : public std::exception
-    {
-        public:
-            virtual const char* what(void) const throw();
-    };
-
 protected:
     virtual int _handle_client_send(TCPConnection* connection) = 0; // return event to set in pollfd
     virtual int _handle_client_recv(TCPConnection* connection) = 0; // return event to set in pollfd

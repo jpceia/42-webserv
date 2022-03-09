@@ -118,3 +118,10 @@ void HTTPRequestParser::addHeader(const std::string& key, const std::string& val
     if (key == "Content-Length")
         _content_length = ft_stoi(value);
 }
+
+void HTTPRequestParser::clear()
+{
+    _state = PARSE_START;
+    _buf.clear();
+    _content_length = 0;
+}

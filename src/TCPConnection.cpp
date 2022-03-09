@@ -6,7 +6,7 @@
 /*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/23 03:04:11 by jpceia            #+#    #+#             */
-/*   Updated: 2022/03/08 23:38:56 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/03/09 02:21:23 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,12 +20,10 @@ TCPConnection::TCPConnection(int sock) :
         throw std::runtime_error("Invalid file descriptor");
 }
 
-TCPConnection::TCPConnection(int sock,
-    const struct sockaddr_in& server_addr,
-    const struct sockaddr_in& client_addr) :
-    _sock(sock),
-    _server_addr(server_addr),
-    _client_addr(client_addr)
+TCPConnection::TCPConnection(const TCPConnectionArgs& args) :
+    _sock(args.sock),
+    _server_addr(args.server_addr),
+    _client_addr(args.client_addr)
 {
     if (_sock < 0)
         throw std::runtime_error("Invalid file descriptor");

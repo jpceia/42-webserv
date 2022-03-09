@@ -6,7 +6,7 @@
 /*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/23 03:04:11 by jpceia            #+#    #+#             */
-/*   Updated: 2022/03/09 01:18:05 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/03/09 02:15:12 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,13 @@
 # include <map>
 
 # define BUFF_SIZE 2048
+
+struct TCPConnectionArgs
+{
+    int sock;
+    struct sockaddr_in server_addr;
+    struct sockaddr_in client_addr;
+};
 
 class TCPConnection
 {
@@ -37,7 +44,7 @@ public:
     };
 
     TCPConnection(int sock);
-    TCPConnection(int sock, const struct sockaddr_in& server_addr, const struct sockaddr_in& client_addr);
+    TCPConnection(const TCPConnectionArgs& args);
     TCPConnection(const TCPConnection& rhs);
 
     virtual ~TCPConnection();

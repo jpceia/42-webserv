@@ -1,11 +1,16 @@
-#pragma once
+#ifndef CONFIGFILE_HPP
+# define CONFIGFILE_HPP
 
 #include <iostream>
-#include <fstream>
-#include <string>
 #include <vector>
 #include <map>
-#include "serverBlock.hpp"
+#include <list>
+#include <stdlib.h>
+#include <stdexcept>
+#include "configFileTreatment.hpp"
+#include "configServerBlock.hpp"
+
+#define DEBUG 1
 
 class configFile
 {
@@ -13,100 +18,64 @@ class configFile
         /****************/
         /* Constructors */
         /****************/
-        configFile(char *configuration_file) 
+        configFile(char *configuration_file)
         {
             /*****************************************************************/
             /* Pass the configuration file to string _configuration_file_raw */
             /*****************************************************************/
-            std::string line;
-            std::ifstream config_file(configuration_file); 
+            std::string					line;
+			std::string					configuration_file_raw;
+            std::ifstream				config_file(configuration_file);
             if (config_file.is_open())
             {
                 while (getline(config_file, line))
                 {
-                    _configuration_file_raw += line;
-                    _configuration_file_raw += "\n";
+                    configuration_file_raw += line;
+                    configuration_file_raw += "\n";
                 }
                 config_file.close();
             }
             else
-            {                
-                std::cout << "Configuration File not found or Invalid (Except Error Here) !" << std::endl;
+            {
+				throw std::runtime_error("configFile.hpp exception: configuration file not found or invalid");
             }
 
-            /***********************************/
-            /* Fill all default configurations */
-            /***********************************/
-            fillDefaultConfigurations();
+			if (configuration_file_raw.empty())
+			{
+				throw std::runtime_error("configFile.hpp exception: configuration file is empty");
+			}
 
-            /*************************************************************************/
-            /* Fill _server_blocks.                                                  */
-            /* Server blocks objects will have all the server_blocks already filled. */
-            /* With their listen, server_name, location... all filled.               */ 
-            /*************************************************************************/
-            serverBlock server_block(_configuration_file_raw);
-            server_block.fillServerBlocks();
+			/************************************************************/
+            /* Treat the configuration file by removing # comments,		*/
+			/* unnecessary spaces and tabs.								*/
+			/* Check cases that have ; in same line.					*/
+			/* If server blocks and locations have correct brackets.	*/
+			/* If location blocks are within server blocks.				*/
+			/* Putting on _configuration_file_treated.					*/
+			/* Finally separating them in Server Blocks to				*/
+			/* _server_blocks											*/
+			/************************************************************/
+			configFileTreatment treatment_obj(configuration_file_raw);
+
+			treatment_obj.treatConfigurationFile();
+			treatment_obj.separateToServerBlocks();
+			_server_blocks = treatment_obj.getServerBlocks();
+
+			if (DEBUG == 1)
+				treatment_obj.printServerBlocks();
+				//treatment_obj.printConfigurationFileTreated();
 
         };
+
         ~configFile()
         {};
-
-        void    fillDefaultConfigurations()
-        {
-            _listen_default.push_back("0.0.0.0:80");
-            _server_name_default.push_back("");
-            _error_page_default.push_back("");
-            _client_max_body_size_default.push_back("1m");
-            _root_default.push_back("./www/");            // These needs to be checked
-            _index_default.push_back("./www/index.html"); // These needs to be checked
-            _auto_index_default.push_back("off");
-
-            _methods_default.push_back("GET");
-            _redirect_default.push_back("");
-            _cgi_default.push_back("");
-            _upload_default.push_back("off");
-        };
-
-        /********************/
-        /* Helper Functions */
-        /********************/
-        void    printConfigurationFileRawException()
-        {
-            std::cout << _configuration_file_raw;
-        };
 
     private:
         /********/
         /* Data */
         /********/
-        std::string                 _configuration_file_raw;
-
-        /**********/
-        /* Blocks */
-        /**********/
-        std::vector<serverBlock>    _server_blocks;
-
-        /******************/
-        /* Configurations */
-        /******************/
-        std::vector<std::string>    _listen_default;
-        std::vector<std::string>    _server_name_default;
-        std::vector<std::string>    _error_page_default;
-        std::vector<std::string>    _client_max_body_size_default;
-        std::vector<std::string>    _root_default;
-        std::vector<std::string>    _index_default;
-        std::vector<std::string>    _auto_index_default;
-
-        std::vector<std::string>    _methods_default;
-        std::vector<std::string>    _redirect_default;
-        std::vector<std::string>    _cgi_default;
-        std::vector<std::string>    _upload_default;
+        std::list<std::vector<std::string> >	_server_blocks; // This list contains the
+																// server blocks.
 };
 
-/*
-server 
-{
-	listen 127.0.0.1:8080;
-	server_name localhost;
-}
-*/
+#endif

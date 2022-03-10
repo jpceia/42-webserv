@@ -480,6 +480,22 @@ https://medium.com/from-the-scratch/http-server-what-do-you-need-to-know-to-buil
 		}
 	}
 
+### Testing Configuration File
+
+	First you’ll want to figure out where nginx is located, which you can always do
+	with a quick ps -ef | grep nginx.
+
+	On Ubuntu is at "/usr/sbin/nginx".
+
+	Then you simple do:
+		"sudo /usr/sbin/nginx -t"
+
+	Then you can change /etc/nginx/sites-enabled/default accordingly to see if it
+	works with your changes.
+
+	For changes to take effect you have to type "sudo /etc/init.d/nginx reload"
+
+
 # Subjects Configuration File
 
 ### What it accepts
@@ -524,15 +540,21 @@ https://medium.com/from-the-scratch/http-server-what-do-you-need-to-know-to-buil
         index index.html;
     - auto-index
         autoindex off;
-    
+
     - methods
         methods GET;
-    - redirect 
+    - redirect
         redirect { -- }
     - cgi
         cgi { -- }
     - upload
         off
+
+### Rules
+
+	Server Blocks:
+		There can be more than one server block.
+		Server blocks can be empty.
 
 
 

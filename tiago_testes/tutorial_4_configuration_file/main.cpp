@@ -10,9 +10,12 @@ int main(int argc, char **argv)
         return (1);
     }
 
-
-    configFile  configObj(argv[1]);    
-    //configObj.printConfigurationFileRawException();   
-
- 
+	try
+	{
+		configFile  config_obj(argv[1]);
+	}
+	catch(const std::exception& e)
+	{
+		std::cerr << e.what() << std::endl;
+	}
 }

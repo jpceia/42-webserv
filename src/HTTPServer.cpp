@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   HTTPServer.cpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jceia <jceia@student.42.fr>                +#+  +:+       +#+        */
+/*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/03 17:30:40 by jceia             #+#    #+#             */
-/*   Updated: 2022/03/07 17:53:35 by jceia            ###   ########.fr       */
+/*   Updated: 2022/03/11 20:01:33 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -132,7 +132,7 @@ HTTPResponse HTTPServer::_build_cgi_response(const HTTPRequest& request, const C
     env["CONTENT_TYPE"] = request.getHeader("Content-Type");
     env["DOCUMENT_ROOT"] = _root;
     env["GATEWAY_INTERFACE"] = "CGI/1.1";
-    env["PATH_INFO"] = request.getUrl();
+    env["PATH_INFO"] = request.getPath();
 
     // HTTP info
     env["HTTP_ACCEPT"] = request.getHeader("Accept");

@@ -495,10 +495,25 @@ https://medium.com/from-the-scratch/http-server-what-do-you-need-to-know-to-buil
 
 	For changes to take effect you have to type "sudo /etc/init.d/nginx reload"
 
+### Basics of NGINX Configuration
+
+	NGINX configuration file uses an inheriting hierarchy, directives specified in
+	a higher block will filter down	to lower blocks as a default value, from this
+	follows that we want to specify	things in the top most hierarchy whenever possible.
+	Since directives in top	blocks filter down as default values it is still possible
+	to override them in most cases.
+	This means if in the server block it has a "root var/www", the location block
+	can override that value.
+
+
+
+	https://blog.martinfjordvald.com/nginx-primer/
+
+
 
 # Subjects Configuration File
 
-### What it accepts
+### Which Directives
 
 	If the server block is missing, then the configuration file is invalid.
 	You can have more than one server block in the configuration file.
@@ -514,11 +529,11 @@ https://medium.com/from-the-scratch/http-server-what-do-you-need-to-know-to-buil
 		- root ( http://nginx.org/en/docs/http/ngx_http_core_module.html#root )
 		- index ( http://nginx.org/en/docs/http/ngx_http_index_module.html#index )
 		- auto-index ( http://nginx.org/en/docs/http/ngx_http_autoindex_module.html#autoindex )
+		- return ( http://nginx.org/en/docs/http/ngx_http_rewrite_module.html#return )
 
 	Not Built-in:
 
 		- methods ( GET, POST, DELETE )
-		- redirect ( first arg a 300 status code, second arg the path to redirect )
 		- cgi
 		- upload ( bool if it accepted or not, and the path )
 
@@ -540,28 +555,136 @@ https://medium.com/from-the-scratch/http-server-what-do-you-need-to-know-to-buil
         index index.html;
     - auto-index
         autoindex off;
+    - return
+        return { -- }
 
     - methods
         methods GET;
-    - redirect
-        redirect { -- }
     - cgi
         cgi { -- }
     - upload
         off
 
-### Rules
+### Cases
 
-	Server Blocks:
-		There can be more than one server block.
-		Server blocks can be empty.
+	Directives:
 
+		Can not be left blank.
+		listen			;   # invalid
+		server_name     ;   # invalid
 
+		listen		  80;   # valid
+		server_name  hey;   # valid
 
+	Server Block:
 
-	// https://github-com.translate.goog/GuDimz/Webserver?_x_tr_sl=auto&_x_tr_tl=en&_x_tr_hl=pt-PT&_x_tr_pto=wapp
+		- If two or more Server Blocks share the same IP and PORT, the first one
+		  should be the default.
+		- If two or more Server Blocks share the same IP and PORT, to call the
+		  corresponding one you should send a "host : "value"" header. The
+		  corresponding server_name will be picked.
 
-	// https://github.com/tvacherat/42_webserv
+	listen:
+
+		A server block with no listen directive uses the value 0.0.0.0:80.
+		A listen set to an IP address 111.111.111.111 with no port becomes 111.111.111.111:80
+		A listen set to port 8888 with no IP address becomes 0.0.0.0:8888
+
+		Can have multiple different listens.
+
+		Can not have duplicated listens.
+		Can not have listen on location block.
+		Can not have listen with extra arguments besides IP and PORT.
+
+	server_name:
+
+		A server block with no server_name directive uses the value "".
+
+		Can have more than one argument "server_name	one two three;"
+		Can have multiple server_name, even duplicated.
+
+		Can not have server_name on location block.
+
+	error_page:
+
+		Can be on the server block and location block.
+
+		It can be duplicated even with same values.
+
+		It has to have more than 1 argument.
+		The last argument is the path to the error page.
+		The first arguments have to be values between 300 and 599.
+
+	client_max_body_size:
+
+		Can be on the server block and location block.
+
+		Setting it to 0 disables checking for client request body size.
+
+		Can have values such as
+		10k 10K		= 10 * (1024)					kbytes
+		6m 6M		= 10 * (1024 * 1024)			mbytes
+		200g 200G	= 10 * (1024 * 1024 * 1024)		gbytes
+
+		Can not have a negative number.
+		Can not have more than one argument.
+		Can not have multiple client_max_body_size.
+
+	root:
+
+		Can be on the server block and location block.
+
+		Can not have more than one argument.
+		Can not have multiple root.
+
+	index:
+
+		Can be on the server block and location block.
+
+		Can have more than one argument.
+		Can have multiple index.
+		Can have duplicated index.
+
+	autoindex:
+
+		Can be on the server block and location block.
+
+		Can only be 'on' or 'off'.
+
+		Can not have multiple autoindex.
+		Can not have more than one argument.
+
+	return:
+
+		Can be on the server block and location block. (We only want on the location due
+		to the subject).
+
+		Can be one argument (if it's an url starting with http://).
+		Can be more than one argument, first argument is a status code, second is an url.
+
+	methods:
+
+		Can only be on the location block.
+		Can only be 'GET', 'POST' or 'DELETE'.
+
+		Can not have multiple methods.
+
+	cgi:
+
+		Can only be on the location block.
+
+		Needs to have 2 arguments.
+		First argument extension (.php), second argument file.
+
+		Can not have multiple cgi.
+
+	upload:
+
+		Can only be on the location block.
+
+		Can only have one argument.
+
+		Can not have multiple upload.
 
 
 # Research:

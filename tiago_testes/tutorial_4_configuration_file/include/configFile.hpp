@@ -61,9 +61,41 @@ class configFile
 			treatment_obj.separateToServerBlocks();
 			_server_blocks = treatment_obj.getServerBlocks();
 
-			if (DEBUG == 1)
+			/*if (DEBUG == 1)
+			{
 				treatment_obj.printServerBlocks();
 				//treatment_obj.printConfigurationFileTreated();
+			}*/
+
+			/************************************************************/
+			/* We now have server blocks separated in vectors<string>.  */
+			/* Now we make an object (configServerBlock) for each of	*/
+			/* the server blocks. These configServerBlock objects have  */
+			/* all the informations of the server blocks.				*/
+			/* Aftewards it will be pushed back to _server_blocks_obj.  */
+			/************************************************************/
+
+			std::list<std::vector<std::string> >::iterator it(_server_blocks.begin());
+
+			for (; it != _server_blocks.end(); it++)
+			{
+				configServerBlock server_block_obj(*it);
+				server_block_obj.fillBlocks();
+
+				// You have to keep it looping, but for tests, let's do one only first.
+				break ;
+			}
+
+
+
+
+
+			/************************************************************/
+			/* We check on all the _server_blocks_obj if we have        */
+			/* repeated ports or other things that invalidate the		*/
+			/* configuration file.										*/
+			/************************************************************/
+
 
         };
 
@@ -76,6 +108,11 @@ class configFile
         /********/
         std::list<std::vector<std::string> >	_server_blocks; // This list contains the
 																// server blocks.
+
+		std::vector<configServerBlock>			_server_blocks_obj; // This vector contains
+																	// all the server blocks
+																	// treated (with IP, PORT,
+																	// Root, Index...)
 };
 
 #endif

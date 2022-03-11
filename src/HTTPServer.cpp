@@ -6,7 +6,7 @@
 /*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/03 17:30:40 by jceia             #+#    #+#             */
-/*   Updated: 2022/03/09 16:29:49 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/03/11 19:59:03 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -156,7 +156,7 @@ HTTPResponse HTTPServer::_build_cgi_response(const HTTPRequest& request, const C
     env["CONTENT_TYPE"] = request.getHeader("Content-Type");
     env["DOCUMENT_ROOT"] = _root;
     env["GATEWAY_INTERFACE"] = "CGI/1.1";
-    env["PATH_INFO"] = request.getUrl();
+    env["PATH_INFO"] = request.getPath();
 
     // HTTP info
     env["HTTP_ACCEPT"] = request.getHeader("Accept");

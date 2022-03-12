@@ -662,6 +662,8 @@ https://medium.com/from-the-scratch/http-server-what-do-you-need-to-know-to-buil
 		Can be one argument (if it's an url starting with “http://”, “https://”).
 		Can be more than one argument, first argument is a status code, second is an url.
 
+		Can't have more than 2 arguments.
+
 	methods:
 
 		Can only be on the location block.

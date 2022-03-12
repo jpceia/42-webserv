@@ -254,6 +254,23 @@ class configServerBlock : public configDefaults
 					std::cout << "  { " << *_location_blocks[i].getAutoindex().begin() << " }" << std::endl;
 				}
 
+				/**********************************/
+				/*			  return              */
+				/**********************************/
+				if (!_location_blocks[i].getRedirectPath().empty() ||
+					!_location_blocks[i].getRedirectStatus().empty())
+				{
+					std::cout << "  Return:		   ";
+					if (!_location_blocks[i].getRedirectStatus().empty())
+					{
+						std::cout << "  { " << *_location_blocks[i].getRedirectStatus().begin() << " "
+											<< *_location_blocks[i].getRedirectPath().begin() << " }" << std::endl;
+					}
+					else if (!_location_blocks[i].getRedirectPath().empty())
+					{
+						std::cout << "  { " << *_location_blocks[i].getRedirectPath().begin() << " }" << std::endl;
+					}
+				}
 			}
 		}
 
@@ -317,7 +334,7 @@ class configServerBlock : public configDefaults
 				else if (!subs.compare("autoindex"))
 					_location_blocks[_location_blocks_count - 1].autoindexDirectiveTreatment(line);
 				else if (!subs.compare("return"))
-				{}
+					_location_blocks[_location_blocks_count - 1].returnDirectiveTreatment(line);
 				else if (!subs.compare("methods"))
 				{}
 				else if (!subs.compare("cgi"))
@@ -821,11 +838,6 @@ class configServerBlock : public configDefaults
         std::vector<std::string>    _root;
         std::vector<std::string>    _index;
         std::vector<std::string>    _auto_index;
-
-        std::vector<std::string>    _methods;
-        std::vector<std::string>    _redirect;
-        std::vector<std::string>    _cgi;
-        std::vector<std::string>    _upload;
 };
 
 #endif

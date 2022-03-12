@@ -72,12 +72,12 @@ class configLocationBlock : public configDefaults
 
 			if (number_of_words == 2 && !word.compare(";"))
 			{
-				throw std::runtime_error("configServerBlock.hpp exception: error_page has no arguments");
+				throw std::runtime_error("configLocationBlock.hpp exception: error_page has no arguments");
 			}
 
 			if (number_of_words < 3)
 			{
-				throw std::runtime_error("configServerBlock.hpp exception: error_page has wrong number of args");
+				throw std::runtime_error("configLocationBlock.hpp exception: error_page has wrong number of args");
 			}
 
 			/*****************************************************************/
@@ -107,14 +107,14 @@ class configLocationBlock : public configDefaults
 				{
 					if ((word.find_first_not_of("0123456789") == std::string::npos) == false)
 					{
-						throw std::runtime_error("configServerBlock.hpp exception: error_page has invalid status code");
+						throw std::runtime_error("configLocationBlock.hpp exception: error_page has invalid status code");
 					}
 					else
 					{
 						int status_code = atoi(word.c_str());
 						if (status_code < 300 || status_code > 599)
 						{
-							throw std::runtime_error("configServerBlock.hpp exception: error_page has invalid range status code");
+							throw std::runtime_error("configLocationBlock.hpp exception: error_page has invalid range status code");
 						}
 						else
 						{
@@ -155,11 +155,11 @@ class configLocationBlock : public configDefaults
 				}
 				if (number_of_words == 1 && !word.compare(";"))
 				{
-					throw std::runtime_error("configServerBlock.hpp exception: client_max_body_size has no arguments");
+					throw std::runtime_error("configLocationBlock.hpp exception: client_max_body_size has no arguments");
 				}
 				if (number_of_words > 1)
 				{
-					throw std::runtime_error("configServerBlock.hpp exception: client_max_body_size has too many arguments");
+					throw std::runtime_error("configLocationBlock.hpp exception: client_max_body_size has too many arguments");
 				}
 				if (*word.rbegin() == ';')
 				{
@@ -174,7 +174,7 @@ class configLocationBlock : public configDefaults
 				}
 				if ((word.find_first_not_of("0123456789") == std::string::npos) == false)
 				{
-					throw std::runtime_error("configServerBlock.hpp exception: client_max_body_size has invalid argument");
+					throw std::runtime_error("configLocationBlock.hpp exception: client_max_body_size has invalid argument");
 				}
 				if (size_type == 'K' || size_type == 'k')
 					client_max_body_size = atoll(word.c_str()) * 1024;
@@ -192,7 +192,7 @@ class configLocationBlock : public configDefaults
 				}
 				else
 				{
-					throw std::runtime_error("configServerBlock.hpp exception: client_max_body_size has duplicated value");
+					throw std::runtime_error("configLocationBlock.hpp exception: client_max_body_size has duplicated value");
 				}
 				number_of_words++;
 			}
@@ -219,11 +219,11 @@ class configLocationBlock : public configDefaults
 				}
 				if (number_of_words == 1 && !word.compare(";"))
 				{
-					throw std::runtime_error("configServerBlock.hpp exception: root has no arguments");
+					throw std::runtime_error("configLocationBlock.hpp exception: root has no arguments");
 				}
 				if (number_of_words > 1)
 				{
-					throw std::runtime_error("configServerBlock.hpp exception: root has too many arguments");
+					throw std::runtime_error("configLocationBlock.hpp exception: root has too many arguments");
 				}
 				if (*word.rbegin() == ';')
 				{
@@ -235,7 +235,7 @@ class configLocationBlock : public configDefaults
 				}
 				else
 				{
-					throw std::runtime_error("configServerBlock.hpp exception: root has duplicated value");
+					throw std::runtime_error("configLocationBlock.hpp exception: root has duplicated value");
 				}
 				number_of_words++;
 			}
@@ -262,7 +262,7 @@ class configLocationBlock : public configDefaults
 				}
 				if (number_of_words == 1 && !word.compare(";"))
 				{
-					throw std::runtime_error("configServerBlock.hpp exception: index has no arguments");
+					throw std::runtime_error("configLocationBlock.hpp exception: index has no arguments");
 				}
 				if (*word.rbegin() == ';')
 				{
@@ -298,11 +298,11 @@ class configLocationBlock : public configDefaults
 				}
 				if (number_of_words == 1 && !word.compare(";"))
 				{
-					throw std::runtime_error("configServerBlock.hpp exception: auto_index has no arguments");
+					throw std::runtime_error("configLocationBlock.hpp exception: auto_index has no arguments");
 				}
 				if (number_of_words > 1)
 				{
-					throw std::runtime_error("configServerBlock.hpp exception: auto_index has too many arguments");
+					throw std::runtime_error("configLocationBlock.hpp exception: auto_index has too many arguments");
 				}
 				if (*word.rbegin() == ';')
 				{
@@ -310,7 +310,7 @@ class configLocationBlock : public configDefaults
 				}
 				if (word.compare("on") && word.compare("off"))
 				{
-					throw std::runtime_error("configServerBlock.hpp exception: auto_index has invalid argument");
+					throw std::runtime_error("configLocationBlock.hpp exception: auto_index has invalid argument");
 				}
 				if (_auto_index.empty())
 				{
@@ -318,9 +318,94 @@ class configLocationBlock : public configDefaults
 				}
 				else
 				{
-					throw std::runtime_error("configServerBlock.hpp exception: auto_index has duplicated value");
+					throw std::runtime_error("configLocationBlock.hpp exception: auto_index has duplicated value");
 				}
 				number_of_words++;
+			}
+		}
+		void	returnDirectiveTreatment(std::string line)
+		{
+			/***********************************************************/
+			/* Ignore the first word.								   */
+			/* Check how many arguments it has.						   */
+			/* If it has 1 argument make sure it's “http://” or        */
+			/* “https://”.	   										   */
+			/* If it has 2 arguments first is a status code.		   */
+			/* If status code is a valid status code.				   */
+			/* Check for ';' if it's one argument only.				   */
+			/* Check for ';' at the end and remove it.				   */
+			/***********************************************************/
+			std::stringstream	is(line);
+			std::string			first_arg;
+			std::string			last_arg;
+			int					number_of_words = 0;
+			while (is >> last_arg)
+			{
+				if (number_of_words == 0)
+				{
+					number_of_words++;
+					continue ;
+				}
+				if (number_of_words == 1 && !last_arg.compare(";"))
+				{
+					throw std::runtime_error("configLocationBlock.hpp exception: return has no arguments");
+				}
+				if (number_of_words == 1)
+					first_arg = last_arg;
+				number_of_words++;
+			}
+
+			if (number_of_words == 2)
+			{
+				if (*last_arg.rbegin() == ';')
+				{
+					last_arg.resize(last_arg.size() - 1);
+				}
+
+				if (last_arg.size() > 6)
+				{
+					std::string first_seven = last_arg.substr(0, 7);
+					if (!first_seven.compare("http://"))
+					{
+						_redirect_path.clear();
+						_redirect_path.push_back(last_arg);
+						return ;
+					}
+				}
+				if (last_arg.size() > 7)
+				{
+					std::string first_eight = last_arg.substr(0, 8);
+					if (!first_eight.compare("https://"))
+					{
+						_redirect_path.clear();
+						_redirect_path.push_back(last_arg);
+						return ;
+					}
+				}
+				throw std::runtime_error("configLocationBlock.hpp exception: return has wrong URL");
+			}
+
+			if (*last_arg.rbegin() == ';')
+			{
+				last_arg.resize(last_arg.size() - 1);
+			}
+			_redirect_path.clear();
+			_redirect_path.push_back(last_arg);
+
+			if ((first_arg.find_first_not_of("0123456789") == std::string::npos) == false)
+			{
+				throw std::runtime_error("configLocationBlock.hpp exception: return has invalid argument");
+			}
+
+			int status_code = atoi(first_arg.c_str());
+			if (status_code < 100 || status_code > 511)
+			{
+				throw std::runtime_error("configLocationBlock.hpp exception: return has invalid range status code");
+			}
+			else
+			{
+				_redirect_status.clear();
+				_redirect_status.push_back(status_code);
 			}
 		}
 
@@ -333,7 +418,8 @@ class configLocationBlock : public configDefaults
 		std::vector<std::string>	getIndex()	{ return (_index); }
 		std::vector<std::string>	getAutoindex()	{ return (_auto_index); }
 		std::vector<std::string>	getMethods()	{ return (_methods); }
-		std::vector<std::string>	getRedirect()	{ return (_redirect); }
+		std::vector<int>			getRedirectStatus()	{ return (_redirect_status); }
+		std::vector<std::string>	getRedirectPath()	{ return (_redirect_path); }
 		std::vector<std::string>	getCgi()	{ return (_cgi); }
 		std::vector<std::string>	getUpload()	{ return (_upload); }
 
@@ -355,7 +441,11 @@ class configLocationBlock : public configDefaults
         std::vector<std::string>    _auto_index;
 
         std::vector<std::string>    _methods;
-        std::vector<std::string>    _redirect;
+
+		// return (redirect)
+		std::vector<int>            _redirect_status;
+        std::vector<std::string>    _redirect_path;
+
         std::vector<std::string>    _cgi;
         std::vector<std::string>    _upload;
 };

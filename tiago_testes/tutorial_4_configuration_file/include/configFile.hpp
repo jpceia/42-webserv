@@ -10,7 +10,7 @@
 #include "configFileTreatment.hpp"
 #include "configServerBlock.hpp"
 
-#define DEBUG 1
+#define DEBUG 0
 
 class configFile
 {
@@ -61,11 +61,11 @@ class configFile
 			treatment_obj.separateToServerBlocks();
 			_server_blocks = treatment_obj.getServerBlocks();
 
-			/*if (DEBUG == 1)
+			if (DEBUG == 1)
 			{
 				treatment_obj.printServerBlocks();
 				//treatment_obj.printConfigurationFileTreated();
-			}*/
+			}
 
 			/************************************************************/
 			/* We now have server blocks separated in vectors<string>.  */

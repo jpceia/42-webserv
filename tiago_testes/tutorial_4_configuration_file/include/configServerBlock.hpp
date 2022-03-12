@@ -103,7 +103,7 @@ class configServerBlock
 			/**********************************/
 			/*			  listen              */
 			/**********************************/
-			std::cout << "Listen:" << std::endl;
+			std::cout << "Listen:			";
 			std::vector<std::string>::iterator	ip_it = _ip.begin();
 			std::vector<int>::iterator	port_it = _port.begin();
 			for (; ip_it != _ip.end(); ip_it++, port_it++)
@@ -114,7 +114,7 @@ class configServerBlock
 			/**********************************/
 			/*			  server_name         */
 			/**********************************/
-			std::cout << "Server_name:" << std::endl;
+			std::cout << "Server_name:		";
 			std::vector<std::string>::iterator	server_name_it = _server_name.begin();
 			std::cout << "  { ";
 			for (; server_name_it != _server_name.end(); server_name_it++)
@@ -128,7 +128,7 @@ class configServerBlock
 			/**********************************/
 			if (!_error_status.empty() && !_error_path.empty())
 			{
-				std::cout << "Error_page:" << std::endl;
+				std::cout << "Error_page:		";
 				std::vector<int>::iterator	_error_status_it = _error_status.begin();
 				std::cout << "  { ";
 				for (; _error_status_it != _error_status.end(); _error_status_it++)
@@ -142,10 +142,41 @@ class configServerBlock
 			/**********************************/
 			/*			    root              */
 			/**********************************/
-			std::cout << "Root:" << std::endl;
+			std::cout << "Root:			";
 			std::cout << "  { " << *_root.begin() << " }" << std::endl;
 
+			/**********************************/
+			/*		 client_max_body_size     */
+			/**********************************/
+			if (!_client_max_body_size.empty())
+			{
+				std::cout << "Client_max_body_size:	";
+				std::cout << "  { " << *_client_max_body_size.begin() << " }" << std::endl;
+			}
 
+			/**********************************/
+			/*				index             */
+			/**********************************/
+			if (!_index.empty())
+			{
+				std::cout << "Index:			";
+				std::vector<std::string>::iterator	index_it = _index.begin();
+				std::cout << "  { ";
+				for (; index_it != _index.end(); index_it++)
+				{
+					std::cout <<  *index_it << " ";
+				}
+				std::cout << "}" << std::endl;
+			}
+
+			/**********************************/
+			/*			  auto_index          */
+			/**********************************/
+			if (!_auto_index.empty())
+			{
+				std::cout << "Auto_index:		";
+				std::cout << "  { " << *_auto_index.begin() << " }" << std::endl;
+			}
 		}
 
 
@@ -170,13 +201,13 @@ class configServerBlock
 				else if (!subs.compare("error_page"))
 					errorpageDirectiveTreatment(line);
 				else if (!subs.compare("client_max_body_size"))
-				{}
+					clientmaxbodysizeDirectiveTreatment(line);
 				else if (!subs.compare("root"))
 					rootDirectiveTreatment(line);
 				else if (!subs.compare("index"))
-				{}
+					indexDirectiveTreatment(line);
 				else if (!subs.compare("autoindex"))
-				{}
+					autoindexDirectiveTreatment(line);
 				else if (!subs.compare("}"))
 				{}
 				else
@@ -477,9 +508,9 @@ class configServerBlock
 		{
 			/***********************************************************/
 			/* Ignore the first word and add the rest of the arguments */
-			/* to the _server_name vector. 							   */
+			/* to the _root vector.									   */
 			/* Check for duplicates so it doesn't add duplicates 	   */
-			/* (not a throw).										   */
+			/* (throw).												   */
 			/* Check for ';' if it's one argument only.				   */
 			/* Check for ';' at the end and remove it.				   */
 			/***********************************************************/
@@ -512,6 +543,158 @@ class configServerBlock
 				else
 				{
 					throw std::runtime_error("configServerBlock.hpp exception: root has duplicated value");
+				}
+				number_of_words++;
+			}
+		}
+		void	clientmaxbodysizeDirectiveTreatment(std::string line)
+		{
+			/***********************************************************/
+			/* Ignore the first word and treat the second word.		   */
+			/* Check if it has more than 1 argument and throw if it    */
+			/* has.													   */
+			/* Check for duplicates so it doesn't add duplicates 	   */
+			/* (throw).												   */
+			/* Check for ';' if it's one argument only.				   */
+			/* Check for ';' at the end and remove it.				   */
+			/* Check for last letter if it's a k K g G m M			   */
+			/* Do the conversions.									   */
+			/***********************************************************/
+			std::stringstream	is(line);
+			std::string			word;
+			char				size_type;
+			long long int		client_max_body_size = 0;
+			int					number_of_words = 0;
+			while (is >> word)
+			{
+				if (number_of_words == 0)
+				{
+					number_of_words++;
+					continue ;
+				}
+				if (number_of_words == 1 && !word.compare(";"))
+				{
+					throw std::runtime_error("configServerBlock.hpp exception: client_max_body_size has no arguments");
+				}
+				if (number_of_words > 1)
+				{
+					throw std::runtime_error("configServerBlock.hpp exception: client_max_body_size has too many arguments");
+				}
+				if (*word.rbegin() == ';')
+				{
+					word.resize(word.size() - 1);
+				}
+				if (*word.rbegin() == 'k' || *word.rbegin() == 'K' ||
+					*word.rbegin() == 'g' || *word.rbegin() == 'G' ||
+					*word.rbegin() == 'm' || *word.rbegin() == 'M')
+				{
+					size_type = *word.rbegin();
+					word.resize(word.size() - 1);
+				}
+				if ((word.find_first_not_of("0123456789") == std::string::npos) == false)
+				{
+					throw std::runtime_error("configServerBlock.hpp exception: client_max_body_size has invalid argument");
+				}
+				if (size_type == 'K' || size_type == 'k')
+					client_max_body_size = atoll(word.c_str()) * 1024;
+				else if (size_type == 'M' || size_type == 'm')
+					client_max_body_size = atoll(word.c_str()) * (1024 * 1024);
+				else if (size_type == 'G' || size_type == 'g')
+				{
+					client_max_body_size = atoll(word.c_str()) * (1024 * 1024 * 1024);
+				}
+				else
+					client_max_body_size = atoll(word.c_str());
+				if (_client_max_body_size.empty())
+				{
+					_client_max_body_size.push_back(client_max_body_size);
+				}
+				else
+				{
+					throw std::runtime_error("configServerBlock.hpp exception: client_max_body_size has duplicated value");
+				}
+				number_of_words++;
+			}
+		}
+		void	indexDirectiveTreatment(std::string line)
+		{
+			/***********************************************************/
+			/* Ignore the first word and add the rest of the arguments */
+			/* to the _index vector.	 							   */
+			/* Check for duplicates so it doesn't add duplicates 	   */
+			/* (not a throw).										   */
+			/* Check for ';' if it's one argument only.				   */
+			/* Check for ';' at the end and remove it.				   */
+			/***********************************************************/
+			std::stringstream	is(line);
+			std::string			word;
+			int					number_of_words = 0;
+			while (is >> word)
+			{
+				if (number_of_words == 0)
+				{
+					number_of_words++;
+					continue ;
+				}
+				if (number_of_words == 1 && !word.compare(";"))
+				{
+					throw std::runtime_error("configServerBlock.hpp exception: index has no arguments");
+				}
+				if (*word.rbegin() == ';')
+				{
+					word.resize(word.size() - 1);
+				}
+				if (std::find(_index.begin(), _index.end(), word) != _index.end())
+				{}
+				else
+					_index.push_back(word);
+				number_of_words++;
+			}
+		}
+		void	autoindexDirectiveTreatment(std::string line)
+		{
+			/***********************************************************/
+			/* Ignore the first word and treat the second word.		   */
+			/* Check if it has more than 1 argument and throw if it    */
+			/* has.													   */
+			/* Check for duplicates so it doesn't add duplicates 	   */
+			/* (throw).												   */
+			/* Check for ';' if it's one argument only.				   */
+			/* Check for ';' at the end and remove it.				   */
+			/***********************************************************/
+			std::stringstream	is(line);
+			std::string			word;
+			int					number_of_words = 0;
+			while (is >> word)
+			{
+				if (number_of_words == 0)
+				{
+					number_of_words++;
+					continue ;
+				}
+				if (number_of_words == 1 && !word.compare(";"))
+				{
+					throw std::runtime_error("configServerBlock.hpp exception: auto_index has no arguments");
+				}
+				if (number_of_words > 1)
+				{
+					throw std::runtime_error("configServerBlock.hpp exception: auto_index has too many arguments");
+				}
+				if (*word.rbegin() == ';')
+				{
+					word.resize(word.size() - 1);
+				}
+				if (word.compare("on") && word.compare("off"))
+				{
+					throw std::runtime_error("configServerBlock.hpp exception: auto_index has invalid argument");
+				}
+				if (_auto_index.empty())
+				{
+					_auto_index.push_back(word);
+				}
+				else
+				{
+					throw std::runtime_error("configServerBlock.hpp exception: auto_index has duplicated value");
 				}
 				number_of_words++;
 			}
@@ -558,7 +741,7 @@ class configServerBlock
         std::vector<int>            _error_status;
         std::vector<std::string>    _error_path;
 
-        std::vector<std::string>    _client_max_body_size;
+        std::vector<long long int>  _client_max_body_size;
         std::vector<std::string>    _root;
         std::vector<std::string>    _index;
         std::vector<std::string>    _auto_index;

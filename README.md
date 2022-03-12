@@ -659,7 +659,7 @@ https://medium.com/from-the-scratch/http-server-what-do-you-need-to-know-to-buil
 		Can be on the server block and location block. (We only want on the location due
 		to the subject).
 
-		Can be one argument (if it's an url starting with http://).
+		Can be one argument (if it's an url starting with “http://”, “https://”).
 		Can be more than one argument, first argument is a status code, second is an url.
 
 	methods:

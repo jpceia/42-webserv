@@ -10,17 +10,16 @@
 #include <stdexcept>
 #include <algorithm>
 #include "configLocationBlock.hpp"
+#include "configDefaults.hpp"
 
-class configServerBlock
+class configServerBlock : public configDefaults
 {
     public:
         configServerBlock()
         {};
 
         configServerBlock(std::vector<std::string> server_block) : _server_block(server_block)
-        {
-			fillDefaultConfigurations();
-        };
+        {};
 
         ~configServerBlock()
         {};
@@ -51,6 +50,12 @@ class configServerBlock
 					{
 						on_server = 0;
 						on_location = 1;
+
+						// In case server block has a root, location has to have the
+						// same root in default.
+						if (!_root.empty())
+							_location_blocks[_location_blocks_count]._root_default = _root;
+
 						_location_blocks_count++;
 					}
 
@@ -91,8 +96,6 @@ class configServerBlock
 				_server_name = _server_name_default;
 			if (_root.empty())
 				_root = _root_default;
-
-			printDirectives();
 		};
 
 		/****************/
@@ -177,6 +180,81 @@ class configServerBlock
 				std::cout << "Auto_index:		";
 				std::cout << "  { " << *_auto_index.begin() << " }" << std::endl;
 			}
+
+			/**********************************/
+			/*			  location            */
+			/**********************************/
+			for (int i = 0; i < _location_blocks_count; i++)
+			{
+				std::cout << "Location:		";
+				std::cout << "  { " << *_location_blocks[i].getLocationPath().begin() << " }" << std::endl;
+
+				/**********************************/
+				/*			  error_page          */
+				/**********************************/
+				std::vector<std::string> error_path_l = _location_blocks[i].getErrorPath();
+				std::vector<int> 		 error_status_l = _location_blocks[i].getErrorStatus();
+
+				if (!error_path_l.empty() &&
+					!error_status_l.empty())
+				{
+					std::cout << "  Error_page:		   ";
+					std::vector<int>::iterator	_error_status_it_l = error_status_l.begin();
+					std::cout << "  { ";
+					for (; _error_status_it_l != error_status_l.end(); _error_status_it_l++)
+					{
+						std::cout <<  *_error_status_it_l << " ";
+					}
+					std::cout << *error_path_l.begin();
+					std::cout << "}" << std::endl;
+				}
+
+				/**********************************/
+				/*			    root              */
+				/**********************************/
+				if (!_location_blocks[i].getRoot().empty())
+				{
+					std::cout << "  Root:			   ";
+					std::cout << "  { " << *_location_blocks[i].getRoot().begin() << " }" << std::endl;
+				}
+
+				/**********************************/
+				/*		 client_max_body_size     */
+				/**********************************/
+				std::vector<long long int> client_max_body_size_l = _location_blocks[i].getClientMaxBodySize();
+
+				if (!client_max_body_size_l.empty())
+				{
+					std::cout << "  Client_max_body_size:	   ";
+					std::cout << "  { " << *client_max_body_size_l.begin() << " }" << std::endl;
+				}
+
+				/**********************************/
+				/*				index             */
+				/**********************************/
+				std::vector<std::string> index_l = _location_blocks[i].getIndex();
+				if (!index_l.empty())
+				{
+					std::cout << "  Index:		   ";
+					std::vector<std::string>::iterator	index_it = index_l.begin();
+					std::cout << "  { ";
+					for (; index_it != index_l.end(); index_it++)
+					{
+						std::cout <<  *index_it << " ";
+					}
+					std::cout << "}" << std::endl;
+				}
+
+				/**********************************/
+				/*			  auto_index          */
+				/**********************************/
+				if (!_location_blocks[i].getAutoindex().empty())
+				{
+					std::cout << "  Auto_index:		   ";
+					std::cout << "  { " << *_location_blocks[i].getAutoindex().begin() << " }" << std::endl;
+				}
+
+			}
 		}
 
 
@@ -218,12 +296,8 @@ class configServerBlock
 				return ;
 			}
 		}
-
 		void	fillLocationBlock(std::string line)
 		{
-			//std::cout << "LOCATION BLOCK = ";
-			//std::cout << line << std::endl;
-
 			std::istringstream	iss(line);
 			while (iss)
 			{
@@ -231,17 +305,17 @@ class configServerBlock
 				iss >> subs;
 
 				if (!subs.compare("location"))
-				{}
+					_location_blocks[_location_blocks_count - 1].locationDirectiveTreatment(line);
 				else if (!subs.compare("error_page"))
-				{}
+					_location_blocks[_location_blocks_count - 1].errorpageDirectiveTreatment(line);
 				else if (!subs.compare("client_max_body_size"))
-				{}
+					_location_blocks[_location_blocks_count - 1].clientmaxbodysizeDirectiveTreatment(line);
 				else if (!subs.compare("root"))
-				{}
+					_location_blocks[_location_blocks_count - 1].rootDirectiveTreatment(line);
 				else if (!subs.compare("index"))
-				{}
+					_location_blocks[_location_blocks_count - 1].indexDirectiveTreatment(line);
 				else if (!subs.compare("autoindex"))
-				{}
+					_location_blocks[_location_blocks_count - 1].autoindexDirectiveTreatment(line);
 				else if (!subs.compare("return"))
 				{}
 				else if (!subs.compare("methods"))
@@ -257,7 +331,25 @@ class configServerBlock
 					std::cerr << "configServerBlock.hpp exception: " << subs << " not valid on location block";
 					throw std::runtime_error("");
 				}
+				checkDuplicatedLocation();
 				return ;
+			}
+		}
+		void	checkDuplicatedLocation()
+		{
+			for (int i = 0; i < _location_blocks_count; i++)
+			{
+				for (int x = 0; x < _location_blocks_count; x++)
+				{
+					if (i != x)
+					{
+						if (*_location_blocks[i].getLocationPath().begin() ==
+							*_location_blocks[x].getLocationPath().begin())
+						{
+							throw std::runtime_error("configServerBlock.hpp exception: location has duplicated value");
+						}
+					}
+				}
 			}
 		}
 
@@ -701,22 +793,6 @@ class configServerBlock
 		}
 
 
-        void    fillDefaultConfigurations()
-        {
-			// listen
-			_ip_default.push_back("0.0.0.0");
-			_port_default.push_back(80);
-
-            _server_name_default.push_back("");
-            _client_max_body_size_default.push_back("1000000");
-            _root_default.push_back("/www/html");            // These needs to be checked
-            _index_default.push_back("index.html");       // These needs to be checked
-            _auto_index_default.push_back("off");
-
-            _methods_default.push_back("GET");
-            _upload_default.push_back("off");
-        };
-
         /********/
         /* Data */
         /********/
@@ -750,24 +826,6 @@ class configServerBlock
         std::vector<std::string>    _redirect;
         std::vector<std::string>    _cgi;
         std::vector<std::string>    _upload;
-
-        /**********************/
-        /* Default Directives */
-        /**********************/
-
-		// listen
-		std::vector<std::string>	_ip_default;
-		std::vector<int>			_port_default;
-
-		std::vector<std::string>    _server_name_default;
-
-        std::vector<std::string>    _client_max_body_size_default;
-        std::vector<std::string>    _root_default;
-        std::vector<std::string>    _index_default;
-        std::vector<std::string>    _auto_index_default;
-
-        std::vector<std::string>    _methods_default;
-        std::vector<std::string>    _upload_default;
 };
 
 #endif

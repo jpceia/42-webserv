@@ -81,6 +81,7 @@ class configFile
 			{
 				configServerBlock server_block_obj(*it);
 				server_block_obj.fillBlocks();
+				server_block_obj.printDirectives();
 
 				// You have to keep it looping, but for tests, let's do one only first.
 				break ;

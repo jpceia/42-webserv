@@ -6,7 +6,7 @@
 /*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/09 20:22:56 by jpceia            #+#    #+#             */
-/*   Updated: 2022/03/09 20:27:04 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/03/13 17:53:53 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,12 +22,6 @@ HTTPStatefulConnection::HTTPStatefulConnection(int fd) :
 HTTPStatefulConnection::HTTPStatefulConnection(const TCPConnectionArgs& args, const std::vector<configServerBlock>& configs) :
     HTTPConnection(args),
     _configs(configs)
-{
-}
-
-HTTPStatefulConnection::HTTPStatefulConnection(const HTTPConnection& rhs) :
-    HTTPConnection(rhs),
-    _configs(rhs._configs)
 {
 }
 
@@ -60,6 +54,25 @@ HTTPRequest HTTPStatefulConnection::getRequest() const
                                     "request not complete");
     return _request;
 }
+
+configServerBlock HTTPStatefulConnection::getServerBlock(const std::string& host) const
+{
+    configServerBlock config = _configs.front();
+    // iterate over the configs and find the one with the same host
+    for (std::vector<configServerBlock>::const_iterator it = _configs.begin();
+        it != _configs.end(); ++it)
+    {
+        std::vector<std::string> server_names = it->getServerName();
+        std::vector<std::string>::const_iterator it_server_name = std::find(
+            server_names.begin(), server_names.end(), host);
+        if (it_server_name != server_names.end())
+        {
+            config = *it;
+            break
+        }
+    }
+    return config;
+};
 
 void HTTPStatefulConnection::setResponse(const HTTPResponse& response)
 {

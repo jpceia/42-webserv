@@ -3,18 +3,30 @@
 /*                                                        :::      ::::::::   */
 /*   utils.hpp                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jceia <jceia@student.42.fr>                +#+  +:+       +#+        */
+/*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/23 20:05:23 by jpceia            #+#    #+#             */
-/*   Updated: 2022/02/24 13:54:13 by jceia            ###   ########.fr       */
+/*   Updated: 2022/03/04 14:12:29 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef UTILS_HPP
 # define UTILS_HPP
 
+# include <map>
+# include <vector>
 # include <string>
+# include <sys/poll.h>
 
 int ft_stoi(const std::string& str);
+bool is_dir(const std::string& path);
+bool is_readable_file(const std::string& path);
+
+struct pollfd create_pollfd(int fd, short int events);
+
+std::string exec_cmd(
+    const std::string &cmd,
+    const std::vector<std::string>& args,
+    const std::map<std::string, std::string>& env);
 
 #endif

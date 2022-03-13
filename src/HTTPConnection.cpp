@@ -6,7 +6,7 @@
 /*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/23 06:02:05 by jpceia            #+#    #+#             */
-/*   Updated: 2022/02/24 05:40:53 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/03/09 20:20:01 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,19 +39,26 @@ HTTPConnection& HTTPConnection::operator=(const HTTPConnection& rhs)
     return *this;
 }
 
-void HTTPConnection::send(const HTTPResponse& response)
+void HTTPConnection::sendResponse(const HTTPResponse& response) const
 {
     std::stringstream ss;
     ss << response;
-    TCPConnection::send(ss.str());
+    std::string msg = ss.str();
+    while (!msg.empty())
+        TCPConnection::send(msg);
 }
 
-HTTPRequest HTTPConnection::recv()
+HTTPRequest HTTPConnection::recvRequest() const
 {
     HTTPRequestParser request;
     ParseState state = PARSE_START;
 
     while (state != PARSE_COMPLETE)
-        state = request.parse(TCPConnection::recv());
+    {
+        std::string chunk = TCPConnection::recv();
+        if (chunk.empty())
+            throw TCPConnection::DisconnectedException();
+        state = request.parse(chunk);
+    }
     return request;
 }

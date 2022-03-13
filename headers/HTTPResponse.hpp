@@ -31,6 +31,7 @@ public:
     void setHeader(const std::string& name, const std::string& value);
     void setVersion(const std::string& version);
     void setBody(const std::string& body);
+    void setBody(const std::ifstream& f);
 
 private:
     int _status_code;

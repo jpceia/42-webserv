@@ -1,14 +1,3 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   TCPListener.hpp                                    :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/02/23 02:48:15 by jpceia            #+#    #+#             */
-/*   Updated: 2022/02/23 04:39:08 by jpceia           ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
 
 #ifndef TCPLISTENER_HPP
 # define TCPLISTENER_HPP
@@ -19,17 +8,38 @@
 # include <arpa/inet.h>
 # include <unistd.h>
 # include <stdio.h>
-#include <sys/poll.h>
+# include <sys/poll.h>
+# include <vector>
 
 class TCPListener
 {
 public:
-    TCPListener(const std::string& host, int port, int timeout);
-    ~TCPListener();
+    class socket_compare
+    {
+    public:
+        bool operator()(const TCPListener& lhs, const TCPListener& rhs) const
+        {
+            return lhs._sock < rhs._sock;
+        }
 
-    void init();
-    TCPConnection accept();
-    void run();
+        bool operator()(const TCPListener* lhs, const TCPListener* rhs) const
+        {
+            return lhs->_sock < rhs->_sock;
+        }
+
+    private:
+        friend class TCPListener;
+    };
+
+    TCPListener(int sock);
+    TCPListener(const std::string& host, int port);
+    TCPListener(const TCPListener& rhs);
+    TCPListener& operator=(const TCPListener& rhs);
+    virtual ~TCPListener();
+
+    virtual TCPConnection* accept() const;
+
+    int getSock() const;
 
     class CreateException : public std::exception
     {
@@ -55,39 +65,13 @@ public:
             virtual const char* what(void) const throw();
     };
 
+protected:
+    TCPConnectionArgs _accept() const;
+
 private:
 
-    void	printPollFds()
-    {
-        for (int i = 0; i < _nfds; i++)
-        {
-            std::cout << "fds[" << i << "]" << std::endl;
-            std::cout << "fd = " << _fds[i].fd << std::endl;
-            std::cout << "events = " << _fds[i].events << std::endl;
-            std::cout << "revents = " << _fds[i].revents << std::endl;
-
-            std::cout << std::endl;
-        }
-    }
-
-
-    // Not copiable
-    TCPListener(const TCPListener& rhs);
-    TCPListener& operator=(const TCPListener& rhs);
-    
-    // Private attributes
+    int _sock;
     struct sockaddr_in _addr;
-    int _sock;                      // listener sock
-
-
-    /********************/
-    /* poll() Variables */
-    /********************/
-    struct pollfd					_fds[1000];			// An array of pollfd structures.
-                                                        // Containing the Listener at _fds[0]
-                                                        // and clients at > 0
-    int								_nfds;				// Number of connected clients
-    int								_timeout;			// Maximum time, in milliseconds,
 };
 
 #endif

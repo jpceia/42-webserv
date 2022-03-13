@@ -6,7 +6,7 @@
 /*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/23 05:15:40 by jpceia            #+#    #+#             */
-/*   Updated: 2022/02/23 07:13:13 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/03/09 20:21:35 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,11 +29,11 @@ public:
     HTTPConnection(const TCPConnection& rhs);
     HTTPConnection(const HTTPConnection& rhs);
 
-    ~HTTPConnection();
-    HTTPConnection& operator=(const HTTPConnection& rhs);
+    virtual ~HTTPConnection();
+    virtual HTTPConnection& operator=(const HTTPConnection& rhs);
 
-    void send(const HTTPResponse& response);
-    HTTPRequest recv();
+    virtual void sendResponse(const HTTPResponse& response) const;
+    virtual HTTPRequest recvRequest() const;
 };
 
 #endif

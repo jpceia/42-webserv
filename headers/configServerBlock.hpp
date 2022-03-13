@@ -336,16 +336,19 @@ class configServerBlock : public configDefaults
 
 			return (send);
 		}
-		std::string							getIP()					{ return (_ip.front()); }
-		int									getPort()				{ return (_port.front()); }
-		std::vector<std::string>			getServerName()			{ return (_server_name); }
+		std::string							getIP()	const			{ return (_ip.front()); }
+		int									getPort() const			{ return (_port.front()); }
+		std::vector<std::string>			getServerName() const	{ return (_server_name); }
 
-		std::vector<int>					getErrorStatus() 		{ return (_error_status); }
-		std::vector<std::string>			getErrorPath()			{ return (_error_path); }
-		std::vector<long int>				getClientMaxBodySize()	{ return (_client_max_body_size); }
-		std::vector<std::string>			getRoot()				{ return (_root); }
-		std::vector<std::string>			getIndex()				{ return (_index); }
-		std::vector<std::string>			getAutoindex()			{ return (_auto_index); }
+		std::vector<int>					getErrorStatus() const	{ return (_error_status); }
+		std::vector<std::string>			getErrorPath() const	{ return (_error_path); }
+		std::vector<long int>				getClientMaxBodySize() const	{ return (_client_max_body_size); }
+		std::vector<std::string>			getRoot() const			{ return (_root); }
+		std::vector<std::string>			getIndex() const		{ return (_index); }
+		std::vector<std::string>			getAutoindex() const	{ return (_auto_index); }
+		
+
+		
 
     private:
         /********************/

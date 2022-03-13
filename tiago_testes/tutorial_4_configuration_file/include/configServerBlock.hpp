@@ -940,7 +940,7 @@ class configServerBlock : public configDefaults
 				_client_max_body_size = _client_max_body_size_default;
 			else if (_root.empty())
 				_root = _root_default;
-			
+			/* */
 		}
 
         /********/

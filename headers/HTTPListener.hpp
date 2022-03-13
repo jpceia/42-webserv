@@ -10,8 +10,9 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "HTTPConnection.hpp"
-#include "TCPListener.hpp"
+#ifndef HTTPLISTENER_HPP
+# define HTTPLISTENER_HPP
+
 
 class HTTPListener : public TCPListener
 {
@@ -24,3 +25,5 @@ public:
     
     virtual TCPConnection* accept() const;
 };
+
+#endif

@@ -96,6 +96,47 @@ class configServerBlock : public configDefaults
 				_server_name = _server_name_default;
 			if (_root.empty())
 				_root = _root_default;
+
+			/**************************************************/
+			/* If there is no locations add a default '/'     */
+			/* If there are location blocks, check to see if  */
+			/* there is a '/', if there isn't one, add it     */
+			/* manually. 									  */
+			/**************************************************/
+			if (_location_blocks_count == 0)
+			{
+				_location_blocks[_location_blocks_count].locationDirectiveTreatment("location / {");
+				_location_blocks_count++;
+			}
+			else
+			{
+				bool	is_default_block_path = false;
+				for (int i = 0; i < _location_blocks_count; i++)
+				{
+					if (_location_blocks[i].getLocationPath().front() == "/")
+						is_default_block_path = true;				
+				}
+				if (is_default_block_path == false)
+				{
+					/*for (int i = 0; i < _location_blocks_count; i++)
+					{
+						_location_blocks[i + 1] = _location_blocks[i];
+					}*/ // to do;
+
+					_location_blocks[0].locationDirectiveTreatment("location / {");
+					_location_blocks_count++;
+				}
+			}
+
+			/**************************************************/
+			/* Fill Server Blocks directives if empty with    */
+			/* defaults.									  */
+			/* Fill Location blocks directives if empty with  */
+			/* Server Blocks information.					  */
+			/**************************************************/
+
+
+
 		};
 
 		/****************/
@@ -221,7 +262,7 @@ class configServerBlock : public configDefaults
 				/**********************************/
 				/*		 client_max_body_size     */
 				/**********************************/
-				std::vector<long long int> client_max_body_size_l = _location_blocks[i].getClientMaxBodySize();
+				std::vector<long int> client_max_body_size_l = _location_blocks[i].getClientMaxBodySize();
 
 				if (!client_max_body_size_l.empty())
 				{
@@ -323,6 +364,32 @@ class configServerBlock : public configDefaults
 		}
 
 
+		/*****************/
+		/*    Getters    */
+		/*****************/
+		int									getLocationBlocksSize() { return (_location_blocks_count); }
+		std::vector<configLocationBlock>	getLocationBlocks()
+		{
+			std::vector<configLocationBlock> send;
+
+			for(int i = 0; i < _location_blocks_count; i++)
+				send.push_back(_location_blocks[i]);
+
+			return (send);
+		}
+		// get location by path name
+
+		std::string							getIP()					{ return (_ip.front()); }
+		int									getPort()				{ return (_port.front()); }
+		std::vector<std::string>			getServerName()			{ return (_server_name); }
+
+		std::vector<int>					getErrorStatus() 		{ return (_error_status); }
+		std::vector<std::string>			getErrorPath()			{ return (_error_path); }
+		std::vector<long int>				getClientMaxBodySize()	{ return (_client_max_body_size); }
+		std::vector<std::string>			getRoot()				{ return (_root); }
+		std::vector<std::string>			getIndex()				{ return (_index); }
+		std::vector<std::string>			getAutoindex()			{ return (_auto_index); }
+
     private:
         /********************/
         /* Helper Functions */
@@ -417,7 +484,6 @@ class configServerBlock : public configDefaults
 				}
 			}
 		}
-
 
 		/************************/
 		/* Directives Treatment */
@@ -720,7 +786,7 @@ class configServerBlock : public configDefaults
 			std::stringstream	is(line);
 			std::string			word;
 			char				size_type;
-			long long int		client_max_body_size = 0;
+			long int		client_max_body_size = 0;
 			int					number_of_words = 0;
 			while (is >> word)
 			{
@@ -866,6 +932,16 @@ class configServerBlock : public configDefaults
 			}
 		}
 
+		void	fillDirectivesIfEmpty(configServerBlock & obj)
+		{
+			if (_server_name.empty())
+				_server_name = _server_name_default;
+			else if (_client_max_body_size.empty())
+				_client_max_body_size = _client_max_body_size_default;
+			else if (_root.empty())
+				_root = _root_default;
+			
+		}
 
         /********/
         /* Data */
@@ -891,10 +967,32 @@ class configServerBlock : public configDefaults
         std::vector<int>            _error_status;
         std::vector<std::string>    _error_path;
 
-        std::vector<long long int>  _client_max_body_size;
+        std::vector<long int>  		_client_max_body_size;
         std::vector<std::string>    _root;
         std::vector<std::string>    _index;
         std::vector<std::string>    _auto_index;
 };
 
 #endif
+
+
+
+/*
+
+	get location by path name
+	meter os defaults no locaiton e no server block fillDirectivesIfEmpty fillDirectivesIfEmpty
+	meter o cgi e o error page em mapas
+
+	error_page 300 301 302 303 /404.html
+	error_page 404 /405.html
+
+	map<300,/404.html>
+	map<301,/404.html>
+	map<302,/404.html>
+	map<303,/404.html>
+	map<404,/405.html>
+
+
+
+
+*/

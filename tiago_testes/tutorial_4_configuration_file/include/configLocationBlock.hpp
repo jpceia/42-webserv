@@ -144,7 +144,7 @@ class configLocationBlock : public configDefaults
 			std::stringstream	is(line);
 			std::string			word;
 			char				size_type;
-			long long int		client_max_body_size = 0;
+			long int		client_max_body_size = 0;
 			int					number_of_words = 0;
 			while (is >> word)
 			{
@@ -576,12 +576,18 @@ class configLocationBlock : public configDefaults
 
 		}
 
+		void	fillDirectivesIfEmpty(configServerBlock & obj)
+		{
+			
+		}
 
-
+		/*****************/
+		/*    Getters    */
+		/*****************/
 		std::vector<std::string>	getLocationPath()		{ return (_location_path); }
 		std::vector<int>			getErrorStatus() 		{ return (_error_status); }
 		std::vector<std::string>	getErrorPath()			{ return (_error_path); }
-		std::vector<long long int>	getClientMaxBodySize()	{ return (_client_max_body_size); }
+		std::vector<long int>		getClientMaxBodySize()	{ return (_client_max_body_size); }
 		std::vector<std::string>	getRoot()				{ return (_root); }
 		std::vector<std::string>	getIndex()				{ return (_index); }
 		std::vector<std::string>	getAutoindex()			{ return (_auto_index); }
@@ -603,7 +609,7 @@ class configLocationBlock : public configDefaults
         std::vector<int>            _error_status;
         std::vector<std::string>    _error_path;
 
-        std::vector<long long int>  _client_max_body_size;
+        std::vector<long int>  		_client_max_body_size;
         std::vector<std::string>    _root;
         std::vector<std::string>    _index;
         std::vector<std::string>    _auto_index;

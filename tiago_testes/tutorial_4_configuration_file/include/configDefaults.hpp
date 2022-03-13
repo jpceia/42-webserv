@@ -36,7 +36,7 @@ class configDefaults
 
 		std::vector<std::string>    _server_name_default;
 
-        std::vector<std::string>    _client_max_body_size_default;
+        std::vector<long int>       _client_max_body_size_default;
         std::vector<std::string>    _root_default;
         std::vector<std::string>    _index_default;
         std::vector<std::string>    _auto_index_default;

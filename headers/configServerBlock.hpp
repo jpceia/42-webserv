@@ -96,6 +96,35 @@ class configServerBlock : public configDefaults
 				_server_name = _server_name_default;
 			if (_root.empty())
 				_root = _root_default;
+
+			/**************************************************/
+			/* If there is no locations add a default '/'     */
+			/* If there are location blocks, check to see if  */
+			/* there is a '/', if there isn't one, add it     */
+			/* manually. 									  */
+			/**************************************************/
+			if (_location_blocks_count == 0)
+			{
+				_location_blocks[_location_blocks_count].locationDirectiveTreatment("location / {");
+				_location_blocks_count++;
+			}
+			else
+			{
+				bool	is_default_block_path = false;
+				for (int i = 0; i < _location_blocks_count; i++)
+				{
+					if (_location_blocks[i].getLocationPath().front() == "/")
+						is_default_block_path = true;				
+				}
+				if (is_default_block_path == false)
+				{
+					_location_blocks[_location_blocks_count].locationDirectiveTreatment("location / {");
+					_location_blocks_count++;
+				}
+			}
+
+
+
 		};
 
 		/****************/

@@ -21,8 +21,7 @@ class HTTPStatefulConnection : public HTTPConnection
 {
 public:
     HTTPStatefulConnection(int fd);
-    HTTPStatefulConnection(const TCPConnectionArgs& args);
-    HTTPStatefulConnection(const HTTPConnection& rhs);
+    HTTPStatefulConnection(const TCPConnectionArgs& args, const std::vector<configServerBlock>& configs);
     HTTPStatefulConnection(const HTTPStatefulConnection& rhs);
     ~HTTPStatefulConnection();
     HTTPStatefulConnection& operator=(const HTTPStatefulConnection& rhs);
@@ -35,6 +34,7 @@ public:
 private:
     HTTPRequestParser _request;
     std::string _response;
+    std::vector<configServerBlock> _configs;
 };
 
 #endif

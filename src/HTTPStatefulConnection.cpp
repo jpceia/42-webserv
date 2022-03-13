@@ -19,13 +19,15 @@ HTTPStatefulConnection::HTTPStatefulConnection(int fd) :
 {
 }
 
-HTTPStatefulConnection::HTTPStatefulConnection(const TCPConnectionArgs& args) :
-    HTTPConnection(args)
+HTTPStatefulConnection::HTTPStatefulConnection(const TCPConnectionArgs& args, const std::vector<configServerBlock>& configs) :
+    HTTPConnection(args),
+    _configs(configs)
 {
 }
 
 HTTPStatefulConnection::HTTPStatefulConnection(const HTTPConnection& rhs) :
-    HTTPConnection(rhs)
+    HTTPConnection(rhs),
+    _configs(rhs._configs)
 {
 }
 

@@ -44,5 +44,5 @@ HTTPListener& HTTPListener::operator=(const HTTPListener& rhs)
 
 TCPConnection* HTTPListener::accept() const
 {
-    return new HTTPStatefulConnection(_accept());
+    return new HTTPStatefulConnection(_accept(), _configs);
 }

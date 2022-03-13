@@ -10,8 +10,12 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "HTTPConnection.hpp"
-#include "HTTPRequestParser.hpp"
+#ifndef HTTPSTATEFULCONNECTION_CPP
+# define HTTPSTATEFULCONNECTION_CPP
+
+# include "HTTPConnection.hpp"
+# include "HTTPRequestParser.hpp"
+# include "configFile.hpp" 
 
 class HTTPStatefulConnection : public HTTPConnection
 {
@@ -32,3 +36,5 @@ private:
     HTTPRequestParser _request;
     std::string _response;
 };
+
+#endif

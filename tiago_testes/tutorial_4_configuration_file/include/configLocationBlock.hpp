@@ -271,7 +271,16 @@ class configLocationBlock : public configDefaults
 				if (std::find(_index.begin(), _index.end(), word) != _index.end())
 				{}
 				else
-					_index.push_back(word);
+				{
+					if (!_root.empty())
+					{
+						_index.push_back(*_root.begin() + "/" + word);
+					}
+					else
+					{
+						_index.push_back(*_root_default.begin() + "/" + word);
+					}
+				}
 				number_of_words++;
 			}
 		}
@@ -408,20 +417,179 @@ class configLocationBlock : public configDefaults
 				_redirect_status.push_back(status_code);
 			}
 		}
+		void	methodsDirectiveTreatment(std::string line)
+		{
+			/***********************************************************/
+			/* Ignore the first word.								   */
+			/* Accept only GET, POST, DELETE.						   */
+			/* Check for ';' if it's one argument only.				   */
+			/* Check for ';' at the end and remove it.				   */
+			/***********************************************************/
+			std::stringstream	is(line);
+			std::string			word;
+			int					number_of_words = 0;
+			while (is >> word)
+			{
+				if (number_of_words == 0)
+				{
+					number_of_words++;
+					continue ;
+				}
+				if (number_of_words == 1 && !word.compare(";"))
+				{
+					throw std::runtime_error("configLocationBlock.hpp exception: methods has no arguments");
+				}
+				if (*word.rbegin() == ';')
+				{
+					word.resize(word.size() - 1);
+				}
+				if (!word.compare("GET") || !word.compare("get"))
+				{
+					if (std::find(_methods.begin(), _methods.end(), "GET") != _methods.end())
+					{}
+					else
+						_methods.push_back("GET");
+				}
+				else if (!word.compare("POST") || !word.compare("post"))
+				{
+					if (std::find(_methods.begin(), _methods.end(), "POST") != _methods.end())
+					{}
+					else
+						_methods.push_back("POST");
+				}
+				else if (!word.compare("DELETE") || !word.compare("delete"))
+				{
+					if (std::find(_methods.begin(), _methods.end(), "DELETE") != _methods.end())
+					{}
+					else
+						_methods.push_back("DELETE");
+				}
+				else
+				{
+					throw std::runtime_error("configLocationBlock.hpp exception: methods has wrong argument");
+				}
+				number_of_words++;
+			}
+
+		}
+		void	cgiDirectiveTreatment(std::string line)
+		{
+			/***********************************************************/
+			/* Ignore the first word.								   */
+			/* Check how many arguments it has.						   */
+			/* It has to have 2 arguments.							   */
+			/* Check for ';' if it's one argument only.				   */
+			/* Check for ';' at the end and remove it.				   */
+			/***********************************************************/
+			std::stringstream	is(line);
+			std::string			first_arg;
+			std::string			last_arg;
+			int					number_of_words = 0;
+			while (is >> last_arg)
+			{
+				if (number_of_words == 0)
+				{
+					number_of_words++;
+					continue ;
+				}
+				if (number_of_words == 1 && !last_arg.compare(";"))
+				{
+					throw std::runtime_error("configLocationBlock.hpp exception: cgi has no arguments");
+				}
+				if (number_of_words == 1)
+					first_arg = last_arg;
+				number_of_words++;
+			}
+
+			if (number_of_words != 3)
+			{
+				throw std::runtime_error("configLocationBlock.hpp exception: cgi has wrong number of arguments");
+			}
+
+			if (*last_arg.rbegin() == ';')
+			{
+				last_arg.resize(last_arg.size() - 1);
+			}
+
+			if (_cgi.empty())
+			{
+				_cgi.push_back(first_arg);
+				_cgi.push_back(last_arg);
+			}
+			else
+			{
+				throw std::runtime_error("configLocationBlock.hpp exception: cgi has duplicated value");
+			}
+
+		}
+		void	uploadDirectiveTreatment(std::string line)
+		{
+			/***********************************************************/
+			/* Ignore the first word.								   */
+			/* Check how many arguments it has.						   */
+			/* It has to have 1 arguments.							   */
+			/* Check for ';' if it's one argument only.				   */
+			/* Check for ';' at the end and remove it.				   */
+			/***********************************************************/
+			std::stringstream	is(line);
+			std::string			word;
+			int					number_of_words = 0;
+			while (is >> word)
+			{
+				if (number_of_words == 0)
+				{
+					number_of_words++;
+					continue ;
+				}
+				if (number_of_words == 1 && !word.compare(";"))
+				{
+					throw std::runtime_error("configLocationBlock.hpp exception: upload has no arguments");
+				}
+				number_of_words++;
+			}
+
+			if (number_of_words != 2)
+			{
+				throw std::runtime_error("configLocationBlock.hpp exception: upload has wrong number of arguments");
+			}
+
+			if (*word.rbegin() == ';')
+			{
+				word.resize(word.size() - 1);
+			}
+
+			if (_upload.empty())
+			{
+				if (_root.empty())
+				{
+					_upload.push_back(*_root_default.begin() + "/" + word);
+				}
+				else
+				{
+					_upload.push_back(*_root.begin() + "/" + word);
+				}
+			}
+			else
+			{
+				throw std::runtime_error("configLocationBlock.hpp exception: upload has duplicated value");
+			}
+
+		}
 
 
-		std::vector<std::string>	getLocationPath()	{ return (_location_path); }
-		std::vector<int>			getErrorStatus() { return (_error_status); }
-		std::vector<std::string>	getErrorPath()	{ return (_error_path); }
+
+		std::vector<std::string>	getLocationPath()		{ return (_location_path); }
+		std::vector<int>			getErrorStatus() 		{ return (_error_status); }
+		std::vector<std::string>	getErrorPath()			{ return (_error_path); }
 		std::vector<long long int>	getClientMaxBodySize()	{ return (_client_max_body_size); }
-		std::vector<std::string>	getRoot()	{ return (_root); }
-		std::vector<std::string>	getIndex()	{ return (_index); }
-		std::vector<std::string>	getAutoindex()	{ return (_auto_index); }
-		std::vector<std::string>	getMethods()	{ return (_methods); }
-		std::vector<int>			getRedirectStatus()	{ return (_redirect_status); }
-		std::vector<std::string>	getRedirectPath()	{ return (_redirect_path); }
-		std::vector<std::string>	getCgi()	{ return (_cgi); }
-		std::vector<std::string>	getUpload()	{ return (_upload); }
+		std::vector<std::string>	getRoot()				{ return (_root); }
+		std::vector<std::string>	getIndex()				{ return (_index); }
+		std::vector<std::string>	getAutoindex()			{ return (_auto_index); }
+		std::vector<std::string>	getMethods()			{ return (_methods); }
+		std::vector<int>			getRedirectStatus()		{ return (_redirect_status); }
+		std::vector<std::string>	getRedirectPath()		{ return (_redirect_path); }
+		std::vector<std::string>	getCgi()				{ return (_cgi); }
+		std::vector<std::string>	getUpload()				{ return (_upload); }
 
     private:
         /**********************/

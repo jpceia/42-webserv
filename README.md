@@ -446,7 +446,6 @@ https://medium.com/from-the-scratch/http-server-what-do-you-need-to-know-to-buil
 		listen		443;
 		error 		PWD/www/errorPages;
 		location / {
-			methods 	GET, POST;
 			root 		PWD/www/content;
 			index 		oldindex.html;
 		}
@@ -458,22 +457,16 @@ https://medium.com/from-the-scratch/http-server-what-do-you-need-to-know-to-buil
 		error 		PWD/www/errorPages;
 		location / {
 			index 	oldindex.html;
-			methods GET;
 			root 	PWD/www/content;
 		}
 		location /directory {
-			methods		GET, POST;
 			root 		PWD/www/YoupiBanane;
 			index 		youpi.bad_extension;
-			CGI 		.bla;
-			exec 		PWD/cgi_tester;
 		}
 		location /put_test {
-			methods		PUT;
 			root 		PWD/www/content;
 		}
 		location /post_body {
-			methods 	POST;
 			root 		PWD/www/content;
 			index 		oldindex.html;
 			max_body 	100;
@@ -669,7 +662,7 @@ https://medium.com/from-the-scratch/http-server-what-do-you-need-to-know-to-buil
 		Can only be on the location block.
 		Can only be 'GET', 'POST' or 'DELETE'.
 
-		Can not have multiple methods.
+		Can have multiple methods.
 
 	cgi:
 

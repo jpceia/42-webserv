@@ -10,7 +10,7 @@
 #include "configFileTreatment.hpp"
 #include "configServerBlock.hpp"
 
-#define DEBUG 0
+#define DEBUG 1
 
 class configFile
 {
@@ -61,12 +61,6 @@ class configFile
 			treatment_obj.separateToServerBlocks();
 			_server_blocks = treatment_obj.getServerBlocks();
 
-			if (DEBUG == 1)
-			{
-				treatment_obj.printServerBlocks();
-				//treatment_obj.printConfigurationFileTreated();
-			}
-
 			/************************************************************/
 			/* We now have server blocks separated in vectors<string>.  */
 			/* Now we make an object (configServerBlock) for each of	*/
@@ -81,19 +75,24 @@ class configFile
 			{
 				configServerBlock server_block_obj(*it);
 				server_block_obj.fillBlocks();
-				server_block_obj.printDirectives();
 
 				_server_blocks_obj.push_back(server_block_obj);
 			}
 
-
-
-
+			if (DEBUG == 1)
+			{
+				std::vector<configServerBlock>::iterator itata = _server_blocks_obj.begin();
+				for (; itata != _server_blocks_obj.end(); itata++)
+				{
+					itata->printDirectives();
+				}
+			}
 
 			/************************************************************/
 			/* We check on all the _server_blocks_obj if we have        */
-			/* repeated ports or other things that invalidate the		*/
-			/* configuration file.										*/
+			/* repeated ports and ips and then check if the server_name */
+			/* is different. If they have the same name, we delete one  */
+			/* of the server_block.										*/
 			/************************************************************/
 
 
@@ -101,6 +100,9 @@ class configFile
 
         ~configFile()
         {};
+
+
+		std::vector<configServerBlock>		getServerBlocksObj() { return _server_blocks_obj; };
 
     private:
         /********/

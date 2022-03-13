@@ -271,6 +271,54 @@ class configServerBlock : public configDefaults
 						std::cout << "  { " << *_location_blocks[i].getRedirectPath().begin() << " }" << std::endl;
 					}
 				}
+
+				/**********************************/
+				/*			  methods             */
+				/**********************************/
+				std::vector<std::string> methods_l = _location_blocks[i].getMethods();
+				if (!methods_l.empty())
+				{
+					std::cout << "  Methods:		   ";
+					std::vector<std::string>::iterator	methods_it = methods_l.begin();
+					std::cout << "  { ";
+					for (; methods_it != methods_l.end(); methods_it++)
+					{
+						std::cout <<  *methods_it << " ";
+					}
+					std::cout << "}" << std::endl;
+				}
+
+				/**********************************/
+				/*			    cgi               */
+				/**********************************/
+				std::vector<std::string> cgi_l = _location_blocks[i].getCgi();
+				if (!cgi_l.empty())
+				{
+					std::cout << "  Cgi:			   ";
+					std::vector<std::string>::iterator	cgi_it = cgi_l.begin();
+					std::cout << "  { ";
+					for (; cgi_it != cgi_l.end(); cgi_it++)
+					{
+						std::cout <<  *cgi_it << " ";
+					}
+					std::cout << "}" << std::endl;
+				}
+
+				/**********************************/
+				/*			   upload             */
+				/**********************************/
+				std::vector<std::string> upload_l = _location_blocks[i].getUpload();
+				if (!upload_l.empty())
+				{
+					std::cout << "  Upload:		   ";
+					std::vector<std::string>::iterator	upload_it = upload_l.begin();
+					std::cout << "  { ";
+					for (; upload_it != upload_l.end(); upload_it++)
+					{
+						std::cout <<  *upload_it << " ";
+					}
+					std::cout << "}" << std::endl;
+				}
 			}
 		}
 
@@ -336,11 +384,11 @@ class configServerBlock : public configDefaults
 				else if (!subs.compare("return"))
 					_location_blocks[_location_blocks_count - 1].returnDirectiveTreatment(line);
 				else if (!subs.compare("methods"))
-				{}
+					_location_blocks[_location_blocks_count - 1].methodsDirectiveTreatment(line);
 				else if (!subs.compare("cgi"))
-				{}
+					_location_blocks[_location_blocks_count - 1].cgiDirectiveTreatment(line);
 				else if (!subs.compare("upload"))
-				{}
+					_location_blocks[_location_blocks_count - 1].uploadDirectiveTreatment(line);
 				else if (!subs.compare("}"))
 				{}
 				else
@@ -756,7 +804,16 @@ class configServerBlock : public configDefaults
 				if (std::find(_index.begin(), _index.end(), word) != _index.end())
 				{}
 				else
-					_index.push_back(word);
+				{
+					if (!_root.empty())
+					{
+						_index.push_back(*_root.begin() + "/" + word);
+					}
+					else
+					{
+						_index.push_back(*_root_default.begin() + "/" + word);
+					}
+				}
 				number_of_words++;
 			}
 		}

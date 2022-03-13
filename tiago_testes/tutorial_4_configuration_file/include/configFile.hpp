@@ -10,8 +10,6 @@
 #include "configFileTreatment.hpp"
 #include "configServerBlock.hpp"
 
-#define DEBUG 1
-
 class configFile
 {
     public:
@@ -79,22 +77,24 @@ class configFile
 				_server_blocks_obj.push_back(server_block_obj);
 			}
 
-			if (DEBUG == 1)
-			{
-				std::vector<configServerBlock>::iterator itata = _server_blocks_obj.begin();
-				for (; itata != _server_blocks_obj.end(); itata++)
-				{
-					itata->printDirectives();
-				}
-			}
-
 			/************************************************************/
 			/* We check on all the _server_blocks_obj if we have        */
 			/* repeated ports and ips and then check if the server_name */
 			/* is different. If they have the same name, we delete one  */
 			/* of the server_block.										*/
 			/************************************************************/
+/*
+			std::list<std::vector<std::string> >::iterator start(_server_blocks.begin());
+			std::list<std::vector<std::string> >::iterator looper(_server_blocks.begin());
 
+			for (; looper != _server_blocks.end(); looper++)
+			{
+				
+				start++;
+				if (start == _server_blocks.end())
+					break ;
+			}
+*/
 
         };
 

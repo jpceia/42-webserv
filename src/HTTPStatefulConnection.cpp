@@ -6,7 +6,7 @@
 /*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/09 20:22:56 by jpceia            #+#    #+#             */
-/*   Updated: 2022/03/13 17:53:53 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/03/13 17:57:05 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,7 +68,7 @@ configServerBlock HTTPStatefulConnection::getServerBlock(const std::string& host
         if (it_server_name != server_names.end())
         {
             config = *it;
-            break
+            break ;
         }
     }
     return config;

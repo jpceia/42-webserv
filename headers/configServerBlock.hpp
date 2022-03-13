@@ -336,8 +336,8 @@ class configServerBlock : public configDefaults
 
 			return (send);
 		}
-		std::vector<std::string>			getIPStatus()			{ return (_ip); }
-		std::vector<int>					getPortStatus()			{ return (_port); }
+		std::string							getIP()					{ return (_ip.front()); }
+		int									getPort()				{ return (_port.front()); }
 		std::vector<std::string>			getServerName()			{ return (_server_name); }
 
 		std::vector<int>					getErrorStatus() 		{ return (_error_status); }

@@ -17,6 +17,7 @@
 # include "HTTPRequest.hpp"
 # include "HTTPResponse.hpp"
 # include "HTTPConnection.hpp"
+# include "configFile.hpp"
 # include <iostream>
 # include <fstream>
 # include <sstream>
@@ -34,8 +35,10 @@ struct Context
 class HTTPServer : public TCPServer
 {
 public:
-    HTTPServer(int timeout);
+    HTTPServer(configFile config, int timeout = -1);
     virtual ~HTTPServer();
+
+    void init();
 
 protected:
     int _handle_client_recv(TCPConnection* connection);
@@ -49,11 +52,12 @@ private:
     HTTPResponse _build_response(const HTTPRequest& request, Context& ctx);
     HTTPResponse _build_cgi_response(const HTTPRequest& request, const Context& ctx);
 
-    std::string _root;
-    std::string _name;
-    size_t _max_body_size;
-    std::vector<std::string> _index;
-    std::vector<HTTPMethod> _allowed_methods;
+    std::string _root; // TODO: remove
+    std::string _name; // TODO: remove
+    size_t _max_body_size; // TODO: remove
+    std::vector<std::string> _index; // TODO: remove
+    std::vector<HTTPMethod> _allowed_methods; // TODO: remove
+    configFile _config;
 };
 
 #endif

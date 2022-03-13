@@ -15,6 +15,7 @@
 # include "HTTPRequest.hpp"
 # include "HTTPResponse.hpp"
 # include "HTTPConnection.hpp"
+# include "HTTPListener.hpp"
 # include "HTTPStatefulConnection.hpp"
 # include <iostream>
 # include <fstream>
@@ -25,11 +26,12 @@
 # include "utils.hpp"
 
 
-HTTPServer::HTTPServer(int timeout) :
+HTTPServer::HTTPServer(configFile config, int timeout) :
     TCPServer(timeout),
     _root("./www"),
     _name(""),
-    _max_body_size(1024 * 1024) // 1MB
+    _max_body_size(1024 * 1024), // 1MB
+    _config(config)
 {
     _index.push_back("index.html");
     _index.push_back("index.htm");
@@ -43,6 +45,28 @@ HTTPServer::HTTPServer(int timeout) :
 
 HTTPServer::~HTTPServer()
 {
+}
+
+
+void HTTPServer::init()
+{
+    std::set<std::pair<std::string, int> > ips_and_ports;
+    std::vector<configServerBlock> server_blocks = _config.getServerBlocksObj();
+    for (std::vector<configServerBlock>::iterator it = server_blocks.begin();
+        it != server_blocks.end(); ++it)
+        ips_and_ports.insert(std::make_pair(it->getIP(), it->getPort()));
+    for (std::set<std::pair<std::string, int> >::const_iterator it = ips_and_ports.begin();
+        it != ips_and_ports.end(); ++it)
+    {
+        // filter for ip and port
+        std::vector<configServerBlock> serverBlocks;
+        for (std::vector<configServerBlock>::iterator it2 = server_blocks.begin();
+            it2 != server_blocks.end(); ++it2)
+            if (it->first == it2->getIP() && it->second == it2->getPort())
+                serverBlocks.push_back(*it2);
+
+        this->add_listener(new HTTPListener(it->first, it->second, serverBlocks));
+    }
 }
 
 int HTTPServer::_handle_client_recv(TCPConnection* connection)

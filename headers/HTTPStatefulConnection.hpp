@@ -6,7 +6,7 @@
 /*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/09 00:17:07 by jpceia            #+#    #+#             */
-/*   Updated: 2022/03/09 20:26:00 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/03/13 17:54:01 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,7 @@ public:
     ~HTTPStatefulConnection();
     HTTPStatefulConnection& operator=(const HTTPStatefulConnection& rhs);
     HTTPRequest getRequest() const;
+    configServerBlock getServerBlock(const std::string& host) const;
     void setResponse(const HTTPResponse& response);
     bool sendChuck();
     bool recvChunk();

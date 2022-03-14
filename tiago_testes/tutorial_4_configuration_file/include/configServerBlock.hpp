@@ -114,16 +114,18 @@ class configServerBlock : public configDefaults
 				for (int i = 0; i < _location_blocks_count; i++)
 				{
 					if (_location_blocks[i].getLocationPath().front() == "/")
-						is_default_block_path = true;				
+						is_default_block_path = true;
 				}
 				if (is_default_block_path == false)
 				{
-					/*for (int i = 0; i < _location_blocks_count; i++)
+					for (int i = _location_blocks_count + 1; i > 0; i--)
 					{
-						_location_blocks[i + 1] = _location_blocks[i];
-					}*/ // to do;
+						_location_blocks[i] = _location_blocks[i - 1];
+					}
 
-					_location_blocks[0].locationDirectiveTreatment("location / {");
+					configLocationBlock locationTemp;
+					locationTemp.locationDirectiveTreatment("location / {");
+					_location_blocks[0] = locationTemp;
 					_location_blocks_count++;
 				}
 			}
@@ -134,7 +136,13 @@ class configServerBlock : public configDefaults
 			/* Fill Location blocks directives if empty with  */
 			/* Server Blocks information.					  */
 			/**************************************************/
-
+			fillDirectivesIfEmpty();
+			for (int i = 0; i < _location_blocks_count; i++)
+			{
+				_location_blocks[i].fillDirectivesIfEmpty(_client_max_body_size,
+														   _root,
+														   _auto_index);
+			}
 
 
 		};
@@ -170,17 +178,20 @@ class configServerBlock : public configDefaults
 			/**********************************/
 			/*			  error_page          */
 			/**********************************/
-			if (!_error_status.empty() && !_error_path.empty())
+			if (!_error_page.empty())
 			{
-				std::cout << "Error_page:		";
-				std::vector<int>::iterator	_error_status_it = _error_status.begin();
-				std::cout << "  { ";
-				for (; _error_status_it != _error_status.end(); _error_status_it++)
+				std::cout << "Error_page:";
+				std::map<int, std::string>::iterator	_error_page_it = _error_page.begin();
+
+				for (int i = 0; _error_page_it != _error_page.end(); _error_page_it++, i++)
 				{
-					std::cout <<  *_error_status_it << " ";
+					if (i == 0)
+						std::cout << "		  { ";
+					else
+						std::cout << "			  { ";
+					std::cout <<  _error_page_it->first << " " << _error_page_it->second;
+					std::cout << " }" << std::endl;
 				}
-				std::cout << *_error_path.begin();
-				std::cout << "}" << std::endl;
 			}
 
 			/**********************************/
@@ -233,21 +244,21 @@ class configServerBlock : public configDefaults
 				/**********************************/
 				/*			  error_page          */
 				/**********************************/
-				std::vector<std::string> error_path_l = _location_blocks[i].getErrorPath();
-				std::vector<int> 		 error_status_l = _location_blocks[i].getErrorStatus();
-
-				if (!error_path_l.empty() &&
-					!error_status_l.empty())
+				std::multimap<int, std::string> error_page_l = _location_blocks[i].getErrorPage();
+				if (!error_page_l.empty())
 				{
-					std::cout << "  Error_page:		   ";
-					std::vector<int>::iterator	_error_status_it_l = error_status_l.begin();
-					std::cout << "  { ";
-					for (; _error_status_it_l != error_status_l.end(); _error_status_it_l++)
+					std::cout << "  Error_page:   ";
+					std::multimap<int, std::string>::iterator	_error_page_it = error_page_l.begin();
+
+					for (int i = 0; _error_page_it != error_page_l.end(); _error_page_it++, i++)
 					{
-						std::cout <<  *_error_status_it_l << " ";
+						if (i == 0)
+							std::cout << "	     { ";
+						else
+							std::cout << "  			     { ";
+						std::cout <<  _error_page_it->first << " " << _error_page_it->second;
+						std::cout << " }" << std::endl;
 					}
-					std::cout << *error_path_l.begin();
-					std::cout << "}" << std::endl;
 				}
 
 				/**********************************/
@@ -262,7 +273,7 @@ class configServerBlock : public configDefaults
 				/**********************************/
 				/*		 client_max_body_size     */
 				/**********************************/
-				std::vector<long int> client_max_body_size_l = _location_blocks[i].getClientMaxBodySize();
+				std::vector<unsigned long int> client_max_body_size_l = _location_blocks[i].getClientMaxBodySize();
 
 				if (!client_max_body_size_l.empty())
 				{
@@ -289,10 +300,10 @@ class configServerBlock : public configDefaults
 				/**********************************/
 				/*			  auto_index          */
 				/**********************************/
-				if (!_location_blocks[i].getAutoindex().empty())
+				if (!_location_blocks[i].getAutoIndex().empty())
 				{
 					std::cout << "  Auto_index:		   ";
-					std::cout << "  { " << *_location_blocks[i].getAutoindex().begin() << " }" << std::endl;
+					std::cout << "  { " << *_location_blocks[i].getAutoIndex().begin() << " }" << std::endl;
 				}
 
 				/**********************************/
@@ -332,17 +343,19 @@ class configServerBlock : public configDefaults
 				/**********************************/
 				/*			    cgi               */
 				/**********************************/
-				std::vector<std::string> cgi_l = _location_blocks[i].getCgi();
+				std::multimap<std::string, std::string> cgi_l = _location_blocks[i].getCgi();
 				if (!cgi_l.empty())
 				{
 					std::cout << "  Cgi:			   ";
-					std::vector<std::string>::iterator	cgi_it = cgi_l.begin();
-					std::cout << "  { ";
-					for (; cgi_it != cgi_l.end(); cgi_it++)
+					std::multimap<std::string, std::string>::iterator	cgi_it = cgi_l.begin();
+					for (int i = 0; cgi_it != cgi_l.end(); cgi_it++, i++)
 					{
-						std::cout <<  *cgi_it << " ";
+						if (i == 0)
+							std::cout << "  { ";
+						else
+							std::cout << "  			     { ";
+						std::cout << cgi_it->first << " " << cgi_it->second << "}" << std::endl;
 					}
-					std::cout << "}" << std::endl;
 				}
 
 				/**********************************/
@@ -377,18 +390,25 @@ class configServerBlock : public configDefaults
 
 			return (send);
 		}
-		// get location by path name
+		configLocationBlock					*getLocationByPath(std::string path)
+		{
+			for (int i = 0; i < _location_blocks_count; i++)
+			{
+				if (_location_blocks[i].getLocationPath().front() == path)
+					return &_location_blocks[i];
+			}
+			return NULL;
+		}
 
-		std::string							getIP()					{ return (_ip.front()); }
-		int									getPort()				{ return (_port.front()); }
-		std::vector<std::string>			getServerName()			{ return (_server_name); }
+		std::string							getIP() const					{ return (_ip.front()); }
+		int									getPort() const					{ return (_port.front()); }
+		std::vector<std::string>			getServerName() const			{ return (_server_name); }
 
-		std::vector<int>					getErrorStatus() 		{ return (_error_status); }
-		std::vector<std::string>			getErrorPath()			{ return (_error_path); }
-		std::vector<long int>				getClientMaxBodySize()	{ return (_client_max_body_size); }
-		std::vector<std::string>			getRoot()				{ return (_root); }
-		std::vector<std::string>			getIndex()				{ return (_index); }
-		std::vector<std::string>			getAutoindex()			{ return (_auto_index); }
+		std::multimap<int, std::string>		getErrorPage() const			{ return (_error_page); }
+		std::vector<unsigned long int>		getClientMaxBodySize() const	{ return (_client_max_body_size); }
+		std::vector<std::string>			getRoot() const					{ return (_root); }
+		std::vector<std::string>			getIndex() const				{ return (_index); }
+		std::vector<std::string>			getAutoIndex() const			{ return (_auto_index); }
 
     private:
         /********************/
@@ -439,13 +459,13 @@ class configServerBlock : public configDefaults
 				if (!subs.compare("location"))
 					_location_blocks[_location_blocks_count - 1].locationDirectiveTreatment(line);
 				else if (!subs.compare("error_page"))
-					_location_blocks[_location_blocks_count - 1].errorpageDirectiveTreatment(line);
+					_location_blocks[_location_blocks_count - 1].errorpageDirectiveTreatment(_error_page, line);
 				else if (!subs.compare("client_max_body_size"))
 					_location_blocks[_location_blocks_count - 1].clientmaxbodysizeDirectiveTreatment(line);
 				else if (!subs.compare("root"))
 					_location_blocks[_location_blocks_count - 1].rootDirectiveTreatment(line);
 				else if (!subs.compare("index"))
-					_location_blocks[_location_blocks_count - 1].indexDirectiveTreatment(line);
+					_location_blocks[_location_blocks_count - 1].indexDirectiveTreatment(_index, line);
 				else if (!subs.compare("autoindex"))
 					_location_blocks[_location_blocks_count - 1].autoindexDirectiveTreatment(line);
 				else if (!subs.compare("return"))
@@ -686,20 +706,21 @@ class configServerBlock : public configDefaults
 			/* Add everything to error status, error path.					 */
 			/*****************************************************************/
 			path.resize(path.size() - 1);
-			_error_path.clear();
+
+        	std::vector<int>				error_status;
+        	std::vector<std::string>		error_path;
 
 			if (_root.empty())
 			{
-				_error_path.push_back(*_root_default.begin() + path);
+				error_path.push_back(*_root_default.begin() + path);
 			}
 			else
 			{
-				_error_path.push_back(*_root.begin() + path);
+				error_path.push_back(*_root.begin() + path);
 			}
 
 			std::stringstream	is2(line);
 			int					i = 0;
-			_error_status.clear();
 			while (is2 >> word)
 			{
 				if (i  != number_of_words - 1 && i != 0)
@@ -717,14 +738,32 @@ class configServerBlock : public configDefaults
 						}
 						else
 						{
-							if (std::find(_error_status.begin(), _error_status.end(), status_code) != _error_status.end())
+							if (std::find(error_status.begin(), error_status.end(), status_code) != error_status.end())
 							{}
 							else
-								_error_status.push_back(status_code);
+								error_status.push_back(status_code);
 						}
 					}
 				}
 				i++;
+			}
+
+			/*****************************************************************/
+			/* Now we have the values in the error_status and error_path.	 */
+			/* We may have something like: 									 */
+			/*	Error_status = "300 301 302 303"							 */
+			/*	Error_path	 = "/404.html"									 */
+			/* We put everything on _error_page map like so:				 */
+			/*	Error_map[0] = {300, "/404".html}							 */
+			/*	Error_map[1] = {301, "/404".html}							 */
+			/*	Error_map[2] = {302, "/404".html}							 */
+			/*	Error_map[3] = {303, "/404".html}							 */
+			/*****************************************************************/
+
+			std::vector<int>::iterator it = error_status.begin();
+			for (; it != error_status.end(); it++)
+			{
+				_error_page.insert(std::pair<int, std::string>(*it, error_path.front()));
 			}
 		}
 		void	rootDirectiveTreatment(std::string line)
@@ -783,11 +822,11 @@ class configServerBlock : public configDefaults
 			/* Check for last letter if it's a k K g G m M			   */
 			/* Do the conversions.									   */
 			/***********************************************************/
-			std::stringstream	is(line);
-			std::string			word;
-			char				size_type;
-			long int		client_max_body_size = 0;
-			int					number_of_words = 0;
+			std::stringstream		is(line);
+			std::string				word;
+			char					size_type;
+			unsigned long int		client_max_body_size = 0;
+			int						number_of_words = 0;
 			while (is >> word)
 			{
 				if (number_of_words == 0)
@@ -877,7 +916,10 @@ class configServerBlock : public configDefaults
 					}
 					else
 					{
-						_index.push_back(*_root_default.begin() + "/" + word);
+						if (std::find(_index.begin(), _index.end(), *_root_default.begin() + "/" + word) != _index.end())
+						{}
+						else
+							_index.push_back(*_root_default.begin() + "/" + word);
 					}
 				}
 				number_of_words++;
@@ -932,15 +974,21 @@ class configServerBlock : public configDefaults
 			}
 		}
 
-		void	fillDirectivesIfEmpty(configServerBlock & obj)
+		void	fillDirectivesIfEmpty()
 		{
 			if (_server_name.empty())
 				_server_name = _server_name_default;
-			else if (_client_max_body_size.empty())
+			if (_client_max_body_size.empty())
 				_client_max_body_size = _client_max_body_size_default;
-			else if (_root.empty())
+			if (_root.empty())
 				_root = _root_default;
-			
+			if (_index.empty())
+			{
+				_index.push_back(_root.front() + _index_default.front());
+			}
+			if (_auto_index.empty())
+				_auto_index = _auto_index_default;
+
 		}
 
         /********/
@@ -958,19 +1006,15 @@ class configServerBlock : public configDefaults
         /**********************/
 
 		// listen
-		std::vector<std::string>	_ip;
-		std::vector<int>			_port;
+		std::vector<std::string>			_ip;
+		std::vector<int>					_port;
 
-		std::vector<std::string>    _server_name;
-
-		// error_page
-        std::vector<int>            _error_status;
-        std::vector<std::string>    _error_path;
-
-        std::vector<long int>  		_client_max_body_size;
-        std::vector<std::string>    _root;
-        std::vector<std::string>    _index;
-        std::vector<std::string>    _auto_index;
+		std::vector<std::string>			_server_name;
+		std::multimap<int, std::string>		_error_page;
+        std::vector<unsigned long int>		_client_max_body_size;
+        std::vector<std::string>			_root;
+        std::vector<std::string>			_index;
+        std::vector<std::string>			_auto_index;
 };
 
 #endif
@@ -978,7 +1022,7 @@ class configServerBlock : public configDefaults
 
 
 /*
-
+	meter os location blocks com o "/" default
 	get location by path name
 	meter os defaults no locaiton e no server block fillDirectivesIfEmpty fillDirectivesIfEmpty
 	meter o cgi e o error page em mapas
@@ -991,6 +1035,12 @@ class configServerBlock : public configDefaults
 	map<302,/404.html>
 	map<303,/404.html>
 	map<404,/405.html>
+
+	fazer os coisos do server block a ignorar
+
+	meter os cpp hpp
+
+	e dar merge
 
 
 

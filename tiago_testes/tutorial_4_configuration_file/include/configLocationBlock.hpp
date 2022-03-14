@@ -10,8 +10,6 @@
 #include <stdexcept>
 #include <algorithm>
 #include "configDefaults.hpp"
-#include "configServerBlock.hpp"
-
 
 class configLocationBlock : public configDefaults
 {
@@ -53,8 +51,15 @@ class configLocationBlock : public configDefaults
 				throw std::runtime_error("configLocationBlock.hpp exception: location path is empty");
 			}
 		}
-		void	errorpageDirectiveTreatment(std::string line)
+		void	errorpageDirectiveTreatment(std::multimap<int, std::string> error_p,
+											std::string line)
 		{
+			/*****************************************************************/
+			/* If there is an error_page on server block. Add here.          */
+			/*****************************************************************/
+			if (!error_p.empty() && _error_page.empty())
+				_error_page = error_p;
+
 			/*****************************************************************/
 			/* First count how many args.     								 */
 			/* Check if it has more than 1 args. 							 */
@@ -72,12 +77,12 @@ class configLocationBlock : public configDefaults
 
 			if (number_of_words == 2 && !word.compare(";"))
 			{
-				throw std::runtime_error("configLocationBlock.hpp exception: error_page has no arguments");
+				throw std::runtime_error("configServerBlock.hpp exception: error_page has no arguments");
 			}
 
 			if (number_of_words < 3)
 			{
-				throw std::runtime_error("configLocationBlock.hpp exception: error_page has wrong number of args");
+				throw std::runtime_error("configServerBlock.hpp exception: error_page has wrong number of args");
 			}
 
 			/*****************************************************************/
@@ -87,45 +92,64 @@ class configLocationBlock : public configDefaults
 			/* Add everything to error status, error path.					 */
 			/*****************************************************************/
 			path.resize(path.size() - 1);
-			_error_path.clear();
+
+        	std::vector<int>				error_status;
+        	std::vector<std::string>		error_path;
 
 			if (_root.empty())
 			{
-				_error_path.push_back(*_root_default.begin() + path);
+				error_path.push_back(*_root_default.begin() + path);
 			}
 			else
 			{
-				_error_path.push_back(*_root.begin() + path);
+				error_path.push_back(*_root.begin() + path);
 			}
 
 			std::stringstream	is2(line);
 			int					i = 0;
-			_error_status.clear();
 			while (is2 >> word)
 			{
 				if (i  != number_of_words - 1 && i != 0)
 				{
 					if ((word.find_first_not_of("0123456789") == std::string::npos) == false)
 					{
-						throw std::runtime_error("configLocationBlock.hpp exception: error_page has invalid status code");
+						throw std::runtime_error("configServerBlock.hpp exception: error_page has invalid status code");
 					}
 					else
 					{
 						int status_code = atoi(word.c_str());
 						if (status_code < 300 || status_code > 599)
 						{
-							throw std::runtime_error("configLocationBlock.hpp exception: error_page has invalid range status code");
+							throw std::runtime_error("configServerBlock.hpp exception: error_page has invalid range status code");
 						}
 						else
 						{
-							if (std::find(_error_status.begin(), _error_status.end(), status_code) != _error_status.end())
+							if (std::find(error_status.begin(), error_status.end(), status_code) != error_status.end())
 							{}
 							else
-								_error_status.push_back(status_code);
+								error_status.push_back(status_code);
 						}
 					}
 				}
 				i++;
+			}
+
+			/*****************************************************************/
+			/* Now we have the values in the error_status and error_path.	 */
+			/* We may have something like: 									 */
+			/*	Error_status = "300 301 302 303"							 */
+			/*	Error_path	 = "/404.html"									 */
+			/* We put everything on _error_page map like so:				 */
+			/*	Error_map[0] = {300, "/404".html}							 */
+			/*	Error_map[1] = {301, "/404".html}							 */
+			/*	Error_map[2] = {302, "/404".html}							 */
+			/*	Error_map[3] = {303, "/404".html}							 */
+			/*****************************************************************/
+
+			std::vector<int>::iterator it = error_status.begin();
+			for (; it != error_status.end(); it++)
+			{
+				_error_page.insert(std::pair<int, std::string>(*it, error_path.front()));
 			}
 		}
 		void	clientmaxbodysizeDirectiveTreatment(std::string line)
@@ -144,7 +168,7 @@ class configLocationBlock : public configDefaults
 			std::stringstream	is(line);
 			std::string			word;
 			char				size_type;
-			long int		client_max_body_size = 0;
+			unsigned long int	client_max_body_size = 0;
 			int					number_of_words = 0;
 			while (is >> word)
 			{
@@ -240,8 +264,14 @@ class configLocationBlock : public configDefaults
 				number_of_words++;
 			}
 		}
-		void	indexDirectiveTreatment(std::string line)
+		void	indexDirectiveTreatment(std::vector<std::string> ind, std::string line)
 		{
+			/*****************************************************************/
+			/* If there is an index on server block. Add here. 		         */
+			/*****************************************************************/
+			if (!ind.empty() && _index.empty())
+				_index = ind;
+
 			/***********************************************************/
 			/* Ignore the first word and add the rest of the arguments */
 			/* to the _index vector.	 							   */
@@ -278,7 +308,10 @@ class configLocationBlock : public configDefaults
 					}
 					else
 					{
-						_index.push_back(*_root_default.begin() + "/" + word);
+						if (std::find(_index.begin(), _index.end(), *_root_default.begin() + "/" + word) != _index.end())
+						{}
+						else
+							_index.push_back(*_root_default.begin() + "/" + word);
 					}
 				}
 				number_of_words++;
@@ -511,16 +544,7 @@ class configLocationBlock : public configDefaults
 				last_arg.resize(last_arg.size() - 1);
 			}
 
-			if (_cgi.empty())
-			{
-				_cgi.push_back(first_arg);
-				_cgi.push_back(last_arg);
-			}
-			else
-			{
-				throw std::runtime_error("configLocationBlock.hpp exception: cgi has duplicated value");
-			}
-
+			_cgi.insert(std::pair<std::string, std::string>(first_arg, last_arg));
 		}
 		void	uploadDirectiveTreatment(std::string line)
 		{
@@ -576,26 +600,38 @@ class configLocationBlock : public configDefaults
 
 		}
 
-		void	fillDirectivesIfEmpty(configServerBlock & obj)
+		void	fillDirectivesIfEmpty( std::vector<unsigned long int> client_max_body_size,
+									   std::vector<std::string> root,
+									   std::vector<std::string> autoindex)
 		{
-			
+			if (_client_max_body_size.empty())
+				_client_max_body_size = client_max_body_size;
+			if (_root.empty())
+				_root = root;
+			if (_index.empty())
+				_index.push_back(_root.front() + _index_default.front());
+			if (_auto_index.empty())
+				_auto_index = autoindex;
+			if (_methods.empty())
+				_methods = _methods_default;
+			if (_upload.empty())
+				_upload = _upload_default;
 		}
 
 		/*****************/
 		/*    Getters    */
 		/*****************/
-		std::vector<std::string>	getLocationPath()		{ return (_location_path); }
-		std::vector<int>			getErrorStatus() 		{ return (_error_status); }
-		std::vector<std::string>	getErrorPath()			{ return (_error_path); }
-		std::vector<long int>		getClientMaxBodySize()	{ return (_client_max_body_size); }
-		std::vector<std::string>	getRoot()				{ return (_root); }
-		std::vector<std::string>	getIndex()				{ return (_index); }
-		std::vector<std::string>	getAutoindex()			{ return (_auto_index); }
-		std::vector<std::string>	getMethods()			{ return (_methods); }
-		std::vector<int>			getRedirectStatus()		{ return (_redirect_status); }
-		std::vector<std::string>	getRedirectPath()		{ return (_redirect_path); }
-		std::vector<std::string>	getCgi()				{ return (_cgi); }
-		std::vector<std::string>	getUpload()				{ return (_upload); }
+		std::vector<std::string>				getLocationPath() const			{ return (_location_path); }
+		std::multimap<int, std::string>			getErrorPage() const			{ return (_error_page); }
+		std::vector<unsigned long int>			getClientMaxBodySize() const	{ return (_client_max_body_size); }
+		std::vector<std::string>				getRoot() const					{ return (_root); }
+		std::vector<std::string>				getIndex() const				{ return (_index); }
+		std::vector<std::string>				getAutoIndex() const			{ return (_auto_index); }
+		std::vector<std::string>				getMethods() const				{ return (_methods); }
+		std::vector<int>						getRedirectStatus() const		{ return (_redirect_status); }
+		std::vector<std::string>				getRedirectPath() const			{ return (_redirect_path); }
+		std::multimap<std::string, std::string>	getCgi() const					{ return (_cgi); }
+		std::vector<std::string>				getUpload() const				{ return (_upload); }
 
     private:
         /**********************/
@@ -603,25 +639,22 @@ class configLocationBlock : public configDefaults
         /**********************/
 
 		// location_path
-		std::vector<std::string>	_location_path;
+		std::vector<std::string>				_location_path;
 
-		// error_page
-        std::vector<int>            _error_status;
-        std::vector<std::string>    _error_path;
+		std::multimap<int, std::string>			_error_page;
+        std::vector<unsigned long int>			_client_max_body_size;
+        std::vector<std::string>    			_root;
+        std::vector<std::string>    			_index;
+        std::vector<std::string>    			_auto_index;
 
-        std::vector<long int>  		_client_max_body_size;
-        std::vector<std::string>    _root;
-        std::vector<std::string>    _index;
-        std::vector<std::string>    _auto_index;
-
-        std::vector<std::string>    _methods;
+        std::vector<std::string>    			_methods;
 
 		// return (redirect)
-		std::vector<int>            _redirect_status;
-        std::vector<std::string>    _redirect_path;
+		std::vector<int>            			_redirect_status;
+        std::vector<std::string>    			_redirect_path;
 
-        std::vector<std::string>    _cgi;
-        std::vector<std::string>    _upload;
+        std::multimap<std::string, std::string>	_cgi;
+        std::vector<std::string>    			_upload;
 };
 
 #endif

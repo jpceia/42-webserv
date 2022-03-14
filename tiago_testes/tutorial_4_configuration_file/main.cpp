@@ -23,9 +23,11 @@ int main(int argc, char **argv)
 			std::vector<configServerBlock> server_blocks = config_obj.getServerBlocksObj();
 			std::vector<configServerBlock>::iterator itata = server_blocks.begin();
 
-			for (; itata != server_blocks.end(); itata++)
+			for (int i = 0; itata != server_blocks.end(); itata++)
 			{
+				std::cout << "\n- - - - - Server Block[" << i << "] - - - - -" << std::endl;
 				itata->printDirectives();
+				i++;
 			}
 		}
 

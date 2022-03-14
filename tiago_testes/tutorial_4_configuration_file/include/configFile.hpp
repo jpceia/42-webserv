@@ -83,18 +83,7 @@ class configFile
 			/* is different. If they have the same name, we delete one  */
 			/* of the server_block.										*/
 			/************************************************************/
-/*
-			std::list<std::vector<std::string> >::iterator start(_server_blocks.begin());
-			std::list<std::vector<std::string> >::iterator looper(_server_blocks.begin());
 
-			for (; looper != _server_blocks.end(); looper++)
-			{
-				
-				start++;
-				if (start == _server_blocks.end())
-					break ;
-			}
-*/
 
         };
 

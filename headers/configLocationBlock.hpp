@@ -39,6 +39,7 @@ class configLocationBlock : public configDefaults
 		std::string								getLocationPath() const			{ return (_location_path.size() > 0 ? _location_path.front() : ""); }
 		std::multimap<int, std::string>			getErrorPage() const			{ return (_error_page); }
 		std::string								getRoot() const					{ return (_root.size() > 0 ? _root.front() : ""); }
+		unsigned long int						getClientMaxBodySize() const	{ return (_client_max_body_size.size() > 0 ? _client_max_body_size.front() : 0); }
 		std::vector<std::string>				getIndex() const				{ return (_index); }
 		std::string								getAutoIndex() const			{ return (_auto_index.size() > 0 ? _auto_index.front() : ""); }
 		std::vector<std::string>				getMethods() const				{ return (_methods); }

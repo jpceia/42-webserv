@@ -1,4 +1,4 @@
-#include "../headers/configFile.hpp"
+#include "../include/configFile.hpp"
 
 configFile::configFile(char *configuration_file)
 {
@@ -91,7 +91,7 @@ configFile::configFile(char *configuration_file)
 
 	}
 
-}
+};
 
 configFile::~configFile()
-{}
+{};

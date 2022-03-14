@@ -19,7 +19,7 @@ class configLocationBlock : public configDefaults
         ~configLocationBlock();
 
 		void	locationDirectiveTreatment(std::string line);
-		void	errorpageDirectiveTreatment(std::multimap<int, std::string> error_p,
+		void	errorpageDirectiveTreatment(std::map<int, std::string> error_p,
 											std::string line);
 		void	clientmaxbodysizeDirectiveTreatment(std::string line);
 		void	rootDirectiveTreatment(std::string line);
@@ -36,17 +36,17 @@ class configLocationBlock : public configDefaults
 		/*****************/
 		/*    Getters    */
 		/*****************/
-		std::string								getLocationPath() const			{ return (_location_path.size() > 0 ? _location_path.front() : ""); }
-		std::multimap<int, std::string>			getErrorPage() const			{ return (_error_page); }
-		std::string								getRoot() const					{ return (_root.size() > 0 ? _root.front() : ""); }
-		unsigned long int						getClientMaxBodySize() const	{ return (_client_max_body_size.size() > 0 ? _client_max_body_size.front() : 0); }
+		std::vector<std::string>				getLocationPath() const			{ return (_location_path); }
+		std::map<int, std::string>				getErrorPage() const			{ return (_error_page); }
+		std::vector<unsigned long int>			getClientMaxBodySize() const	{ return (_client_max_body_size); }
+		std::vector<std::string>				getRoot() const					{ return (_root); }
 		std::vector<std::string>				getIndex() const				{ return (_index); }
-		std::string								getAutoIndex() const			{ return (_auto_index.size() > 0 ? _auto_index.front() : ""); }
+		std::vector<std::string>				getAutoIndex() const			{ return (_auto_index); }
 		std::vector<std::string>				getMethods() const				{ return (_methods); }
-		int										getRedirectStatus() const		{ return (_redirect_status.size() > 0 ? _redirect_status.front() : 0); }
-		std::string								getRedirectPath() const			{ return (_redirect_path.size() > 0 ? _redirect_path.front() : ""); }
-		std::multimap<std::string, std::string>	getCgi() const					{ return (_cgi); }
-		std::string								getUpload() const				{ return (_upload.size() > 0 ? _upload.front() : ""); }
+		std::vector<int>						getRedirectStatus() const		{ return (_redirect_status); }
+		std::vector<std::string>				getRedirectPath() const			{ return (_redirect_path); }
+		std::map<std::string, std::string>	getCgi() const						{ return (_cgi); }
+		std::vector<std::string>				getUpload() const				{ return (_upload); }
 
     private:
         /**********************/
@@ -56,7 +56,7 @@ class configLocationBlock : public configDefaults
 		// location_path
 		std::vector<std::string>				_location_path;
 
-		std::multimap<int, std::string>			_error_page;
+		std::map<int, std::string>				_error_page;
         std::vector<unsigned long int>			_client_max_body_size;
         std::vector<std::string>    			_root;
         std::vector<std::string>    			_index;
@@ -68,7 +68,7 @@ class configLocationBlock : public configDefaults
 		std::vector<int>            			_redirect_status;
         std::vector<std::string>    			_redirect_path;
 
-        std::multimap<std::string, std::string>	_cgi;
+        std::map<std::string, std::string>		_cgi;
         std::vector<std::string>    			_upload;
 };
 

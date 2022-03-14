@@ -19,7 +19,7 @@ class configLocationBlock : public configDefaults
         ~configLocationBlock();
 
 		void	locationDirectiveTreatment(std::string line);
-		void	errorpageDirectiveTreatment(std::multimap<int, std::string> error_p,
+		void	errorpageDirectiveTreatment(std::map<int, std::string> error_p,
 											std::string line);
 		void	clientmaxbodysizeDirectiveTreatment(std::string line);
 		void	rootDirectiveTreatment(std::string line);
@@ -37,7 +37,7 @@ class configLocationBlock : public configDefaults
 		/*    Getters    */
 		/*****************/
 		std::vector<std::string>				getLocationPath() const			{ return (_location_path); }
-		std::multimap<int, std::string>			getErrorPage() const			{ return (_error_page); }
+		std::map<int, std::string>				getErrorPage() const			{ return (_error_page); }
 		std::vector<unsigned long int>			getClientMaxBodySize() const	{ return (_client_max_body_size); }
 		std::vector<std::string>				getRoot() const					{ return (_root); }
 		std::vector<std::string>				getIndex() const				{ return (_index); }
@@ -45,7 +45,7 @@ class configLocationBlock : public configDefaults
 		std::vector<std::string>				getMethods() const				{ return (_methods); }
 		std::vector<int>						getRedirectStatus() const		{ return (_redirect_status); }
 		std::vector<std::string>				getRedirectPath() const			{ return (_redirect_path); }
-		std::multimap<std::string, std::string>	getCgi() const					{ return (_cgi); }
+		std::map<std::string, std::string>	getCgi() const						{ return (_cgi); }
 		std::vector<std::string>				getUpload() const				{ return (_upload); }
 
     private:
@@ -56,7 +56,7 @@ class configLocationBlock : public configDefaults
 		// location_path
 		std::vector<std::string>				_location_path;
 
-		std::multimap<int, std::string>			_error_page;
+		std::map<int, std::string>				_error_page;
         std::vector<unsigned long int>			_client_max_body_size;
         std::vector<std::string>    			_root;
         std::vector<std::string>    			_index;
@@ -68,7 +68,7 @@ class configLocationBlock : public configDefaults
 		std::vector<int>            			_redirect_status;
         std::vector<std::string>    			_redirect_path;
 
-        std::multimap<std::string, std::string>	_cgi;
+        std::map<std::string, std::string>		_cgi;
         std::vector<std::string>    			_upload;
 };
 

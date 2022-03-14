@@ -27,9 +27,13 @@ int main(int argc, char **argv)
 			{
 				std::cout << "\n- - - - - Server Block[" << i << "] - - - - -" << std::endl;
 				itata->printDirectives();
+
+
+				std::cout << itata->getLocationByPath("/hello").getLocationPath().front() << std::endl;
 				i++;
 			}
 		}
+
 
 	}
 	catch(const std::exception& e)

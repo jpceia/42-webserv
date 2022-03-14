@@ -1,11 +1,11 @@
-#include "../headers/configFileTreatment.hpp"
+#include "../include/configFileTreatment.hpp"
 
 configFileTreatment::configFileTreatment()
-{}
+{};
 
 configFileTreatment::configFileTreatment(std::string configuration_file_raw)
 										:	_configuration_file_raw(configuration_file_raw)
-{}
+{};
 
 configFileTreatment::~configFileTreatment()
 {}
@@ -49,7 +49,7 @@ void	configFileTreatment::printConfigurationFileTreated()
 		std::cout << i  << " = " << *it << std::endl;
 		i++;
 	}
-}
+};
 
 void	configFileTreatment::printServerBlocks()
 {

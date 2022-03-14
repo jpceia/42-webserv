@@ -53,7 +53,7 @@ class configServerBlock : public configDefaults
 
 		std::string							getIP() const					{ return (_ip.front()); }
 		int									getPort() const					{ return (_port.front()); }
-		std::vector<std::string>			getServerName() const			{ return (_server_name); }
+		std::string							getServerName() const			{ return (_server_name.front()); }
 
 		std::multimap<int, std::string>		getErrorPage() const			{ return (_error_page); }
 		std::vector<unsigned long int>		getClientMaxBodySize() const	{ return (_client_max_body_size); }

@@ -6,7 +6,7 @@
 /*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/03 17:30:40 by jceia             #+#    #+#             */
-/*   Updated: 2022/03/14 16:09:36 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/03/14 16:42:07 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,6 +81,7 @@ int HTTPServer::_handle_client_recv(TCPConnection* connection)
         ctx.max_body_size = location_block.getClientMaxBodySize();
         ctx.root = location_block.getRoot();
         ctx.index = location_block.getIndex();
+        ctx.autoindex = location_block.getAutoIndex();
         {
             std::vector<std::string> methods = location_block.getMethods();
             for (std::vector<std::string>::iterator it = methods.begin();
@@ -127,11 +128,11 @@ HTTPResponse HTTPServer::_response(const HTTPRequest& request, Context& ctx)
     // checking if the method is allowed
     if (std::find(ctx.allowed_methods.begin(), ctx.allowed_methods.end(),
         request.getMethod()) == ctx.allowed_methods.end())
-        return _method_not_allowed_response(ctx);
+        return _error_page_response(405, "Method not allowed", ctx);
 
     // checking the body size
     if (request.getBody().size() > (size_t)ctx.max_body_size)
-        return _body_too_large_response(ctx);
+        return _error_page_response(413, "Request Entity Too Large", ctx);
 
     // checking if the file exists
     ctx.path = ctx.root + request.getEndpoint();
@@ -146,23 +147,30 @@ HTTPResponse HTTPServer::_response(const HTTPRequest& request, Context& ctx)
             {
                 ctx.path += *it;
                 found = true;
-                break;
+                break ;
             }
         }
         if (!found)
-            return _not_found_response(ctx);
+        {
+            if (ctx.autoindex == "on")
+                return _autoindex_response(ctx);
+            else
+                return _error_page_response(404, "Not found", ctx);
+        }
     }
     else if (!is_readable_file(ctx.path))
-        return _not_found_response(ctx);
+        return _error_page_response(404, "Not found", ctx);
 
     // CGI
-    if(ctx.path.substr(ctx.path.find_last_of(".") + 1) == "php")
-        return _cgi_response(request, ctx);
-    
+    std::string extension = ctx.path.substr(ctx.path.find_last_of(".") + 1);
+    std::map<std::string, std::string>::const_iterator it = ctx.cgi.find(extension);
+    if (it != ctx.cgi.end())
+        return _cgi_response(it->second, request, ctx);
+
     // Static page
     std::ifstream ifs(ctx.path.c_str(), std::ifstream::in);
     if (!ifs.good())
-        return _not_found_response(ctx);
+        return _error_page_response(404, "Not found", ctx);
 
     std::cout << "path is " << ctx.path << std::endl;
 
@@ -175,11 +183,11 @@ HTTPResponse HTTPServer::_response(const HTTPRequest& request, Context& ctx)
     return response;
 }
 
-HTTPResponse HTTPServer::_cgi_response(const HTTPRequest& request, const Context& ctx)
+HTTPResponse HTTPServer::_cgi_response(const std::string& cmd, const HTTPRequest& request, const Context& ctx)
 {
     // calling the CGI script using execvpe
     std::vector<std::string> args;
-    args.push_back("php");
+    args.push_back(cmd);
     args.push_back(ctx.path);
 
     std::map<std::string, std::string> env;
@@ -228,44 +236,55 @@ HTTPResponse HTTPServer::_cgi_response(const HTTPRequest& request, const Context
     return response;
 }
 
-HTTPResponse HTTPServer::_not_found_response(const Context& ctx) const
+HTTPResponse HTTPServer::_autoindex_response(const Context& ctx) const
 {
-    HTTPResponse response;
-    response.setVersion("HTTP/1.1");
-    response.setHeader("Content-Type", "text/html");
-    response.setStatus(404, "Not Found");
-    
-    std::string path = ctx.root + "/404.html";
-    std::ifstream ifs(path.c_str(), std::ifstream::in);
-    if (ifs.good())
+    /*
+    std::stringstream ss;
+    ss << "<html><head><title>Index of " << ctx.path << "</title></head><body><h1>Index of " << ctx.path << "</h1><hr><pre>";
+    ss << "<a href=\"..\">..</a>\n";
+    for (std::vector<std::string>::const_iterator it = ctx.index.begin();
+        it != ctx.index.end(); ++it)
     {
-        response.setBody(ifs);
-        ifs.close();
+        std::string path = ctx.path + *it;
+        if (is_dir(path))
+            ss << "<a href=\"" << *it << "/\">" << *it << "/</a>\n";
+        else
+            ss << "<a href=\"" << *it << "\">" << *it << "</a>\n";
     }
-    else
-        response.setBody("<h1>404 Not Found</h1>"); // backup
-
-    return response;
-}
-
-HTTPResponse HTTPServer::_method_not_allowed_response(const Context& ctx) const
-{
+    ss << "</pre></body></html>";
+    std::string body = ss.str();
+    */
     (void)ctx;
     HTTPResponse response;
     response.setVersion("HTTP/1.1");
     response.setHeader("Content-Type", "text/html");
-    response.setStatus(405, "Method Not Allowed");
-    response.setBody("<h1>405 Method Not Allowed</h1>");
+    response.setStatus(200, "OK");
+    //response.setBody(body);
     return response;
+    
 }
 
-HTTPResponse HTTPServer::_body_too_large_response(const Context& ctx) const
+HTTPResponse HTTPServer::_error_page_response(int code, const std::string& msg, const Context& ctx) const
 {
-    (void)ctx;
     HTTPResponse response;
     response.setVersion("HTTP/1.1");
     response.setHeader("Content-Type", "text/html");
-    response.setStatus(413, "Request Entity Too Large");
-    response.setBody("<h1>413 Request Entity Too Large</h1>");
+    response.setStatus(code, msg);
+
+    std::map<int, std::string>::const_iterator it = ctx.error_page.find(code);
+    if (it != ctx.error_page.end())
+    {
+        std::ifstream ifs(it->second.c_str(), std::ifstream::in);
+        if (ifs.good())
+        {
+            response.setBody(ifs);
+            ifs.close();
+            return response;
+        }
+    }
+    // Backup
+    std::stringstream ss;
+    ss << "<h1>" << code << " " << msg << "</h1>";
+    response.setBody(ss.str());
     return response;
 }

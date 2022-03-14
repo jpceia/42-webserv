@@ -6,7 +6,7 @@
 /*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/03 17:30:40 by jceia             #+#    #+#             */
-/*   Updated: 2022/03/14 16:08:44 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/03/14 16:44:13 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,7 @@ struct Context
     std::map<int, std::string> error_page;
     unsigned long int max_body_size;
     std::string root;
+    std::string autoindex;
     std::vector<std::string> index;
     std::vector<HTTPMethod> allowed_methods;
     std::string redirect_status;
@@ -55,12 +56,13 @@ protected:
     int _handle_client_send(TCPConnection* connection);
 
 private:
-    HTTPResponse _not_found_response(const Context& ctx) const;
-    HTTPResponse _method_not_allowed_response(const Context& ctx) const;
-    HTTPResponse _body_too_large_response(const Context& ctx) const;
-
     HTTPResponse _response(const HTTPRequest& request, Context& ctx);
-    HTTPResponse _cgi_response(const HTTPRequest& request, const Context& ctx);
+    HTTPResponse _cgi_response(const std::string& cmd, const HTTPRequest& request, const Context& ctx);
+    //HTTPResponse _static_response(const HTTPRequest& request, const Context& ctx);
+    //HTTPResponse _redirect_response(const HTTPRequest& request, const Context& ctx) const;
+    //HTTPResponse _upload_response(const HTTPRequest& request, const Context& ctx);
+    HTTPResponse _autoindex_response(const Context& ctx) const;
+    HTTPResponse _error_page_response(int code, const std::string& msg, const Context& ctx) const;
 
     configFile _config;
 };

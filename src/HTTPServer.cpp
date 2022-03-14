@@ -6,7 +6,7 @@
 /*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/03 17:30:40 by jceia             #+#    #+#             */
-/*   Updated: 2022/03/11 19:59:03 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/03/14 16:09:36 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,19 +28,8 @@
 
 HTTPServer::HTTPServer(configFile config, int timeout) :
     TCPServer(timeout),
-    _root("./www"),
-    _name(""),
-    _max_body_size(1024 * 1024), // 1MB
     _config(config)
 {
-    _index.push_back("index.html");
-    _index.push_back("index.htm");
-
-    _allowed_methods.push_back(GET);
-    _allowed_methods.push_back(POST);
-    _allowed_methods.push_back(DELETE);
-    
-    //this->init();
 }
 
 HTTPServer::~HTTPServer()
@@ -78,15 +67,38 @@ int HTTPServer::_handle_client_recv(TCPConnection* connection)
     bool finished = conn->recvChunk();
     if (finished) // Finished receiving the request
     {
+        HTTPRequest request = conn->getRequest();
+
+        // Get the server block
+        configServerBlock server_block = conn->getServerBlock(request.getHeader("Host"));
+        
+        // Get correct location config for a given path
+        configLocationBlock location_block = server_block.getLocationByPath(request.getPath());
+
         // Construct the context
         Context ctx;
+        //ctx.error_page = location_block.getErrorPage();
+        ctx.max_body_size = location_block.getClientMaxBodySize();
+        ctx.root = location_block.getRoot();
+        ctx.index = location_block.getIndex();
+        {
+            std::vector<std::string> methods = location_block.getMethods();
+            for (std::vector<std::string>::iterator it = methods.begin();
+                it != methods.end(); ++it)
+                ctx.allowed_methods.push_back(HTTPRequest::parseMethod(*it));
+        }
+        ctx.redirect_status = location_block.getRedirectStatus();
+        ctx.redirect_path = location_block.getRedirectPath();
+        // cgi
+        ctx.upload_path = location_block.getUpload();
+        ctx.server_name = server_block.getServerName();
         ctx.server_addr = connection->getServerIP();
         ctx.client_addr = connection->getClientIP();
         ctx.server_port = connection->getServerPort();
         ctx.client_port = connection->getClientPort();
 
         // build the response
-        HTTPResponse response = _build_response(conn->getRequest(), ctx);
+        HTTPResponse response = _response(conn->getRequest(), ctx);
         conn->setResponse(response);
         return POLLOUT;
     }
@@ -110,25 +122,25 @@ int HTTPServer::_handle_client_send(TCPConnection* connection)
     return POLLOUT;
 }
 
-HTTPResponse HTTPServer::_build_response(const HTTPRequest& request, Context& ctx)
+HTTPResponse HTTPServer::_response(const HTTPRequest& request, Context& ctx)
 {
     // checking if the method is allowed
-    if (std::find(_allowed_methods.begin(), _allowed_methods.end(),
-        request.getMethod()) == _allowed_methods.end())
-        return _method_not_allowed_response();
+    if (std::find(ctx.allowed_methods.begin(), ctx.allowed_methods.end(),
+        request.getMethod()) == ctx.allowed_methods.end())
+        return _method_not_allowed_response(ctx);
 
     // checking the body size
-    if (request.getBody().size() > _max_body_size)
-        return _body_too_large_response();
+    if (request.getBody().size() > (size_t)ctx.max_body_size)
+        return _body_too_large_response(ctx);
 
     // checking if the file exists
-    ctx.path = _root + request.getEndpoint();
+    ctx.path = ctx.root + request.getEndpoint();
     if (is_dir(ctx.path))
     {
         std::cout << "path is a directory" << std::endl;
         bool found = false;
-        for (std::vector<std::string>::const_iterator it = _index.begin();
-            it != _index.end(); ++it)
+        for (std::vector<std::string>::const_iterator it = ctx.index.begin();
+            it != ctx.index.end(); ++it)
         {
             if (is_readable_file(ctx.path + *it))
             {
@@ -138,19 +150,19 @@ HTTPResponse HTTPServer::_build_response(const HTTPRequest& request, Context& ct
             }
         }
         if (!found)
-            return _not_found_response();
+            return _not_found_response(ctx);
     }
     else if (!is_readable_file(ctx.path))
-        return _not_found_response();
+        return _not_found_response(ctx);
 
     // CGI
     if(ctx.path.substr(ctx.path.find_last_of(".") + 1) == "php")
-        return _build_cgi_response(request, ctx);
+        return _cgi_response(request, ctx);
     
     // Static page
     std::ifstream ifs(ctx.path.c_str(), std::ifstream::in);
     if (!ifs.good())
-        return _not_found_response();
+        return _not_found_response(ctx);
 
     std::cout << "path is " << ctx.path << std::endl;
 
@@ -163,7 +175,7 @@ HTTPResponse HTTPServer::_build_response(const HTTPRequest& request, Context& ct
     return response;
 }
 
-HTTPResponse HTTPServer::_build_cgi_response(const HTTPRequest& request, const Context& ctx)
+HTTPResponse HTTPServer::_cgi_response(const HTTPRequest& request, const Context& ctx)
 {
     // calling the CGI script using execvpe
     std::vector<std::string> args;
@@ -172,13 +184,13 @@ HTTPResponse HTTPServer::_build_cgi_response(const HTTPRequest& request, const C
 
     std::map<std::string, std::string> env;
 
-    env["SERVER_NAME"] = _name;
+    env["SERVER_NAME"] = ctx.server_name;
     env["SERVER_PROTOCOL"] = request.getVersion();
     env["SERVER_SOFTWARE"] = "webserv";
     env["AUTH_TYPE"] = "";
     env["CONTENT_LENGTH"] = request.getHeader("Content-Length");
     env["CONTENT_TYPE"] = request.getHeader("Content-Type");
-    env["DOCUMENT_ROOT"] = _root;
+    env["DOCUMENT_ROOT"] = ctx.root;
     env["GATEWAY_INTERFACE"] = "CGI/1.1";
     env["PATH_INFO"] = request.getPath();
 
@@ -187,7 +199,7 @@ HTTPResponse HTTPServer::_build_cgi_response(const HTTPRequest& request, const C
     env["HTTP_ACCEPT_ENCODING"] = request.getHeader("Accept-Encoding");
     env["HTTP_ACCEPT_LANGUAGE"] = request.getHeader("Accept-Language");
     env["HTTP_CONNECTION"] = request.getHeader("Connection");
-    env["HTTP_HOST"] = _name; // TODO: get the hostname from config
+    env["HTTP_HOST"] = ctx.server_name; // TODO: get the hostname from config
     env["HTTP_USER_AGENT"] = request.getHeader("User-Agent");
     env["HTTP_COOKIE"] = request.getHeader("Cookie");
     
@@ -216,14 +228,14 @@ HTTPResponse HTTPServer::_build_cgi_response(const HTTPRequest& request, const C
     return response;
 }
 
-HTTPResponse HTTPServer::_not_found_response()
+HTTPResponse HTTPServer::_not_found_response(const Context& ctx) const
 {
     HTTPResponse response;
     response.setVersion("HTTP/1.1");
     response.setHeader("Content-Type", "text/html");
     response.setStatus(404, "Not Found");
     
-    std::string path = _root + "/404.html";
+    std::string path = ctx.root + "/404.html";
     std::ifstream ifs(path.c_str(), std::ifstream::in);
     if (ifs.good())
     {
@@ -236,8 +248,9 @@ HTTPResponse HTTPServer::_not_found_response()
     return response;
 }
 
-HTTPResponse HTTPServer::_method_not_allowed_response()
+HTTPResponse HTTPServer::_method_not_allowed_response(const Context& ctx) const
 {
+    (void)ctx;
     HTTPResponse response;
     response.setVersion("HTTP/1.1");
     response.setHeader("Content-Type", "text/html");
@@ -246,8 +259,9 @@ HTTPResponse HTTPServer::_method_not_allowed_response()
     return response;
 }
 
-HTTPResponse HTTPServer::_body_too_large_response()
+HTTPResponse HTTPServer::_body_too_large_response(const Context& ctx) const
 {
+    (void)ctx;
     HTTPResponse response;
     response.setVersion("HTTP/1.1");
     response.setHeader("Content-Type", "text/html");

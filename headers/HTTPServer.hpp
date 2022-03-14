@@ -6,7 +6,7 @@
 /*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/03 17:30:40 by jceia             #+#    #+#             */
-/*   Updated: 2022/03/09 18:53:37 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/03/14 16:08:44 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,16 @@
 struct Context
 {
     std::string path;
+    std::map<int, std::string> error_page;
+    unsigned long int max_body_size;
+    std::string root;
+    std::vector<std::string> index;
+    std::vector<HTTPMethod> allowed_methods;
+    std::string redirect_status;
+    std::string redirect_path;
+    std::map<std::string, std::string> cgi;
+    std::string upload_path;
+    std::string server_name;
     std::string server_addr;
     std::string client_addr;
     int server_port;
@@ -45,18 +55,13 @@ protected:
     int _handle_client_send(TCPConnection* connection);
 
 private:
-    HTTPResponse _not_found_response();
-    HTTPResponse _method_not_allowed_response();
-    HTTPResponse _body_too_large_response();
+    HTTPResponse _not_found_response(const Context& ctx) const;
+    HTTPResponse _method_not_allowed_response(const Context& ctx) const;
+    HTTPResponse _body_too_large_response(const Context& ctx) const;
 
-    HTTPResponse _build_response(const HTTPRequest& request, Context& ctx);
-    HTTPResponse _build_cgi_response(const HTTPRequest& request, const Context& ctx);
+    HTTPResponse _response(const HTTPRequest& request, Context& ctx);
+    HTTPResponse _cgi_response(const HTTPRequest& request, const Context& ctx);
 
-    std::string _root; // TODO: remove
-    std::string _name; // TODO: remove
-    size_t _max_body_size; // TODO: remove
-    std::vector<std::string> _index; // TODO: remove
-    std::vector<HTTPMethod> _allowed_methods; // TODO: remove
     configFile _config;
 };
 

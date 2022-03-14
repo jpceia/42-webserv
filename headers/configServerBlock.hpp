@@ -41,14 +41,14 @@ class configServerBlock : public configDefaults
 
 			return (send);
 		}
-		configLocationBlock					*getLocationByPath(std::string path)
+		configLocationBlock					getLocationByPath(std::string path)
 		{
 			for (int i = 0; i < _location_blocks_count; i++)
 			{
 				if (_location_blocks[i].getLocationPath().front() == path)
-					return &_location_blocks[i];
+					return _location_blocks[i];
 			}
-			return NULL;
+			return _location_blocks[0];
 		}
 
 		std::string							getIP() const					{ return (_ip.front()); }

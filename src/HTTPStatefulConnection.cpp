@@ -6,7 +6,7 @@
 /*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/09 20:22:56 by jpceia            #+#    #+#             */
-/*   Updated: 2022/03/13 17:57:05 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/03/14 15:16:42 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,7 +72,7 @@ configServerBlock HTTPStatefulConnection::getServerBlock(const std::string& host
         }
     }
     return config;
-};
+}
 
 void HTTPStatefulConnection::setResponse(const HTTPResponse& response)
 {

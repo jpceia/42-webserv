@@ -83,7 +83,29 @@ class configFile
 			/* is different. If they have the same name, we delete one  */
 			/* of the server_block.										*/
 			/************************************************************/
+			std::vector<configServerBlock>::iterator start = _server_blocks_obj.begin();
+			for (; start != _server_blocks_obj.end(); start++)
+			{
+				std::vector<configServerBlock>::iterator looper(_server_blocks_obj.begin());
+				for (; looper != _server_blocks_obj.end(); looper++)
+				{
+					if (start != looper)
+					{
+						if ((start->getIP() 		== looper->getIP()) &&
+							(start->getPort() 		== looper->getPort()) &&
+							(start->getServerName() == looper->getServerName()))
+							{
+								std::cout << "Ignoring repeated server {" << start->getIP() << ":"
+										  << start->getPort() << "} server_name = \"" << start->getServerName().front()
+										  << "\"" << std::endl;
+								_server_blocks_obj.erase(looper);
+								start = _server_blocks_obj.begin();
+								break ;
+							}
+					}
+				}
 
+			}
 
         };
 

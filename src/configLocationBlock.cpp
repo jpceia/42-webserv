@@ -1,10 +1,10 @@
-#include "../headers/configLocationBlock.hpp"
+#include "../include/configLocationBlock.hpp"
 
 configLocationBlock::configLocationBlock()
-{}
+{};
 
 configLocationBlock::~configLocationBlock()
-{}
+{};
 
 void	configLocationBlock::locationDirectiveTreatment(std::string line)
 {
@@ -37,7 +37,7 @@ void	configLocationBlock::locationDirectiveTreatment(std::string line)
 		throw std::runtime_error("configLocationBlock.hpp exception: location path is empty");
 	}
 }
-void	configLocationBlock::errorpageDirectiveTreatment(std::multimap<int, std::string> error_p,
+void	configLocationBlock::errorpageDirectiveTreatment(std::map<int, std::string> error_p,
 									std::string line)
 {
 	/*****************************************************************/
@@ -135,7 +135,7 @@ void	configLocationBlock::errorpageDirectiveTreatment(std::multimap<int, std::st
 	std::vector<int>::iterator it = error_status.begin();
 	for (; it != error_status.end(); it++)
 	{
-		_error_page.insert(std::pair<int, std::string>(*it, error_path.front()));
+		_error_page[*it] = error_path.front();
 	}
 }
 void	configLocationBlock::clientmaxbodysizeDirectiveTreatment(std::string line)
@@ -529,8 +529,8 @@ void	configLocationBlock::cgiDirectiveTreatment(std::string line)
 	{
 		last_arg.resize(last_arg.size() - 1);
 	}
-
-	_cgi.insert(std::pair<std::string, std::string>(first_arg, last_arg));
+	
+	_cgi[first_arg] = last_arg;
 }
 void	configLocationBlock::uploadDirectiveTreatment(std::string line)
 {

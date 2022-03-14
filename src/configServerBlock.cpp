@@ -1,13 +1,13 @@
-#include "../headers/configServerBlock.hpp"
+#include "../include/configServerBlock.hpp"
 
 configServerBlock::configServerBlock()
-{}
+{};
 
 configServerBlock::configServerBlock(std::vector<std::string> server_block) : _server_block(server_block)
-{}
+{};
 
 configServerBlock::~configServerBlock()
-{}
+{};
 
 void    configServerBlock::fillBlocks()
 {
@@ -130,7 +130,7 @@ void    configServerBlock::fillBlocks()
 	}
 
 
-}
+};
 
 /****************/
 /* Print Helper */
@@ -229,11 +229,11 @@ void	configServerBlock::printDirectives()
 		/**********************************/
 		/*			  error_page          */
 		/**********************************/
-		std::multimap<int, std::string> error_page_l = _location_blocks[i].getErrorPage();
+		std::map<int, std::string> error_page_l = _location_blocks[i].getErrorPage();
 		if (!error_page_l.empty())
 		{
 			std::cout << "  Error_page:   ";
-			std::multimap<int, std::string>::iterator	_error_page_it = error_page_l.begin();
+			std::map<int, std::string>::iterator	_error_page_it = error_page_l.begin();
 
 			for (int i = 0; _error_page_it != error_page_l.end(); _error_page_it++, i++)
 			{
@@ -328,11 +328,11 @@ void	configServerBlock::printDirectives()
 		/**********************************/
 		/*			    cgi               */
 		/**********************************/
-		std::multimap<std::string, std::string> cgi_l = _location_blocks[i].getCgi();
+		std::map<std::string, std::string> cgi_l = _location_blocks[i].getCgi();
 		if (!cgi_l.empty())
 		{
 			std::cout << "  Cgi:			   ";
-			std::multimap<std::string, std::string>::iterator	cgi_it = cgi_l.begin();
+			std::map<std::string, std::string>::iterator	cgi_it = cgi_l.begin();
 			for (int i = 0; cgi_it != cgi_l.end(); cgi_it++, i++)
 			{
 				if (i == 0)
@@ -713,7 +713,7 @@ void	configServerBlock::errorpageDirectiveTreatment(std::string line)
 	std::vector<int>::iterator it = error_status.begin();
 	for (; it != error_status.end(); it++)
 	{
-		_error_page.insert(std::pair<int, std::string>(*it, error_path.front()));
+		_error_page[*it] = error_path.front();
 	}
 }
 void	configServerBlock::rootDirectiveTreatment(std::string line)

@@ -49,7 +49,7 @@ class configServerBlock : public configDefaults
 			/* location[0] = /hello/world  <--- */
 			/* location[1] = /goodbye           */
 			/* location[2] = /goodbye/alo       */
-			/************************************/ 
+			/************************************/
 			for (int i = 0; i < _location_blocks_count; i++)
 			{
 				if (_location_blocks[i].getLocationPath().front() == path)
@@ -57,47 +57,51 @@ class configServerBlock : public configDefaults
 			}
 
 			/**************************************/
-			/* If no match, find the closest to / */
+			/* If no match, find the closest      */
 			/* path = /goodbye/year        <---   */
-			/* location[0] = /hello/world  <---   */
-			/* location[1] = /goodbye             */
+			/* location[0] = /hello/world         */
+			/* location[1] = /goodbye      <---   */
 			/* location[2] = /goodbye/alo         */
 			/**************************************/
 
-/*			size_t pos = 0;
-			std::string path_temp = path;
-			std::string delimiter = "/";
-			std::vector<std::string> path_vector;
-			while ((pos = path_temp.find(delimiter)) != std::string::npos) {
-				path_vector.push_back(path_temp.substr(0, pos));
-				path_temp.erase(0, pos + delimiter.length());
-			}
-			path_vector.push_back(path_temp);
+			// Divide the path with / as delimiter, and put the split on
+			// a vector.
+			std::vector<std::string> path_vector = returnSplitedDelimiter(path, "/");
 
-			std::vector<std::string>::iterator itaa = path_vector.begin();
-			for (; itaa != path_vector.end(); itaa++)
+			// Traverse all paths of location_blocks
+			// Check which is the closest match
+			std::vector<std::string> location_path;
+			int		count_words = 0;
+			int		location_to_return = 0;
+			for (int i = 0; i < _location_blocks_count; i++)
 			{
-				std::cout << *itaa << std::endl;
+				int	count_words_temp = 0;
+				location_path = returnSplitedDelimiter(_location_blocks[i].getLocationPath().front(),
+													   "/");
+
+				std::vector<std::string>::iterator path_it = path_vector.begin();
+				std::vector<std::string>::iterator loc_it  = location_path.begin();
+				for (; loc_it != location_path.end(); loc_it++, path_it++)
+				{
+					if (*path_it == *loc_it)
+					{
+						count_words_temp++;
+					}
+					else
+						break ;
+				}
+
+				if (count_words_temp > count_words)
+				{
+					location_to_return = i;
+					count_words = count_words_temp;
+				}
 			}
-*/
-
-
-			return _location_blocks[0];
+			if (count_words > 0)
+				return _location_blocks[location_to_return];
+			else
+				return _location_blocks[0];
 		}
-
-		/*
-			location /hello {
-
-			}
-
-			location /hello/world {
-
-			}
-
-			location /hello/mundo {
-
-			}
-		*/
 
 		std::string							getIP() const					{ return (_ip.front()); }
 		int									getPort() const					{ return (_port.front()); }
@@ -117,6 +121,8 @@ class configServerBlock : public configDefaults
 		void	fillLocationBlock(std::string line);
 		void	checkDuplicatedLocation();
 
+		std::vector<std::string>	returnSplitedDelimiter(std::string line,
+														   std::string delimiter);
 		/************************/
 		/* Directives Treatment */
 		/************************/

@@ -1,10 +1,10 @@
-#include "../include/configLocationBlock.hpp"
+#include "configLocationBlock.hpp"
 
 configLocationBlock::configLocationBlock()
-{};
+{}
 
 configLocationBlock::~configLocationBlock()
-{};
+{}
 
 void	configLocationBlock::locationDirectiveTreatment(std::string line)
 {
@@ -529,7 +529,7 @@ void	configLocationBlock::cgiDirectiveTreatment(std::string line)
 	{
 		last_arg.resize(last_arg.size() - 1);
 	}
-	
+
 	_cgi[first_arg] = last_arg;
 }
 void	configLocationBlock::uploadDirectiveTreatment(std::string line)

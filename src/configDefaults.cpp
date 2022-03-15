@@ -1,4 +1,4 @@
-#include "../include/configDefaults.hpp"
+#include "configDefaults.hpp"
 
 configDefaults::configDefaults()
 {
@@ -14,7 +14,7 @@ configDefaults::configDefaults()
 
 	_methods_default.push_back("GET");
 	_upload_default.push_back("off");
-};
+}
 
 configDefaults::~configDefaults()
-{};
+{}

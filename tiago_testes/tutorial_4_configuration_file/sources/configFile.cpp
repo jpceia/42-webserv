@@ -91,7 +91,7 @@ configFile::configFile(char *configuration_file)
 
 	}
 
-};
+}
 
 configFile::~configFile()
-{};
+{}

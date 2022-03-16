@@ -33,7 +33,7 @@ public:
 
     ParseState getState() const;
 
-    ParseState parse(const std::string& s);
+    ParseState parse(const std::string& s, bool new_chunk=true);
     void addHeader(const std::string& key, const std::string& value);
 
     void clear();
@@ -42,6 +42,7 @@ private:
     ParseState _state;
     std::string _buf;
     size_t _content_length;
+    bool _by_chunks;
 };
 
 #endif

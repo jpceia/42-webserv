@@ -18,7 +18,8 @@ HTTPRequestParser::HTTPRequestParser() :
     HTTPRequest(),
     _state(PARSE_START),
     _buf(""),
-    _content_length(0)
+    _content_length(0),
+    _by_chunks(true)
 {
 }
 
@@ -26,7 +27,8 @@ HTTPRequestParser::HTTPRequestParser(const HTTPRequestParser& rhs) :
     HTTPRequest(rhs),
     _state(rhs._state),
     _buf(rhs._buf),
-    _content_length(rhs._content_length)
+    _content_length(rhs._content_length),
+    _by_chunks(rhs._by_chunks)
 {
 }
 
@@ -42,6 +44,7 @@ HTTPRequestParser& HTTPRequestParser::operator=(const HTTPRequestParser& rhs)
         _state = rhs._state;
         _buf = rhs._buf;
         _content_length = rhs._content_length;
+        _by_chunks = rhs._by_chunks;
     }
     return *this;
 }
@@ -51,7 +54,7 @@ ParseState HTTPRequestParser::getState() const
     return _state;
 }
 
-ParseState HTTPRequestParser::parse(const std::string& s = "")
+ParseState HTTPRequestParser::parse(const std::string& s = "", bool new_chunk)
 {
     _buf += s;  // append last received chunk to buffer
     if (_state == PARSE_START)
@@ -71,7 +74,7 @@ ParseState HTTPRequestParser::parse(const std::string& s = "")
             this->setPath(path);
             this->setMethod(method);
             _state = PARSE_HEADER;
-            this->parse();                              // Consume buffer
+            this->parse("", false);                    // Consume buffer
         }
     }
     else if (_state == PARSE_HEADER)
@@ -97,17 +100,25 @@ ParseState HTTPRequestParser::parse(const std::string& s = "")
             }
             else
                 HTTPRequest::addHeader(line);
-            return this->parse();                       // Consume buffer
+            return this->parse("", false);              // Consume buffer
         }
     }
     else if (_state == PARSE_BODY)
     {
         _body += _buf;
         _buf = "";                                      // clear buffer
-        if (_body.length() > _content_length)
-            throw HTTPRequest::ParseException();
-        if (_body.length() == _content_length)
-            _state = PARSE_COMPLETE;
+        if (_by_chunks)
+        {
+            if (new_chunk && s.empty())
+                _state = PARSE_COMPLETE;
+        }
+        else
+        {
+            if (_body.length() > _content_length)
+                throw HTTPRequest::ParseException();
+            if (_body.length() == _content_length)
+                _state = PARSE_COMPLETE;
+        }
     }
     return _state;
 }
@@ -116,7 +127,10 @@ void HTTPRequestParser::addHeader(const std::string& key, const std::string& val
 {
     _headers[key] = value;
     if (key == "Content-Length")
+    {
         _content_length = ft_stoi(value);
+        _by_chunks = false;
+    }
 }
 
 void HTTPRequestParser::clear()
@@ -124,4 +138,5 @@ void HTTPRequestParser::clear()
     _state = PARSE_START;
     _buf.clear();
     _content_length = 0;
+    _by_chunks = true;
 }

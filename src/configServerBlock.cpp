@@ -445,8 +445,7 @@ void	configServerBlock::checkDuplicatedLocation()
 		{
 			if (i != x)
 			{
-				if (*_location_blocks[i].getLocationPath().begin() ==
-					*_location_blocks[x].getLocationPath().begin())
+				if (_location_blocks[i].getLocationPath() == _location_blocks[x].getLocationPath())
 				{
 					throw std::runtime_error("configServerBlock.hpp exception: location has duplicated value");
 				}

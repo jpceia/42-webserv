@@ -13,7 +13,7 @@ configDefaults::configDefaults()
 	_auto_index_default.push_back("off");
 
 	_methods_default.push_back("GET");
-	_upload_default.push_back("off");
+	_upload_default.push_back("");
 }
 
 configDefaults::~configDefaults()

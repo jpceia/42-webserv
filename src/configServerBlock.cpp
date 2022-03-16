@@ -126,7 +126,8 @@ void    configServerBlock::fillBlocks()
 	{
 		_location_blocks[i].fillDirectivesIfEmpty(_client_max_body_size,
 													_root,
-													_auto_index);
+													_auto_index,
+													_index);
 	}
 
 

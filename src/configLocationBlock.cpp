@@ -436,6 +436,15 @@ void	configLocationBlock::returnDirectiveTreatment(std::string line)
 		_redirect_status.push_back(status_code);
 	}
 }
+
+// convert string to uppercase
+std::string toUpper(const std::string& s)
+{
+	std::string result(s);
+	std::transform(result.begin(), result.end(), result.begin(), ::toupper);
+	return result;
+}
+
 void	configLocationBlock::methodsDirectiveTreatment(std::string line)
 {
 	/***********************************************************/
@@ -462,26 +471,33 @@ void	configLocationBlock::methodsDirectiveTreatment(std::string line)
 		{
 			word.resize(word.size() - 1);
 		}
-		if (!word.compare("GET") || !word.compare("get"))
+		if (toUpper(word) == "GET")
 		{
 			if (std::find(_methods.begin(), _methods.end(), "GET") != _methods.end())
 			{}
 			else
 				_methods.push_back("GET");
 		}
-		else if (!word.compare("POST") || !word.compare("post"))
+		else if (toUpper(word) == "POST")
 		{
 			if (std::find(_methods.begin(), _methods.end(), "POST") != _methods.end())
 			{}
 			else
 				_methods.push_back("POST");
 		}
-		else if (!word.compare("DELETE") || !word.compare("delete"))
+		else if (toUpper(word) == "DELETE")
 		{
 			if (std::find(_methods.begin(), _methods.end(), "DELETE") != _methods.end())
 			{}
 			else
 				_methods.push_back("DELETE");
+		}
+		else if (toUpper(word) == "PUT")
+		{
+			if (std::find(_methods.begin(), _methods.end(), "PUT") != _methods.end())
+			{}
+			else
+				_methods.push_back("PUT");
 		}
 		else
 		{
@@ -589,14 +605,15 @@ void	configLocationBlock::uploadDirectiveTreatment(std::string line)
 void	configLocationBlock::fillDirectivesIfEmpty(
 								std::vector<unsigned long int> client_max_body_size,
 								std::vector<std::string> root,
-								std::vector<std::string> autoindex)
+								std::vector<std::string> autoindex,
+								std::vector<std::string> index)
 {
 	if (_client_max_body_size.empty())
 		_client_max_body_size = client_max_body_size;
 	if (_root.empty())
 		_root = root;
 	if (_index.empty())
-		_index.push_back(_root.front() + _index_default.front());
+		_index = index;
 	if (_auto_index.empty())
 		_auto_index = autoindex;
 	if (_methods.empty())

@@ -6,7 +6,7 @@
 /*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/03 17:30:40 by jceia             #+#    #+#             */
-/*   Updated: 2022/03/09 18:53:37 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/03/16 16:17:54 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,7 @@
 # include "HTTPRequest.hpp"
 # include "HTTPResponse.hpp"
 # include "HTTPConnection.hpp"
+# include "configFile.hpp"
 # include <iostream>
 # include <fstream>
 # include <sstream>
@@ -25,6 +26,19 @@
 struct Context
 {
     std::string path;
+    std::map<int, std::string> error_page;
+    unsigned long int max_body_size;
+    std::string root;
+    std::string rel_path;
+    std::string base_path;
+    std::string autoindex;
+    std::vector<std::string> index;
+    std::vector<HTTPMethod> allowed_methods;
+    int redirect_status;
+    std::string redirect_path;
+    std::map<std::string, std::string> cgi;
+    std::string upload_path;
+    std::string server_name;
     std::string server_addr;
     std::string client_addr;
     int server_port;
@@ -34,26 +48,27 @@ struct Context
 class HTTPServer : public TCPServer
 {
 public:
-    HTTPServer(int timeout);
+    HTTPServer(configFile config, int timeout = -1);
     virtual ~HTTPServer();
+
+    void init();
 
 protected:
     int _handle_client_recv(TCPConnection* connection);
     int _handle_client_send(TCPConnection* connection);
 
 private:
-    HTTPResponse _not_found_response();
-    HTTPResponse _method_not_allowed_response();
-    HTTPResponse _body_too_large_response();
+    HTTPResponse _response(const HTTPRequest& request, Context& ctx);
+    HTTPResponse _cgi_response(const std::string& cmd, const HTTPRequest& request, const Context& ctx);
+    //HTTPResponse _static_response(const HTTPRequest& request, const Context& ctx);
+    //HTTPResponse _redirect_response(const HTTPRequest& request, const Context& ctx) const;
+    //HTTPResponse _upload_response(const HTTPRequest& request, const Context& ctx);
+    HTTPResponse _autoindex_response(const Context& ctx) const;
+    HTTPResponse _upload_response(const HTTPRequest& request, const Context& ctx) const;
+    HTTPResponse _redirect_response(const Context& ctx) const;
+    HTTPResponse _error_page_response(int code, const std::string& msg, const Context& ctx) const;
 
-    HTTPResponse _build_response(const HTTPRequest& request, Context& ctx);
-    HTTPResponse _build_cgi_response(const HTTPRequest& request, const Context& ctx);
-
-    std::string _root;
-    std::string _name;
-    size_t _max_body_size;
-    std::vector<std::string> _index;
-    std::vector<HTTPMethod> _allowed_methods;
+    configFile _config;
 };
 
 #endif

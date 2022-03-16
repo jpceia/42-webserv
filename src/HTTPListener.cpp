@@ -14,19 +14,20 @@
 #include "HTTPStatefulConnection.hpp"
 #include "HTTPListener.hpp"
 #include "TCPListener.hpp"
+#include "configFile.hpp"
 
 HTTPListener::HTTPListener(int sock) :
     TCPListener(sock)
 {
 }
 
-HTTPListener::HTTPListener(const std::string& host, int port) :
-    TCPListener(host, port)
+HTTPListener::HTTPListener(const std::string& host, int port, const std::vector<configServerBlock>& configs) :
+    TCPListener(host, port), _configs(configs)
 {
 }
 
 HTTPListener::HTTPListener(const HTTPListener& rhs) :
-    TCPListener(rhs)
+    TCPListener(rhs), _configs(rhs._configs)
 {
 }
 
@@ -37,10 +38,11 @@ HTTPListener::~HTTPListener()
 HTTPListener& HTTPListener::operator=(const HTTPListener& rhs)
 {
     TCPListener::operator=(rhs);
+    _configs = rhs._configs;
     return *this;
 }
 
 TCPConnection* HTTPListener::accept() const
 {
-    return new HTTPStatefulConnection(_accept());
+    return new HTTPStatefulConnection(_accept(), _configs);
 }

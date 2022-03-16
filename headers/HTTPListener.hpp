@@ -10,17 +10,26 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "HTTPConnection.hpp"
-#include "TCPListener.hpp"
+#ifndef HTTPLISTENER_HPP
+# define HTTPLISTENER_HPP
+
+# include "HTTPConnection.hpp"
+# include "TCPListener.hpp"
+# include "configFile.hpp"
 
 class HTTPListener : public TCPListener
 {
 public:
     HTTPListener(int sock);
-    HTTPListener(const std::string& host, int port);
+    HTTPListener(const std::string& host, int port, const std::vector<configServerBlock>& configs);
     HTTPListener(const HTTPListener& rhs);
     virtual ~HTTPListener();
     HTTPListener& operator=(const HTTPListener& rhs);
     
     virtual TCPConnection* accept() const;
+
+private:
+    std::vector<configServerBlock> _configs;
 };
+
+#endif

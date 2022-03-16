@@ -3,6 +3,7 @@
 #include "HTTPServer.hpp"
 #include "HTTPListener.hpp"
 #include "HTTPConnection.hpp"
+#include "configFile.hpp"
 #include <iostream>
 #include <sstream>
 
@@ -10,17 +11,18 @@
 
 int main(int argc, char *argv[])
 {
-    if (argc < 2)
+    if (argc != 2)
     {
-        std::cout << "Usage: ./webserv <port1> <port2> ..." << std::endl;
-        return -1;
+        std::cout << "Insert the Configuration File" << std::endl;
+        return (1);
     }
 
     try
     {
-        HTTPServer webserv(-1);
-        for (int i=1; i<argc; i++)
-            webserv.add_listener(new HTTPListener("0.0.0.0", ft_stoi(argv[i])));
+        configFile  config(argv[1]);
+
+        HTTPServer webserv(config, -1);
+        webserv.init();
         webserv.run();
     }
     catch (std::exception& e)

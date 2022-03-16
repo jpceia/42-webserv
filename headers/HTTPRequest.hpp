@@ -6,7 +6,7 @@
 /*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/22 13:00:01 by jceia             #+#    #+#             */
-/*   Updated: 2022/03/08 22:39:16 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/03/16 15:20:05 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,9 @@
 enum HTTPMethod {
     GET,
     POST,
-    DELETE
+    PUT,
+    DELETE,
+    HEAD
 };
 
 class HTTPRequest

@@ -29,7 +29,7 @@ int main(int argc, char **argv)
 				itata->printDirectives();
 
 
-				std::cout << itata->getLocationByPath("/hello").getLocationPath().front() << std::endl;
+				//std::cout << itata->getLocationByPath("/hello/world/no/you").getLocationPath().front() << std::endl;
 				i++;
 			}
 		}

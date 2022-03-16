@@ -1,13 +1,13 @@
 #include "../include/configServerBlock.hpp"
 
 configServerBlock::configServerBlock()
-{};
+{}
 
 configServerBlock::configServerBlock(std::vector<std::string> server_block) : _server_block(server_block)
-{};
+{}
 
 configServerBlock::~configServerBlock()
-{};
+{}
 
 void    configServerBlock::fillBlocks()
 {
@@ -130,7 +130,7 @@ void    configServerBlock::fillBlocks()
 	}
 
 
-};
+}
 
 /****************/
 /* Print Helper */
@@ -453,6 +453,20 @@ void	configServerBlock::checkDuplicatedLocation()
 			}
 		}
 	}
+}
+
+std::vector<std::string>	configServerBlock::returnSplitedDelimiter(std::string line,
+																	  std::string delimiter)
+{
+	size_t pos = 0;
+	std::string path_temp = line;
+	std::vector<std::string> path_vector;
+	while ((pos = path_temp.find(delimiter)) != std::string::npos) {
+		path_vector.push_back(path_temp.substr(0, pos));
+		path_temp.erase(0, pos + delimiter.length());
+	}
+	path_vector.push_back(path_temp);
+	return (path_vector);
 }
 
 /************************/

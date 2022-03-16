@@ -48,7 +48,7 @@ class configLocationBlock : public configDefaults
 		std::map<std::string, std::string>		getCgi() const					{ return (_cgi); }
 		std::string								getUpload() const				{ return (_upload.size() > 0 ? _upload.front() : ""); }
 
-    private:
+    public:
         /**********************/
         /* Current Directives */
         /**********************/

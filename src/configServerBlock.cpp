@@ -1,13 +1,13 @@
-#include "../include/configServerBlock.hpp"
+#include "configServerBlock.hpp"
 
 configServerBlock::configServerBlock()
-{};
+{}
 
 configServerBlock::configServerBlock(std::vector<std::string> server_block) : _server_block(server_block)
-{};
+{}
 
 configServerBlock::~configServerBlock()
-{};
+{}
 
 void    configServerBlock::fillBlocks()
 {
@@ -98,7 +98,7 @@ void    configServerBlock::fillBlocks()
 		bool	is_default_block_path = false;
 		for (int i = 0; i < _location_blocks_count; i++)
 		{
-			if (_location_blocks[i].getLocationPath().front() == "/")
+			if (_location_blocks[i]._location_path.front() == "/")
 				is_default_block_path = true;
 		}
 		if (is_default_block_path == false)
@@ -130,7 +130,7 @@ void    configServerBlock::fillBlocks()
 	}
 
 
-};
+}
 
 /****************/
 /* Print Helper */
@@ -258,7 +258,7 @@ void	configServerBlock::printDirectives()
 		/**********************************/
 		/*		 client_max_body_size     */
 		/**********************************/
-		std::vector<unsigned long int> client_max_body_size_l = _location_blocks[i].getClientMaxBodySize();
+		std::vector<unsigned long int> client_max_body_size_l = _location_blocks[i]._client_max_body_size;
 
 		if (!client_max_body_size_l.empty())
 		{
@@ -294,18 +294,18 @@ void	configServerBlock::printDirectives()
 		/**********************************/
 		/*			  return              */
 		/**********************************/
-		if (!_location_blocks[i].getRedirectPath().empty() ||
-			!_location_blocks[i].getRedirectStatus().empty())
+		if (!_location_blocks[i]._redirect_path.empty() ||
+			!_location_blocks[i]._redirect_status.empty())
 		{
 			std::cout << "  Return:		   ";
-			if (!_location_blocks[i].getRedirectStatus().empty())
+			if (!_location_blocks[i]._redirect_status.empty())
 			{
-				std::cout << "  { " << *_location_blocks[i].getRedirectStatus().begin() << " "
-									<< *_location_blocks[i].getRedirectPath().begin() << " }" << std::endl;
+				std::cout << "  { " << *_location_blocks[i]._redirect_status.begin() << " "
+									<< *_location_blocks[i]._redirect_path.begin() << " }" << std::endl;
 			}
-			else if (!_location_blocks[i].getRedirectPath().empty())
+			else if (!_location_blocks[i]._redirect_path.empty())
 			{
-				std::cout << "  { " << *_location_blocks[i].getRedirectPath().begin() << " }" << std::endl;
+				std::cout << "  { " << *_location_blocks[i]._redirect_path.begin() << " }" << std::endl;
 			}
 		}
 
@@ -346,7 +346,7 @@ void	configServerBlock::printDirectives()
 		/**********************************/
 		/*			   upload             */
 		/**********************************/
-		std::vector<std::string> upload_l = _location_blocks[i].getUpload();
+		std::vector<std::string> upload_l = _location_blocks[i]._upload;
 		if (!upload_l.empty())
 		{
 			std::cout << "  Upload:		   ";
@@ -453,6 +453,20 @@ void	configServerBlock::checkDuplicatedLocation()
 			}
 		}
 	}
+}
+
+std::vector<std::string>	configServerBlock::returnSplitedDelimiter(std::string line,
+																	  std::string delimiter)
+{
+	size_t pos = 0;
+	std::string path_temp = line;
+	std::vector<std::string> path_vector;
+	while ((pos = path_temp.find(delimiter)) != std::string::npos) {
+		path_vector.push_back(path_temp.substr(0, pos));
+		path_temp.erase(0, pos + delimiter.length());
+	}
+	path_vector.push_back(path_temp);
+	return (path_vector);
 }
 
 /************************/

@@ -45,7 +45,7 @@ class configLocationBlock : public configDefaults
 		std::vector<std::string>				getMethods() const				{ return (_methods); }
 		std::vector<int>						getRedirectStatus() const		{ return (_redirect_status); }
 		std::vector<std::string>				getRedirectPath() const			{ return (_redirect_path); }
-		std::map<std::string, std::string>	getCgi() const						{ return (_cgi); }
+		std::map<std::string, std::string>		getCgi() const					{ return (_cgi); }
 		std::vector<std::string>				getUpload() const				{ return (_upload); }
 
     private:

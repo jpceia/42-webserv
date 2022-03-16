@@ -6,7 +6,7 @@
 /*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/03 17:30:40 by jceia             #+#    #+#             */
-/*   Updated: 2022/03/16 12:28:25 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/03/16 13:48:35 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,6 +79,7 @@ int HTTPServer::_handle_client_recv(TCPConnection* connection)
         //ctx.error_page = location_block.getErrorPage();
         ctx.max_body_size = location_block.getClientMaxBodySize();
         ctx.root = location_block.getRoot();
+        ctx.base_path = ctx.root + "/" + request.getEndpoint().substr(location_block.getLocationPath().size());
         ctx.index = location_block.getIndex();
         ctx.autoindex = location_block.getAutoIndex();
         {
@@ -98,7 +99,7 @@ int HTTPServer::_handle_client_recv(TCPConnection* connection)
         ctx.client_addr = connection->getClientIP();
         ctx.server_port = connection->getServerPort();
         ctx.client_port = connection->getClientPort();
-
+    
         // build the response
         HTTPResponse response = _response(conn->getRequest(), ctx);
         conn->setResponse(response);
@@ -140,7 +141,7 @@ HTTPResponse HTTPServer::_response(const HTTPRequest& request, Context& ctx)
         return _redirect_response(ctx);
 
     // checking if the file exists
-    ctx.path = ctx.root + request.getEndpoint();
+    ctx.path = ctx.base_path;
     if (is_dir(ctx.path))
     {
         std::cout << "path is a directory" << std::endl;
@@ -148,6 +149,7 @@ HTTPResponse HTTPServer::_response(const HTTPRequest& request, Context& ctx)
         for (std::vector<std::string>::const_iterator it = ctx.index.begin();
             it != ctx.index.end(); ++it)
         {
+            std::cout << "path: " << ctx.path << "\t index:" << *it << std::endl;
             if (is_readable_file(ctx.path + *it))
             {
                 ctx.path += *it;

@@ -6,7 +6,7 @@
 /*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/03 17:30:40 by jceia             #+#    #+#             */
-/*   Updated: 2022/03/16 13:00:56 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/03/16 13:46:39 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,7 @@ struct Context
     std::map<int, std::string> error_page;
     unsigned long int max_body_size;
     std::string root;
+    std::string base_path;
     std::string autoindex;
     std::vector<std::string> index;
     std::vector<HTTPMethod> allowed_methods;

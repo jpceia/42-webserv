@@ -6,7 +6,7 @@
 /*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/03 17:30:40 by jceia             #+#    #+#             */
-/*   Updated: 2022/03/16 16:22:06 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/03/16 23:17:36 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -339,7 +339,7 @@ HTTPResponse HTTPServer::_upload_response(const HTTPRequest& request, const Cont
     std::string path = ctx.upload_path + ctx.rel_path;
     std::cout << "Upload path: " << path << std::endl;
     // write to file
-    std::ofstream ofs(path, std::ios::binary | std::ios::trunc);
+    std::ofstream ofs(path.c_str(), std::ios::binary | std::ios::trunc);
     if (!ofs.good())
     {
         // cannot open file

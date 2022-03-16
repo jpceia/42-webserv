@@ -876,14 +876,14 @@ void	configServerBlock::indexDirectiveTreatment(std::string line)
 		{
 			if (!_root.empty())
 			{
-				_index.push_back(*_root.begin() + "/" + word);
+				_index.push_back(word);
 			}
 			else
 			{
-				if (std::find(_index.begin(), _index.end(), *_root_default.begin() + "/" + word) != _index.end())
+				if (std::find(_index.begin(), _index.end(), word) != _index.end())
 				{}
 				else
-					_index.push_back(*_root_default.begin() + "/" + word);
+					_index.push_back(word);
 			}
 		}
 		number_of_words++;

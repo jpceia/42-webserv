@@ -135,6 +135,10 @@ HTTPResponse HTTPServer::_response(const HTTPRequest& request, Context& ctx)
     if (request.getBody().size() > (size_t)ctx.max_body_size)
         return _error_page_response(413, "Request Entity Too Large", ctx);
 
+    // checking if it is a redirection
+    if (!ctx.redirect_path.empty())
+        return _redirect_response(ctx);
+
     // checking if the file exists
     ctx.path = ctx.root + request.getEndpoint();
     if (is_dir(ctx.path))
@@ -263,6 +267,46 @@ HTTPResponse HTTPServer::_autoindex_response(const Context& ctx) const
     //response.setBody(body);
     return response;
     
+}
+
+HTTPResponse HTTPServer::_redirect_response(const Context& ctx) const
+{
+    HTTPResponse response;
+
+    std::string text;
+    response.setVersion("HTTP/1.1");
+    response.setHeader("Location", ctx.redirect_path);
+    switch (ctx.redirect_status)
+    {
+    case 300:
+        text = "Multiple Choices";
+        break ;
+    case 301:
+        text = "Moved Permanently";
+        break ;
+    case 302:
+        text = "Found";
+        break ;
+    case 303:
+        text = "See Other";
+        break ;
+    case 304:
+        text = "Not Modified";
+        break ;
+    case 305:
+        text = "Use Proxy";
+        break ;
+    case 307:
+        text = "Temporary Redirect";
+        break ;
+    case 308:
+        text = "Permanent Redirect";
+        break ;
+    default:
+        break;
+    }
+    response.setStatus(ctx.redirect_status, text);
+    return response;
 }
 
 HTTPResponse HTTPServer::_error_page_response(int code, const std::string& msg, const Context& ctx) const

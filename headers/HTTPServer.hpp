@@ -6,7 +6,7 @@
 /*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/03 17:30:40 by jceia             #+#    #+#             */
-/*   Updated: 2022/03/14 16:44:13 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/03/16 13:00:56 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,6 +62,7 @@ private:
     //HTTPResponse _redirect_response(const HTTPRequest& request, const Context& ctx) const;
     //HTTPResponse _upload_response(const HTTPRequest& request, const Context& ctx);
     HTTPResponse _autoindex_response(const Context& ctx) const;
+    HTTPResponse _redirect_response(const Context& ctx) const;
     HTTPResponse _error_page_response(int code, const std::string& msg, const Context& ctx) const;
 
     configFile _config;

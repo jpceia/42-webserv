@@ -6,7 +6,7 @@
 /*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/03 17:30:40 by jceia             #+#    #+#             */
-/*   Updated: 2022/03/16 13:48:35 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/03/16 16:22:06 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,6 +68,9 @@ int HTTPServer::_handle_client_recv(TCPConnection* connection)
     {
         HTTPRequest request = conn->getRequest();
 
+        std::cout << "Request: " << std::endl;
+        std::cout << request << std::endl;
+
         // Get the server block
         configServerBlock server_block = conn->getServerBlock(request.getHeader("Host"));
         
@@ -76,10 +79,11 @@ int HTTPServer::_handle_client_recv(TCPConnection* connection)
 
         // Construct the context
         Context ctx;
-        //ctx.error_page = location_block.getErrorPage();
+        ctx.error_page = location_block.getErrorPage();
         ctx.max_body_size = location_block.getClientMaxBodySize();
         ctx.root = location_block.getRoot();
-        ctx.base_path = ctx.root + "/" + request.getEndpoint().substr(location_block.getLocationPath().size());
+        ctx.rel_path = request.getEndpoint().substr(location_block.getLocationPath().size());
+        ctx.base_path = ctx.root + "/" + ctx.rel_path;
         ctx.index = location_block.getIndex();
         ctx.autoindex = location_block.getAutoIndex();
         {
@@ -102,6 +106,8 @@ int HTTPServer::_handle_client_recv(TCPConnection* connection)
     
         // build the response
         HTTPResponse response = _response(conn->getRequest(), ctx);
+        std::cout << "Response: " << std::endl;
+        std::cout << response << std::endl;
         conn->setResponse(response);
         return POLLOUT;
     }
@@ -140,6 +146,9 @@ HTTPResponse HTTPServer::_response(const HTTPRequest& request, Context& ctx)
     if (!ctx.redirect_path.empty())
         return _redirect_response(ctx);
 
+    if (!ctx.upload_path.empty())
+        return _upload_response(request, ctx);
+
     // checking if the file exists
     ctx.path = ctx.base_path;
     if (is_dir(ctx.path))
@@ -149,10 +158,10 @@ HTTPResponse HTTPServer::_response(const HTTPRequest& request, Context& ctx)
         for (std::vector<std::string>::const_iterator it = ctx.index.begin();
             it != ctx.index.end(); ++it)
         {
-            std::cout << "path: " << ctx.path << "\t index:" << *it << std::endl;
-            if (is_readable_file(ctx.path + *it))
+            std::cout << "path: " << ctx.base_path << "\t index:" << *it << std::endl;
+            if (is_readable_file(ctx.path + "/" + *it))
             {
-                ctx.path += *it;
+                ctx.path = ctx.base_path + "/" +  *it;
                 found = true;
                 break ;
             }
@@ -177,7 +186,10 @@ HTTPResponse HTTPServer::_response(const HTTPRequest& request, Context& ctx)
     // Static page
     std::ifstream ifs(ctx.path.c_str(), std::ifstream::in);
     if (!ifs.good())
-        return _error_page_response(404, "Not found", ctx);
+    {
+        // cannot open file
+        return _error_page_response(500, "Internal Server Error", ctx);
+    }
 
     std::cout << "path is " << ctx.path << std::endl;
 
@@ -266,6 +278,7 @@ HTTPResponse HTTPServer::_autoindex_response(const Context& ctx) const
     response.setVersion("HTTP/1.1");
     response.setHeader("Content-Type", "text/html");
     response.setStatus(200, "OK");
+    response.setBody("Autoindex");
     //response.setBody(body);
     return response;
     
@@ -311,6 +324,37 @@ HTTPResponse HTTPServer::_redirect_response(const Context& ctx) const
     return response;
 }
 
+HTTPResponse HTTPServer::_upload_response(const HTTPRequest& request, const Context& ctx) const
+{
+    std::cout << "Entering upload response" << std::endl;
+    HTTPResponse response;
+    response.setVersion("HTTP/1.1");
+    response.setHeader("Content-Type", "text/html");
+    HTTPMethod method = request.getMethod();
+    if (method != POST && method != PUT)
+    {
+        response.setStatus(405, "Method Not Allowed");
+        return response;
+    }
+    std::string path = ctx.upload_path + ctx.rel_path;
+    std::cout << "Upload path: " << path << std::endl;
+    // write to file
+    std::ofstream ofs(path, std::ios::binary | std::ios::trunc);
+    if (!ofs.good())
+    {
+        // cannot open file
+        response.setStatus(500, "Internal Server Error");
+        return response;
+    }
+    std::string body = request.getBody();
+    ofs.write(body.c_str(), body.size());
+    ofs.close();
+
+    response.setStatus(200, "OK");
+    response.setBody("Upload Successfull");
+    return response;
+}
+
 HTTPResponse HTTPServer::_error_page_response(int code, const std::string& msg, const Context& ctx) const
 {
     HTTPResponse response;
@@ -329,6 +373,7 @@ HTTPResponse HTTPServer::_error_page_response(int code, const std::string& msg, 
             return response;
         }
     }
+
     // Backup
     std::stringstream ss;
     ss << "<h1>" << code << " " << msg << "</h1>";

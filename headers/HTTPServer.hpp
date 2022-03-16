@@ -6,7 +6,7 @@
 /*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/03 17:30:40 by jceia             #+#    #+#             */
-/*   Updated: 2022/03/16 13:46:39 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/03/16 16:17:54 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,7 @@ struct Context
     std::map<int, std::string> error_page;
     unsigned long int max_body_size;
     std::string root;
+    std::string rel_path;
     std::string base_path;
     std::string autoindex;
     std::vector<std::string> index;
@@ -63,6 +64,7 @@ private:
     //HTTPResponse _redirect_response(const HTTPRequest& request, const Context& ctx) const;
     //HTTPResponse _upload_response(const HTTPRequest& request, const Context& ctx);
     HTTPResponse _autoindex_response(const Context& ctx) const;
+    HTTPResponse _upload_response(const HTTPRequest& request, const Context& ctx) const;
     HTTPResponse _redirect_response(const Context& ctx) const;
     HTTPResponse _error_page_response(int code, const std::string& msg, const Context& ctx) const;
 

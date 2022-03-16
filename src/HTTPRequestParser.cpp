@@ -90,7 +90,7 @@ ParseState HTTPRequestParser::parse(const std::string& s = "", bool new_chunk)
             // if the line is empty the header section is over
             if (line.empty())                           
             {
-                if (_content_length > 0)                // if we have a content length
+                if (_method == POST || _method == PUT)                // if we have a content length
                     _state = PARSE_BODY;                // we are now parsing the body
                 else
                 {
@@ -99,7 +99,7 @@ ParseState HTTPRequestParser::parse(const std::string& s = "", bool new_chunk)
                 }
             }
             else
-                HTTPRequest::addHeader(line);
+                this->addHeader(line);
             return this->parse("", false);              // Consume buffer
         }
     }
@@ -121,6 +121,20 @@ ParseState HTTPRequestParser::parse(const std::string& s = "", bool new_chunk)
         }
     }
     return _state;
+}
+
+void HTTPRequestParser::addHeader(const std::string& s)
+{
+    size_t pos = s.find(':');
+    if (pos == std::string::npos)
+        throw HTTPRequest::ParseException();
+    std::string key = s.substr(0, pos);
+    // find first non-whitespace character after ':'
+    pos = s.find_first_not_of(" \t", pos + 1);
+    if (pos == std::string::npos)
+        throw HTTPRequest::ParseException();
+    std::string value = s.substr(pos);
+    this->addHeader(key, value);
 }
 
 void HTTPRequestParser::addHeader(const std::string& key, const std::string& value)

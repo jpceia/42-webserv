@@ -6,7 +6,7 @@
 /*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/03 17:30:40 by jceia             #+#    #+#             */
-/*   Updated: 2022/03/14 16:42:07 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/03/16 12:28:25 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,6 @@ HTTPServer::HTTPServer(configFile config, int timeout) :
 HTTPServer::~HTTPServer()
 {
 }
-
 
 void HTTPServer::init()
 {

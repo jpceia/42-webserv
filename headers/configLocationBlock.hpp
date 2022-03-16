@@ -31,7 +31,8 @@ class configLocationBlock : public configDefaults
 		void	uploadDirectiveTreatment(std::string line);
 		void	fillDirectivesIfEmpty( std::vector<unsigned long int> client_max_body_size,
 									   std::vector<std::string> root,
-									   std::vector<std::string> autoindex);
+									   std::vector<std::string> autoindex,
+									   std::vector<std::string> index);
 
 		/*****************/
 		/*    Getters    */

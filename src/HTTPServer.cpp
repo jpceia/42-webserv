@@ -91,7 +91,9 @@ int HTTPServer::_handle_client_recv(TCPConnection* connection)
         ctx.redirect_path = location_block.getRedirectPath();
         // cgi
         ctx.upload_path = location_block.getUpload();
-        ctx.server_name = server_block.getServerName();
+        if (server_block.getServerName().size() > 0)
+            ctx.server_name = server_block.getServerName().front();
+        ctx.server_name = "";
         ctx.server_addr = connection->getServerIP();
         ctx.client_addr = connection->getClientIP();
         ctx.server_port = connection->getServerPort();

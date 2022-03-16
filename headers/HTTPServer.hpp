@@ -32,7 +32,7 @@ struct Context
     std::string autoindex;
     std::vector<std::string> index;
     std::vector<HTTPMethod> allowed_methods;
-    std::string redirect_status;
+    int redirect_status;
     std::string redirect_path;
     std::map<std::string, std::string> cgi;
     std::string upload_path;

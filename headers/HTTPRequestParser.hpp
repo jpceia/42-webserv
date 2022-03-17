@@ -33,9 +33,11 @@ public:
 
     ParseState getState() const;
 
-    ParseState parse(const std::string& s, bool new_chunk=true);
+    ParseState parse(const std::string& s = "");
     void addHeader(const std::string& line);
     void addHeader(const std::string& key, const std::string& value);
+
+    bool isByChunks() { return _by_chunks; }
 
     void clear();
 

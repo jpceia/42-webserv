@@ -6,7 +6,7 @@
 /*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/23 03:04:11 by jpceia            #+#    #+#             */
-/*   Updated: 2022/03/16 23:41:28 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/03/17 01:37:41 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,7 +64,7 @@ void TCPConnection::send(std::string& msg) const
 std::string TCPConnection::recv(size_t size) const
 {
     char* buff = new char[size];
-    int n = ::recv(_sock, buff, size, 0);
+    int n = ::recv(_sock, buff, size, MSG_WAITALL);
     if (n < 0)
     {
         delete[] buff;

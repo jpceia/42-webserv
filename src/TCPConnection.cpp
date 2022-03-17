@@ -6,7 +6,7 @@
 /*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/23 03:04:11 by jpceia            #+#    #+#             */
-/*   Updated: 2022/03/09 16:58:36 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/03/16 23:41:28 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,14 +61,18 @@ void TCPConnection::send(std::string& msg) const
     msg = msg.substr(n);
 }
 
-std::string TCPConnection::recv() const
+std::string TCPConnection::recv(size_t size) const
 {
-    char buff[BUFF_SIZE];
-
-    int n = ::recv(_sock, buff, sizeof(buff), 0);
+    char* buff = new char[size];
+    int n = ::recv(_sock, buff, size, 0);
     if (n < 0)
+    {
+        delete[] buff;
         throw TCPConnection::ReadException();
-    return std::string(buff, n);
+    }
+    std::string result = std::string(buff, n);
+    delete[] buff;
+    return result;
 }
 
 int TCPConnection::getSock() const

@@ -125,7 +125,8 @@ int HTTPServer::_handle_client_send(TCPConnection* connection)
     {
         if (conn->getRequest().getHeader("Connection") != "keep-alive") // close connection
             _close_connection(connection);
-        conn->clear();  // Clear the buffers
+        else
+            conn->clear();  // Clear the buffers
         return POLLIN;
     }
     return POLLOUT;

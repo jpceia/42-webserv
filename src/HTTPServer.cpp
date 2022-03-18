@@ -6,7 +6,7 @@
 /*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/03 17:30:40 by jceia             #+#    #+#             */
-/*   Updated: 2022/03/16 23:17:36 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/03/18 20:29:54 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -95,6 +95,7 @@ int HTTPServer::_handle_client_recv(TCPConnection* connection)
         ctx.redirect_status = location_block.getRedirectStatus();
         ctx.redirect_path = location_block.getRedirectPath();
         // cgi
+        ctx.cgi = location_block.getCgi();
         ctx.upload_path = location_block.getUpload();
         if (server_block.getServerName().size() > 0)
             ctx.server_name = server_block.getServerName().front();

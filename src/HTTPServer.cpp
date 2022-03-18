@@ -6,7 +6,7 @@
 /*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/03 17:30:40 by jceia             #+#    #+#             */
-/*   Updated: 2022/03/18 20:29:54 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/03/18 20:49:25 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -244,7 +244,7 @@ HTTPResponse HTTPServer::_cgi_response(const std::string& cmd, const HTTPRequest
     ss << ctx.client_port;
     ss >> env["REMOTE_PORT"];
 
-    std::string body = exec_cmd("php", args, env);
+    std::string body = exec_cmd(cmd, args, env);
 
     std::cout << "cgi output: " << body << std::endl;
 

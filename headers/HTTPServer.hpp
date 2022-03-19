@@ -3,21 +3,22 @@
 /*                                                        :::      ::::::::   */
 /*   HTTPServer.hpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
+/*   By: tisantos <tisantos@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/03 17:30:40 by jceia             #+#    #+#             */
-/*   Updated: 2022/03/16 16:17:54 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/03/19 16:13:07 by tisantos         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef HTTPSERVER_CPP
-# define HTTPSERVER_CPP
+#ifndef HTTPSERVER_HPP
+# define HTTPSERVER_HPP
 
 # include "TCPServer.hpp"
 # include "HTTPRequest.hpp"
 # include "HTTPResponse.hpp"
 # include "HTTPConnection.hpp"
 # include "configFile.hpp"
+# include "debug.hpp"
 # include <iostream>
 # include <fstream>
 # include <sstream>

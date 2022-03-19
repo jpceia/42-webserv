@@ -1,9 +1,0 @@
-https://www.youtube.com/watch?v=tb8gHvYlCFs
-
-http://myhttpheader.com/
-
-https://github.com/joeyajames/Python/blob/master/Web%20Data%20Mining/Python%20Requests.ipynb
-
-
-# For info on requests
-print(dir(r))

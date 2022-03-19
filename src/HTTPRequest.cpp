@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   HTTPRequest.cpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
+/*   By: tisantos <tisantos@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/22 15:33:45 by jceia             #+#    #+#             */
-/*   Updated: 2022/03/16 15:20:50 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/03/19 15:55:47 by tisantos         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -191,6 +191,11 @@ std::string HTTPRequest::getHeader(const std::string& key) const
     if (it == _headers.end())
         return "";
     return it->second;
+}
+
+std::map<std::string, std::string> HTTPRequest::getHeaders() const
+{
+	return _headers;
 }
 
 void HTTPRequest::setPath(const std::string& path)

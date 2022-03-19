@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   configDefaults.hpp                                 :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: tisantos <tisantos@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2022/03/19 15:58:50 by tisantos          #+#    #+#             */
+/*   Updated: 2022/03/19 16:46:41 by tisantos         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #ifndef CONFIGDEFAULTS_HPP
 # define CONFIGDEFAULTS_HPP
 
@@ -7,8 +19,17 @@
 class configDefaults
 {
 	public:
+        /****************/
+        /* Constructors */
+        /****************/
 		configDefaults();
+        configDefaults(const configDefaults& rhs);
 		~configDefaults();
+
+        /*****************/
+        /* Copy Operator */
+        /*****************/
+        configDefaults& operator=(const configDefaults& rhs);
 
         /**********************/
         /* Default Directives */

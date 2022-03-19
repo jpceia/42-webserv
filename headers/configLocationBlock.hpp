@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   configLocationBlock.hpp                            :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: tisantos <tisantos@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2022/03/19 15:59:08 by tisantos          #+#    #+#             */
+/*   Updated: 2022/03/19 17:10:17 by tisantos         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #ifndef CONFIGLOCATIONBLOCK_HPP
 # define CONFIGLOCATIONBLOCK_HPP
 
@@ -14,10 +26,21 @@
 class configLocationBlock : public configDefaults
 {
     public:
-        configLocationBlock();
-
+        /****************/
+        /* Constructors */
+        /****************/
+        configLocationBlock();		
+        configLocationBlock(const configLocationBlock& rhs);
         ~configLocationBlock();
 
+        /*****************/
+        /* Copy Operator */
+        /*****************/
+        configLocationBlock& operator=(const configLocationBlock& rhs);
+
+        /***********/
+        /* Methods */
+        /***********/
 		void	locationDirectiveTreatment(std::string line);
 		void	errorpageDirectiveTreatment(std::map<int, std::string> error_p,
 											std::string line);
@@ -53,22 +76,15 @@ class configLocationBlock : public configDefaults
         /**********************/
         /* Current Directives */
         /**********************/
-
-		// location_path
 		std::vector<std::string>				_location_path;
-
 		std::map<int, std::string>				_error_page;
         std::vector<unsigned long int>			_client_max_body_size;
         std::vector<std::string>    			_root;
         std::vector<std::string>    			_index;
         std::vector<std::string>    			_auto_index;
-
         std::vector<std::string>    			_methods;
-
-		// return (redirect)
 		std::vector<int>            			_redirect_status;
         std::vector<std::string>    			_redirect_path;
-
         std::map<std::string, std::string>		_cgi;
         std::vector<std::string>    			_upload;
 };

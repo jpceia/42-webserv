@@ -1,11 +1,58 @@
-#include "configLocationBlock.hpp"
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   configLocationBlock.cpp                            :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: tisantos <tisantos@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2022/03/19 15:59:55 by tisantos          #+#    #+#             */
+/*   Updated: 2022/03/19 17:16:19 by tisantos         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
+# include "configLocationBlock.hpp"
+
+/****************/
+/* Constructors */
+/****************/
 configLocationBlock::configLocationBlock()
 {}
+
+configLocationBlock::configLocationBlock(const configLocationBlock& rhs)
+{
+	*this = rhs;
+}
 
 configLocationBlock::~configLocationBlock()
 {}
 
+/*****************/
+/* Copy Operator */
+/*****************/
+configLocationBlock& configLocationBlock::operator=(const configLocationBlock& rhs)
+{
+    if (this == &rhs)
+    {
+    	return *this;
+    }
+	_location_path = rhs._location_path;
+	_error_page = rhs._error_page;
+	_client_max_body_size = rhs._client_max_body_size;
+	_root = rhs._root;
+	_index = rhs._index;
+	_auto_index = rhs._auto_index;
+	_methods = rhs._methods;
+	_redirect_status = rhs._redirect_status;
+	_redirect_path = rhs._redirect_path;
+	_cgi = rhs._cgi;
+	_upload = rhs._upload;
+
+	return *this;
+}
+
+/***********/
+/* Methods */
+/***********/
 void	configLocationBlock::locationDirectiveTreatment(std::string line)
 {
 	/***********************************************************/

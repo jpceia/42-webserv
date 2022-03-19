@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   configServerBlock.hpp                              :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: tisantos <tisantos@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2022/03/19 15:59:14 by tisantos          #+#    #+#             */
+/*   Updated: 2022/03/19 17:26:21 by tisantos         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #ifndef CONFIGSERVERBLOCK_HPP
 # define CONFIGSERVERBLOCK_HPP
 
@@ -15,17 +27,27 @@
 class configServerBlock : public configDefaults
 {
     public:
+        /****************/
+        /* Constructors */
+        /****************/
         configServerBlock();
-
+		configServerBlock(const configServerBlock& rhs);
         configServerBlock(std::vector<std::string> server_block);
-
         ~configServerBlock();
 
+        /*****************/
+        /* Copy Operator */
+        /*****************/
+        configServerBlock& operator=(const configServerBlock& rhs);
+
+        /***********/
+        /* Methods */
+        /***********/
         void    fillBlocks();
 
-		/****************/
-		/* Print Helper */
-		/****************/
+        /************/
+        /* Debugger */
+        /************/
 		void	printDirectives();
 
 		/*****************/
@@ -152,10 +174,8 @@ class configServerBlock : public configDefaults
         /* Current Directives */
         /**********************/
 
-		// listen
 		std::vector<std::string>			_ip;
 		std::vector<int>					_port;
-
 		std::vector<std::string>			_server_name;
 		std::map<int, std::string>			_error_page;
         std::vector<unsigned long int>		_client_max_body_size;

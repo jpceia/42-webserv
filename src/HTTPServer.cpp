@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   HTTPServer.cpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
+/*   By: tisantos <tisantos@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/03 17:30:40 by jceia             #+#    #+#             */
-/*   Updated: 2022/03/16 23:17:36 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/03/19 17:57:28 by tisantos         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,8 @@
 # include <vector>
 # include <algorithm>
 # include <sys/poll.h>
+# include <dirent.h>
+# include <cstring>
 # include "utils.hpp"
 
 
@@ -95,10 +97,10 @@ int HTTPServer::_handle_client_recv(TCPConnection* connection)
         ctx.redirect_status = location_block.getRedirectStatus();
         ctx.redirect_path = location_block.getRedirectPath();
         // cgi
+        ctx.cgi = location_block.getCgi();
         ctx.upload_path = location_block.getUpload();
         if (server_block.getServerName().size() > 0)
             ctx.server_name = server_block.getServerName().front();
-        ctx.server_name = "";
         ctx.server_addr = connection->getServerIP();
         ctx.client_addr = connection->getClientIP();
         ctx.server_port = connection->getServerPort();
@@ -170,7 +172,7 @@ HTTPResponse HTTPServer::_response(const HTTPRequest& request, Context& ctx)
         if (!found)
         {
             if (ctx.autoindex == "on")
-                return _autoindex_response(ctx);
+                return _autoindex_response(ctx, request);
             else
                 return _error_page_response(404, "Not found", ctx);
         }
@@ -208,7 +210,7 @@ HTTPResponse HTTPServer::_cgi_response(const std::string& cmd, const HTTPRequest
     // calling the CGI script using execvpe
     std::vector<std::string> args;
     args.push_back(cmd);
-    args.push_back(ctx.path);
+    //args.push_back(ctx.path);
 
     std::map<std::string, std::string> env;
 
@@ -221,6 +223,9 @@ HTTPResponse HTTPServer::_cgi_response(const std::string& cmd, const HTTPRequest
     env["DOCUMENT_ROOT"] = ctx.root;
     env["GATEWAY_INTERFACE"] = "CGI/1.1";
     env["PATH_INFO"] = request.getPath();
+    env["SCRIPT_NAME"] = ctx.path;
+    env["SCRIPT_FILENAME"] = ctx.path;
+    env["REDIRECT_STATUS"] = ctx.redirect_path;
 
     // HTTP info
     env["HTTP_ACCEPT"] = request.getHeader("Accept");
@@ -244,7 +249,7 @@ HTTPResponse HTTPServer::_cgi_response(const std::string& cmd, const HTTPRequest
     ss << ctx.client_port;
     ss >> env["REMOTE_PORT"];
 
-    std::string body = exec_cmd("php", args, env);
+    std::string body = exec_cmd(cmd, args, env);
 
     std::cout << "cgi output: " << body << std::endl;
 
@@ -256,33 +261,73 @@ HTTPResponse HTTPServer::_cgi_response(const std::string& cmd, const HTTPRequest
     return response;
 }
 
-HTTPResponse HTTPServer::_autoindex_response(const Context& ctx) const
+// Client_port or Server_port is wrong
+// Need to change it and then change it here:
+// ss << "\t\t<p><a href=\"http://" + ctx.client_addr + ":" <<\
+// "8080" << dirName + "/" + dirEntry + "\">" + dirEntry + "</a></p>\n";
+HTTPResponse HTTPServer::_autoindex_response(const Context& ctx, const HTTPRequest& request) const
 {
-    /*
+	DIR *dpdf;
+	struct dirent *epdf = NULL;
+
+	std::vector<std::string> directories; //    /www/blog ,       /www/here/blabla
+	std::vector<std::string> files;       //    /www/blog.html ,  /www/here/blabla.php
+
+	// Get all the directories from /www/request.getPath().
+	// Remove ?example=hello if found on getPath()
+	// Remove the "." / "..", put directories in directories, files in files
+	std::string path_treated = request.getPath().substr(0, request.getPath().find("?"));
+	std::string full_path = ctx.root + path_treated;
+	dpdf = opendir(full_path.c_str());
+
+	if (dpdf == NULL)
+	{
+		return _error_page_response(404, "Not found", ctx);
+	}
+	do {
+		epdf = readdir(dpdf);
+		if (epdf != NULL)
+		{
+			if (strcmp(epdf->d_name, ".") &&
+				strcmp(epdf->d_name, ".."))
+			{
+				if (std::string(epdf->d_name).find('.') != std::string::npos)
+					files.push_back(epdf->d_name);
+				else
+					directories.push_back(epdf->d_name + std::string("/"));
+			}
+		}
+	} while(epdf != NULL);
+
+	closedir(dpdf);
+
+	// Sort alphabetical the files and directories
+	std::sort(directories.begin(),directories.end(),compareFunction);
+	std::sort(files.begin(),files.end(),compareFunction);
+
     std::stringstream ss;
-    ss << "<html><head><title>Index of " << ctx.path << "</title></head><body><h1>Index of " << ctx.path << "</h1><hr><pre>";
-    ss << "<a href=\"..\">..</a>\n";
-    for (std::vector<std::string>::const_iterator it = ctx.index.begin();
-        it != ctx.index.end(); ++it)
-    {
-        std::string path = ctx.path + *it;
-        if (is_dir(path))
-            ss << "<a href=\"" << *it << "/\">" << *it << "/</a>\n";
-        else
-            ss << "<a href=\"" << *it << "\">" << *it << "</a>\n";
-    }
-    ss << "</pre></body></html>";
+    ss << "<html><head><title>Index of " << path_treated << "</title></head><body><h1>Index of " << path_treated << "</h1><hr><pre>";
+    ss << "<a href=\"..\">../</a>\n";
+	for (std::vector<std::string>::iterator it = directories.begin(); it != directories.end(); it++)
+	{
+    	ss << "<a href=\"http://" + ctx.client_addr + ":" <<\
+        	   "8081" << path_treated + *it + "\">" + *it + "</a>\n";
+	}
+	for (std::vector<std::string>::iterator it = files.begin(); it != files.end(); it++)
+	{
+    	ss << "<a href=\"http://" + ctx.client_addr + ":" <<
+        	   "8081" << path_treated + *it + "\">" + *it + "</a>\n";
+	}
+
+    ss << "</pre><hr></body></html>";
     std::string body = ss.str();
-    */
-    (void)ctx;
+
     HTTPResponse response;
     response.setVersion("HTTP/1.1");
     response.setHeader("Content-Type", "text/html");
     response.setStatus(200, "OK");
-    response.setBody("Autoindex");
-    //response.setBody(body);
+    response.setBody(body);
     return response;
-    
 }
 
 HTTPResponse HTTPServer::_redirect_response(const Context& ctx) const

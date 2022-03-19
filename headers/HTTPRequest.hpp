@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   HTTPRequest.hpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
+/*   By: tisantos <tisantos@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/22 13:00:01 by jceia             #+#    #+#             */
-/*   Updated: 2022/03/16 15:20:05 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/03/19 15:54:30 by tisantos         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,6 +47,7 @@ public:
     std::string getPath() const;
     HTTPMethod getMethod() const;
     std::string getHeader(const std::string& key) const;
+    std::map<std::string, std::string> getHeaders() const;
     std::string getQueryString() const;
     std::string getEndpoint() const;
     std::string getBody() const;

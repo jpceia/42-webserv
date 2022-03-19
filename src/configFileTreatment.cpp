@@ -1,7 +1,27 @@
-#include "configFileTreatment.hpp"
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   configFileTreatment.cpp                            :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: tisantos <tisantos@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2022/03/19 15:59:50 by tisantos          #+#    #+#             */
+/*   Updated: 2022/03/19 17:03:42 by tisantos         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
+# include "configFileTreatment.hpp"
+
+/****************/
+/* Constructors */
+/****************/
 configFileTreatment::configFileTreatment()
 {}
+
+configFileTreatment::configFileTreatment(const configFileTreatment& rhs)
+{
+	*this = rhs;
+}
 
 configFileTreatment::configFileTreatment(std::string configuration_file_raw)
 										:	_configuration_file_raw(configuration_file_raw)
@@ -10,6 +30,25 @@ configFileTreatment::configFileTreatment(std::string configuration_file_raw)
 configFileTreatment::~configFileTreatment()
 {}
 
+/*****************/
+/* Copy Operator */
+/*****************/
+configFileTreatment& configFileTreatment::operator=(const configFileTreatment& rhs)
+{
+    if (this == &rhs)
+    {
+    	return *this;
+    }
+    _configuration_file_raw = rhs._configuration_file_raw;
+	_configuration_file_treated = rhs._configuration_file_treated;
+    _server_blocks = rhs._server_blocks; 
+
+	return *this;
+}
+
+/***********/
+/* Methods */
+/***********/
 void	configFileTreatment::treatConfigurationFile()
 {
 	treatConfigurationFile_StepOne();
@@ -41,6 +80,17 @@ void	configFileTreatment::separateToServerBlocks()
 
 }
 
+/***********/
+/* Getters */
+/***********/
+std::list<std::vector<std::string> >	configFileTreatment::getServerBlocks()
+{
+	return _server_blocks;
+}
+
+/*************/
+/* Debuggers */
+/*************/
 void	configFileTreatment::printConfigurationFileTreated()
 {
 	std::vector<std::string>::iterator it(_configuration_file_treated.begin());
@@ -67,11 +117,6 @@ void	configFileTreatment::printServerBlocks()
 		}
 		i++;
 	}
-}
-
-std::list<std::vector<std::string> >	configFileTreatment::getServerBlocks()
-{
-	return _server_blocks;
 }
 
 /********************/

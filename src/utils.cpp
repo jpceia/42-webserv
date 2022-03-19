@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   utils.cpp                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
+/*   By: tisantos <tisantos@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/23 20:06:03 by jpceia            #+#    #+#             */
-/*   Updated: 2022/03/07 21:23:00 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/03/19 17:53:18 by tisantos         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,12 @@
 #include <unistd.h>
 #include <limits.h>
 #include <cstdlib>
+#include <iostream>
+
+bool compareFunction (std::string a, std::string b)
+{
+	return a<b;
+}
 
 int ft_stoi(const std::string& str)
 {
@@ -85,23 +91,33 @@ std::string lookup_full_path(const std::string& path)
     }
 }
 
+std::vector<char *> char_ptr_vector(const std::vector<std::string>& args)
+{
+    std::vector<char *> c_args;
+    for (std::vector<std::string>::const_iterator it = args.begin();
+        it != args.end(); ++it)
+        c_args.push_back(const_cast<char *>(it->c_str()));
+    c_args.push_back(NULL);
+    return c_args;
+}
+
+std::vector<std::string> map_to_vector(const std::map<std::string, std::string>& map)
+{
+    std::vector<std::string> v;
+    for (std::map<std::string, std::string>::const_iterator it = map.begin();
+        it != map.end(); ++it)
+        v.push_back(it->first + "=" + it->second);
+    return v;
+}
 
 std::string exec_cmd(
     const std::string &path,
     const std::vector<std::string>& args,
     const std::map<std::string, std::string>& env)
 {
-    std::vector<char *> argv;
-    for (std::vector<std::string>::const_iterator it = args.begin();
-        it != args.end(); ++it)
-        argv.push_back(const_cast<char *>(it->c_str()));
-    argv.push_back(NULL);
-
-    std::vector<char *> envp;
-    for (std::map<std::string, std::string>::const_iterator it = env.begin();
-        it != env.end(); ++it)
-        envp.push_back(const_cast<char *>((it->first + "=" + it->second).c_str()));
-    envp.push_back(NULL);
+    std::vector<char *> argv = char_ptr_vector(args);
+    std::vector<std::string> aux = map_to_vector(env);
+    std::vector<char *> envp = char_ptr_vector(aux);
 
     int fd[2];
     pipe(fd);
@@ -109,7 +125,7 @@ std::string exec_cmd(
 
     if (pid < 0)
         throw std::runtime_error("fork failed");
-    if (pid == 0)
+    if (pid == 0) // child
     {
         dup2(fd[1], STDOUT_FILENO);
         close(fd[0]);
@@ -120,15 +136,15 @@ std::string exec_cmd(
     }
     // pid > 0 (parent)
     close(fd[1]);
-    std::string body;
+    std::string res;
     char buf[1024];
     int n = 1;
     while (n > 0)
     {
         n = read(fd[0], buf, sizeof(buf));
-        body.append(buf, n);
+        res.append(buf, n);
     }
     close(fd[0]);
     waitpid(pid, NULL, 0);
-    return body;
+    return res;
 }

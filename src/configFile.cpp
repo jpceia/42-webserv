@@ -1,5 +1,20 @@
-#include "configFile.hpp"
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   configFile.cpp                                     :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: tisantos <tisantos@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2022/03/19 15:59:45 by tisantos          #+#    #+#             */
+/*   Updated: 2022/03/19 16:49:48 by tisantos         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
+# include "configFile.hpp"
+
+/****************/
+/* Constructors */
+/****************/
 configFile::configFile(char *configuration_file)
 {
 	/*****************************************************************/
@@ -93,5 +108,25 @@ configFile::configFile(char *configuration_file)
 
 }
 
+configFile::configFile(const configFile& rhs)
+{
+	*this = rhs;
+}
+
 configFile::~configFile()
 {}
+
+/*****************/
+/* Copy Operator */
+/*****************/
+configFile& configFile::operator=(const configFile& rhs)
+{
+    if (this == &rhs)
+    {
+    	return *this;
+    }
+	_server_blocks = rhs._server_blocks;
+	_server_blocks_obj = rhs._server_blocks_obj;
+
+	return *this;
+}

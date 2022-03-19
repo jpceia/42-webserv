@@ -1,7 +1,27 @@
-#include "configServerBlock.hpp"
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   configServerBlock.cpp                              :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: tisantos <tisantos@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2022/03/19 16:00:01 by tisantos          #+#    #+#             */
+/*   Updated: 2022/03/19 17:30:02 by tisantos         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
+# include "configServerBlock.hpp"
+
+/****************/
+/* Constructors */
+/****************/
 configServerBlock::configServerBlock()
 {}
+
+configServerBlock::configServerBlock(const configServerBlock& rhs)
+{
+	*this = rhs;
+}
 
 configServerBlock::configServerBlock(std::vector<std::string> server_block) : _server_block(server_block)
 {}
@@ -9,6 +29,36 @@ configServerBlock::configServerBlock(std::vector<std::string> server_block) : _s
 configServerBlock::~configServerBlock()
 {}
 
+/*****************/
+/* Copy Operator */
+/*****************/
+configServerBlock& configServerBlock::operator=(const configServerBlock& rhs)
+{
+    if (this == &rhs)
+    {
+    	return *this;
+    }
+	_ip = rhs._ip;
+	_port = rhs._port;
+	_server_name = rhs._server_name;
+	_error_page = rhs._error_page;
+	_client_max_body_size = rhs._client_max_body_size;
+	_root = rhs._root;
+	_index = rhs._index;
+	_auto_index = rhs._auto_index;
+	_server_block = rhs._server_block;
+	for (int i = 0; i < 1000; i++)
+	{
+		_location_blocks[i] = rhs._location_blocks[i];
+	}
+	_location_blocks_count = rhs._location_blocks_count;
+
+	return *this;
+}
+
+/***********/
+/* Methods */
+/***********/
 void    configServerBlock::fillBlocks()
 {
 	std::vector<std::string>::iterator it(_server_block.begin());
@@ -133,9 +183,9 @@ void    configServerBlock::fillBlocks()
 
 }
 
-/****************/
-/* Print Helper */
-/****************/
+/************/
+/* Debugger */
+/************/
 void	configServerBlock::printDirectives()
 {
 	/**********************************/
@@ -472,7 +522,6 @@ std::vector<std::string>	configServerBlock::returnSplitedDelimiter(std::string l
 /************************/
 /* Directives Treatment */
 /************************/
-
 void	configServerBlock::listenDirectiveTreatment(std::string line)
 {
 	/*****************************************************************/

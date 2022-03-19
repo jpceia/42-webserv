@@ -1,15 +1,7 @@
 <!DOCTYPE html>
-<html>
-<body>
-
-<h1>My first PHP page</h1>
-
+<!-- Contrbuted by GS -->
+<html><head></head><body>
 <?php
-
-echo "Hello World!\n";
-echo 'Hello ' . htmlspecialchars($_GET["hello"]) . '!';
-
-
 
 //Call getenv() function without argument
 
@@ -27,8 +19,5 @@ foreach ($env_array as $key=>$value)
 
 }
 
-
 ?>
-
-</body>
-</html>
+</body></html>

@@ -208,7 +208,7 @@ HTTPResponse HTTPServer::_cgi_response(const std::string& cmd, const HTTPRequest
     // calling the CGI script using execvpe
     std::vector<std::string> args;
     args.push_back(cmd);
-    args.push_back(ctx.path);
+    //args.push_back(ctx.path);
 
     std::map<std::string, std::string> env;
 

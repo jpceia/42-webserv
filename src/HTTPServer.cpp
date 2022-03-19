@@ -6,7 +6,7 @@
 /*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/03 17:30:40 by jceia             #+#    #+#             */
-/*   Updated: 2022/03/18 20:49:25 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/03/19 13:07:02 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,7 +99,6 @@ int HTTPServer::_handle_client_recv(TCPConnection* connection)
         ctx.upload_path = location_block.getUpload();
         if (server_block.getServerName().size() > 0)
             ctx.server_name = server_block.getServerName().front();
-        ctx.server_name = "";
         ctx.server_addr = connection->getServerIP();
         ctx.client_addr = connection->getClientIP();
         ctx.server_port = connection->getServerPort();

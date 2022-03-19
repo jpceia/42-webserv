@@ -85,23 +85,31 @@ std::string lookup_full_path(const std::string& path)
     }
 }
 
+std::vector<char *> char_ptr_vector(const std::vector<std::string>& args)
+{
+    std::vector<char *> c_args;
+    for (std::vector<std::string>::const_iterator it = args.begin();
+        it != args.end(); ++it)
+        c_args.push_back(const_cast<char *>(it->c_str()));
+    c_args.push_back(NULL);
+    return c_args;
+}
+
 
 std::string exec_cmd(
     const std::string &path,
     const std::vector<std::string>& args,
-    const std::map<std::string, std::string>& env)
+    const std::map<std::string, std::string>& env,
+    const std::string& input)
 {
-    std::vector<char *> argv;
-    for (std::vector<std::string>::const_iterator it = args.begin();
-        it != args.end(); ++it)
-        argv.push_back(const_cast<char *>(it->c_str()));
-    argv.push_back(NULL);
+    std::vector<char *> argv = char_ptr_vector(args);
 
-    std::vector<char *> envp;
+    std::vector<std::string> aux;
     for (std::map<std::string, std::string>::const_iterator it = env.begin();
         it != env.end(); ++it)
-        envp.push_back(const_cast<char *>((it->first + "=" + it->second).c_str()));
-    envp.push_back(NULL);
+        aux.push_back(it->first + "=" + it->second);
+
+    std::vector<char *> envp = char_ptr_vector(aux);
 
     int fd[2];
     pipe(fd);
@@ -120,15 +128,15 @@ std::string exec_cmd(
     }
     // pid > 0 (parent)
     close(fd[1]);
-    std::string body;
+    std::string res;
     char buf[1024];
     int n = 1;
     while (n > 0)
     {
         n = read(fd[0], buf, sizeof(buf));
-        body.append(buf, n);
+        res.append(buf, n);
     }
     close(fd[0]);
     waitpid(pid, NULL, 0);
-    return body;
+    return res;
 }

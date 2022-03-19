@@ -1,13 +1,7 @@
-#include "webserv.hpp"
 #include "utils.hpp"
 #include "HTTPServer.hpp"
-#include "HTTPListener.hpp"
-#include "HTTPConnection.hpp"
 #include "configFile.hpp"
 #include <iostream>
-#include <sstream>
-
-// https://gist.github.com/vthanki/8405c9cd4a09d3a0b73bf876b2635ad4#file-unix_server-c
 
 int main(int argc, char *argv[])
 {

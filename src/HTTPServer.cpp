@@ -221,6 +221,9 @@ HTTPResponse HTTPServer::_cgi_response(const std::string& cmd, const HTTPRequest
     env["DOCUMENT_ROOT"] = ctx.root;
     env["GATEWAY_INTERFACE"] = "CGI/1.1";
     env["PATH_INFO"] = request.getPath();
+    env["SCRIPT_NAME"] = ctx.path;
+    env["SCRIPT_FILENAME"] = ctx.path;
+    env["REDIRECT_STATUS"] = ctx.redirect_path;
 
     // HTTP info
     env["HTTP_ACCEPT"] = request.getHeader("Accept");

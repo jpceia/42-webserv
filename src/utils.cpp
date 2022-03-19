@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   utils.cpp                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
+/*   By: tisantos <tisantos@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/23 20:06:03 by jpceia            #+#    #+#             */
-/*   Updated: 2022/03/19 00:43:14 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/03/19 17:53:18 by tisantos         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,11 @@
 #include <limits.h>
 #include <cstdlib>
 #include <iostream>
+
+bool compareFunction (std::string a, std::string b)
+{
+	return a<b;
+}
 
 int ft_stoi(const std::string& str)
 {

@@ -6,7 +6,7 @@
 /*   By: tisantos <tisantos@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/03 17:30:40 by jceia             #+#    #+#             */
-/*   Updated: 2022/03/19 16:13:07 by tisantos         ###   ########.fr       */
+/*   Updated: 2022/03/19 17:55:17 by tisantos         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,7 +64,7 @@ private:
     //HTTPResponse _static_response(const HTTPRequest& request, const Context& ctx);
     //HTTPResponse _redirect_response(const HTTPRequest& request, const Context& ctx) const;
     //HTTPResponse _upload_response(const HTTPRequest& request, const Context& ctx);
-    HTTPResponse _autoindex_response(const Context& ctx) const;
+    HTTPResponse _autoindex_response(const Context& ctx, const HTTPRequest& request) const;
     HTTPResponse _upload_response(const HTTPRequest& request, const Context& ctx) const;
     HTTPResponse _redirect_response(const Context& ctx) const;
     HTTPResponse _error_page_response(int code, const std::string& msg, const Context& ctx) const;

@@ -99,8 +99,7 @@ std::vector<char *> char_ptr_vector(const std::vector<std::string>& args)
 std::string exec_cmd(
     const std::string &path,
     const std::vector<std::string>& args,
-    const std::map<std::string, std::string>& env,
-    const std::string& input)
+    const std::map<std::string, std::string>& env)
 {
     std::vector<char *> argv = char_ptr_vector(args);
 

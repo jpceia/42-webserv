@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   utils.cpp                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tisantos <tisantos@student.42.fr>          +#+  +:+       +#+        */
+/*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/23 20:06:03 by jpceia            #+#    #+#             */
-/*   Updated: 2022/03/19 17:53:18 by tisantos         ###   ########.fr       */
+/*   Updated: 2022/03/20 00:26:00 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,6 +32,13 @@ int ft_stoi(const std::string& str)
     int i;
     ss >> i;
     return i;
+}
+
+std::string ft_itos(int i)
+{
+    std::stringstream ss;
+    ss << i;
+    return ss.str();
 }
 
 bool is_dir(const std::string& path)

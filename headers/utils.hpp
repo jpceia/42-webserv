@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   utils.hpp                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tisantos <tisantos@student.42.fr>          +#+  +:+       +#+        */
+/*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/23 20:05:23 by jpceia            #+#    #+#             */
-/*   Updated: 2022/03/19 17:53:36 by tisantos         ###   ########.fr       */
+/*   Updated: 2022/03/20 00:26:53 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,7 @@
 
 bool compareFunction (std::string a, std::string b);
 int ft_stoi(const std::string& str);
+std::string ft_itos(int i);
 bool is_dir(const std::string& path);
 bool is_readable_file(const std::string& path);
 

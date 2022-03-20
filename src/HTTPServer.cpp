@@ -6,7 +6,7 @@
 /*   By: tisantos <tisantos@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/03 17:30:40 by jceia             #+#    #+#             */
-/*   Updated: 2022/03/20 15:47:18 by tisantos         ###   ########.fr       */
+/*   Updated: 2022/03/20 15:50:53 by tisantos         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -284,7 +284,7 @@ HTTPResponse HTTPServer::_autoindex_response(const Context& ctx, const HTTPReque
 			if (strcmp(epdf->d_name, ".") &&
 				strcmp(epdf->d_name, ".."))
 			{
-				if (epdf->d_type != 4)	// If not a folder
+				if (epdf->d_type != DT_DIR)	// If not a folder
 					files.push_back(epdf->d_name);
 				else
 					directories.push_back(epdf->d_name + std::string("/"));

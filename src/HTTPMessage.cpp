@@ -6,7 +6,7 @@
 /*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/20 00:50:16 by jpceia            #+#    #+#             */
-/*   Updated: 2022/03/20 01:29:42 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/03/20 02:19:46 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,10 @@ HTTPMessage& HTTPMessage::operator=(const HTTPMessage &rhs)
     return *this;
 }
 
-// Getters
+// -----------------------------------------------------------------------------
+//                                   Getters
+// -----------------------------------------------------------------------------
+
 std::string HTTPMessage::getVersion() const
 {
     return _version;
@@ -69,7 +72,10 @@ std::string HTTPMessage::getBody() const
     return _body;
 }
 
-// Setters
+// -----------------------------------------------------------------------------
+//                                   Setters
+// -----------------------------------------------------------------------------
+
 void HTTPMessage::setVersion(const std::string& version)
 {
     _version = version;

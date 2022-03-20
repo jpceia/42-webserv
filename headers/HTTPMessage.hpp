@@ -6,7 +6,7 @@
 /*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/20 00:41:19 by jpceia            #+#    #+#             */
-/*   Updated: 2022/03/20 01:30:52 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/03/20 02:15:57 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,8 @@
 
 # include <iostream>
 # include <map>
+
+// https://developer.mozilla.org/en-US/docs/Web/HTTP/Messages
 
 class HTTPMessage
 {

@@ -6,7 +6,7 @@
 /*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/22 13:00:01 by jceia             #+#    #+#             */
-/*   Updated: 2022/03/20 02:07:23 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/03/20 02:16:25 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,18 +14,9 @@
 # define HTTPREQUEST_HPP
 
 # include "HTTPMessage.hpp"
+# include "HTTPMethod.hpp"
 # include <iostream>
 # include <map>
-
-// https://developer.mozilla.org/en-US/docs/Web/HTTP/Messages
-
-enum HTTPMethod {
-    GET,
-    POST,
-    PUT,
-    DELETE,
-    HEAD
-};
 
 class HTTPRequest : public HTTPMessage
 {
@@ -51,8 +42,5 @@ protected:
     std::string _endpoint;
     std::string _query;
 };
-
-std::istream &operator>>(std::istream &is, HTTPMethod &method);
-std::ostream &operator<<(std::ostream &out, const HTTPMethod &method);
 
 #endif

@@ -6,15 +6,15 @@
 /*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/22 15:33:45 by jceia             #+#    #+#             */
-/*   Updated: 2022/03/20 02:12:47 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/03/20 02:19:09 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 # include "HTTPMessage.hpp"
 # include "HTTPRequest.hpp"
+# include "HTTPMethod.hpp"
 # include "utils.hpp"
 # include <sstream>
-
 
 
 HTTPRequest::HTTPRequest() :
@@ -76,49 +76,9 @@ std::ostream &operator<<(std::ostream &out, const HTTPRequest &request)
     return out;
 }
 
-std::istream &operator>>(std::istream &is, HTTPMethod &method)
-{
-    std::string s;
-    is >> s;
-    if (s == "GET")
-        method = GET;
-    else if (s == "POST")
-        method = POST;
-    else if (s == "PUT")
-        method = PUT;
-    else if (s == "DELETE")
-        method = DELETE;
-    else if (s == "HEAD")
-        method = HEAD;
-    else
-        throw HTTPMessage::ParseException();
-    return is;
-}
-
-std::ostream &operator<<(std::ostream &out, const HTTPMethod &method)
-{
-    switch (method)
-    {
-    case GET:
-        out << "GET";
-        break ;
-    case POST:
-        out << "POST";
-        break ;
-    case PUT:
-        out << "PUT";
-        break ;
-    case DELETE:
-        out << "DELETE";
-        break ;
-    case HEAD:
-        out << "HEAD";
-        break ;
-    default:
-        throw std::runtime_error("Unkown HTTP method");
-    }
-    return out;
-}
+// -----------------------------------------------------------------------------
+//                                   Getters
+// -----------------------------------------------------------------------------
 
 std::string HTTPRequest::getPath() const
 {
@@ -126,7 +86,6 @@ std::string HTTPRequest::getPath() const
         return _endpoint;
     return _endpoint + "?" + _query;
 }
-
 
 std::string HTTPRequest::getQueryString() const
 {
@@ -142,6 +101,10 @@ HTTPMethod HTTPRequest::getMethod() const
 {
     return _method;
 }
+
+// -----------------------------------------------------------------------------
+//                                   Setters
+// -----------------------------------------------------------------------------
 
 void HTTPRequest::setPath(const std::string& path)
 {

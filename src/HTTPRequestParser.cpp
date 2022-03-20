@@ -19,7 +19,7 @@ HTTPRequestParser::HTTPRequestParser() :
     _state(PARSE_START),
     _buf(""),
     _content_length(0),
-    _by_chunks(true)
+    _chunked(false)
 {
 }
 
@@ -28,7 +28,7 @@ HTTPRequestParser::HTTPRequestParser(const HTTPRequestParser& rhs) :
     _state(rhs._state),
     _buf(rhs._buf),
     _content_length(rhs._content_length),
-    _by_chunks(rhs._by_chunks)
+    _chunked(rhs._chunked)
 {
 }
 
@@ -44,7 +44,7 @@ HTTPRequestParser& HTTPRequestParser::operator=(const HTTPRequestParser& rhs)
         _state = rhs._state;
         _buf = rhs._buf;
         _content_length = rhs._content_length;
-        _by_chunks = rhs._by_chunks;
+        _chunked = rhs._chunked;
     }
     return *this;
 }
@@ -107,7 +107,7 @@ ParseState HTTPRequestParser::parse(const std::string& s)
     {
         _body += _buf;
         _buf = "";                                      // clear buffer
-        if (!_by_chunks)
+        if (!_chunked)
         {
             if (_body.length() > _content_length)
                 throw HTTPRequest::ParseException();
@@ -138,7 +138,19 @@ void HTTPRequestParser::addHeader(const std::string& key, const std::string& val
     if (key == "Content-Length")
     {
         _content_length = ft_stoi(value);
-        _by_chunks = false;
+        _chunked = false;
+    }
+    else if (key == "Transfer-Encoding")
+    {
+        if (value == "chunked")
+        {
+            _chunked = true;
+
+            // 'Transfer-Encoding: chunked' and 'Content-Length'
+            // are not compatible
+            if (_content_length > 0)
+                throw HTTPRequest::ParseException();
+        }
     }
 }
 
@@ -147,5 +159,5 @@ void HTTPRequestParser::clear()
     _state = PARSE_START;
     _buf.clear();
     _content_length = 0;
-    _by_chunks = true;
+    _chunked = true;
 }

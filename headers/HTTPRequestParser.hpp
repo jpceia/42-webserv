@@ -36,16 +36,13 @@ public:
     ParseState parse(const std::string& s = "");
     void addHeader(const std::string& line);
     void addHeader(const std::string& key, const std::string& value);
-
-    bool isByChunks() { return _by_chunks; }
-
     void clear();
 
 private:
     ParseState _state;
     std::string _buf;
     size_t _content_length;
-    bool _by_chunks;
+    bool _chunked;
 };
 
 #endif

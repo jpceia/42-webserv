@@ -6,7 +6,7 @@
 #    By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/11/04 23:37:29 by jceia             #+#    #+#              #
-#    Updated: 2022/01/22 07:10:09 by jpceia           ###   ########.fr        #
+#    Updated: 2022/03/19 22:17:52 by jpceia           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -19,17 +19,21 @@ OBJ_DIR     = obj
 SRCS        = $(shell find $(SRC_DIR) -name "*.cpp" -type f)
 OBJS        = $(SRCS:$(SRC_DIR)/%=$(OBJ_DIR)/%.o)
 
-CXX          = clang++
-RM           = rm -f
+CXX			= clang++
+RM          = rm -f
 
 OS          = $(shell uname)
 
 FLAGS_WARN  = -Wall -Werror -Wextra -pedantic-errors
 FLAGS_INC   = -I$(INC_DIR)
-FLAGS_DEBUG = -g -fsanitize=address -DDEBUG
 FLAGS_OPT   = -O3
+ifeq ($(OS), Linux)
+	FLAGS_DEBUG = -ggdb3 -fsanitize=address -DDEBUG -D_GLIBCXX_DEBUG
+else
+	FLAGS_DEBUG = -g -fsanitize=address -DDEBUG
+endif
 
-CXXFLAGS    = $(FLAGS_WARN) $(FLAGS_INC) -std=c++98
+CXXFLAGS    = $(FLAGS_WARN) $(FLAGS_INC) $(FLAGS_OPT) -std=c++98
 
 # Compilation
 $(OBJ_DIR)/%.o:    $(SRC_DIR)/%
@@ -53,7 +57,7 @@ fclean: clean
 re: fclean all
 
 # Debug build
-debug:      CXXFLAGS += $(FLAGS_DEBUG)
+debug:      CXXFLAGS = $(FLAGS_WARN) $(FLAGS_INC) $(FLAGS_DEBUG) -std=c++98
 debug:      all
 
 

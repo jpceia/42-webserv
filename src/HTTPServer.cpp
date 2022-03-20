@@ -6,7 +6,7 @@
 /*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/03 17:30:40 by jceia             #+#    #+#             */
-/*   Updated: 2022/03/20 02:42:59 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/03/20 09:45:16 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -209,9 +209,7 @@ HTTPResponse HTTPServer::_response(const HTTPRequest& request, Context& ctx)
     std::cout << "path is " << ctx.path << std::endl;
 
     HTTPResponse response;
-    response.setVersion("HTTP/1.1");
     response.setHeader("Content-Type", "text/html");
-    response.setStatus(200, "OK");
     response.setBody(ifs);
     ifs.close();
     return response;
@@ -264,7 +262,6 @@ HTTPResponse HTTPServer::_cgi_response(const std::string& cmd, const HTTPRequest
     std::stringstream ss(exec_cmd(cmd, args, env));
     HTTPResponse response;
     ss >> dynamic_cast<HTTPMessage&>(response);
-    response.setStatus(200, "OK");
     return response;
 }
 
@@ -330,9 +327,7 @@ HTTPResponse HTTPServer::_autoindex_response(const Context& ctx, const HTTPReque
     std::string body = ss.str();
 
     HTTPResponse response;
-    response.setVersion("HTTP/1.1");
     response.setHeader("Content-Type", "text/html");
-    response.setStatus(200, "OK");
     response.setBody(body);
     return response;
 }
@@ -342,7 +337,6 @@ HTTPResponse HTTPServer::_redirect_response(const Context& ctx) const
     HTTPResponse response;
 
     std::string text;
-    response.setVersion("HTTP/1.1");
     response.setHeader("Location", ctx.redirect_path);
     switch (ctx.redirect_status)
     {
@@ -381,7 +375,6 @@ HTTPResponse HTTPServer::_upload_response(const HTTPRequest& request, const Cont
 {
     std::cout << "Entering upload response" << std::endl;
     HTTPResponse response;
-    response.setVersion("HTTP/1.1");
     response.setHeader("Content-Type", "text/html");
     HTTPMethod method = request.getMethod();
     if (method != POST && method != PUT)
@@ -403,7 +396,6 @@ HTTPResponse HTTPServer::_upload_response(const HTTPRequest& request, const Cont
     ofs.write(body.c_str(), body.size());
     ofs.close();
 
-    response.setStatus(200, "OK");
     response.setBody("Upload Successfull");
     return response;
 }
@@ -411,7 +403,6 @@ HTTPResponse HTTPServer::_upload_response(const HTTPRequest& request, const Cont
 HTTPResponse HTTPServer::_error_page_response(int code, const std::string& msg, const Context& ctx) const
 {
     HTTPResponse response;
-    response.setVersion("HTTP/1.1");
     response.setHeader("Content-Type", "text/html");
     response.setStatus(code, msg);
 

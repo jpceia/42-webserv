@@ -39,6 +39,13 @@ public:
     void clear();
 
 private:
+    ParseState _parse_start();
+    ParseState _parse_headers();
+    ParseState _parse_body();
+    ParseState _parse_chunked_body();
+    ParseState _parse_body_chunk();
+    ParseState _parse_next_chunk();
+
     ParseState _state;
     std::string _buf;
     size_t _content_length;

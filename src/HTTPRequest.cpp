@@ -3,13 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   HTTPRequest.cpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tisantos <tisantos@student.42.fr>          +#+  +:+       +#+        */
+/*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/22 15:33:45 by jceia             #+#    #+#             */
-/*   Updated: 2022/03/19 15:55:47 by tisantos         ###   ########.fr       */
+/*   Updated: 2022/03/20 02:12:47 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+# include "HTTPMessage.hpp"
 # include "HTTPRequest.hpp"
 # include "utils.hpp"
 # include <sstream>
@@ -17,10 +18,18 @@
 
 
 HTTPRequest::HTTPRequest() :
+    HTTPMessage(),
+    _method(GET),
     _endpoint(""),
-    _query(""),
-    _body(""),
-    _version("")
+    _query("")
+{
+}
+
+HTTPRequest::HTTPRequest(const HTTPRequest& rhs) :
+    HTTPMessage(rhs),
+    _method(rhs._method),
+    _endpoint(rhs._endpoint),
+    _query(rhs._query)
 {
 }
 
@@ -30,62 +39,31 @@ HTTPRequest::~HTTPRequest()
 
 HTTPRequest& HTTPRequest::operator=(const HTTPRequest &rhs)
 {
+    HTTPMessage::operator=(rhs);
     if (this != &rhs)
     {
         _method = rhs._method;
         _endpoint = rhs._endpoint;
         _query = rhs._query;
-        _body = rhs._body;
     }
     return *this;
 }
 
-const char* HTTPRequest::ParseException::what(void) const throw()
-{
-    return "Error parsing HTTP Request";
-}
-
-static std::string& drop_carriage_return(std::string& s)
-{
-    size_t pos = s.length() - 1;
-    if (s[pos] != '\r')
-        throw HTTPRequest::ParseException();
-    s = s.substr(0, pos);
-    return s;
-}
-
 std::istream &operator>>(std::istream &is, HTTPRequest &request)
 {
-    std::string line;
-
     // Start line
-    {
-        std::getline(is, line);
-        std::stringstream ss(drop_carriage_return(line));
-        std::string method;
-        std::string path;
-        ss >> method >> path >> request._version;
-        request.setPath(path);
-        request.setMethod(method);
-        if (!ss.eof())
-            throw HTTPRequest::ParseException();
-    }
-    
-    // Headers
-    while (std::getline(is, line))
-    {
-        drop_carriage_return(line);
-        if (line.empty())
-            break;
-        request.addHeader(line);
-    }
-    
-    // Body
-    while (std::getline(is, line))
-    {
-        request._body += drop_carriage_return(line);
-        request._body += "\n";
-    }
+    std::string line;
+    std::getline(is, line);
+    std::stringstream ss(_drop_carriage_return(line));
+    std::string method;
+    std::string path;
+    ss >> method >> path >> request._version;
+    request.setPath(path);
+    request.setMethod(method);
+    if (!ss.eof())
+        throw HTTPMessage::ParseException();
+    // remaining message
+    is >> dynamic_cast<HTTPMessage&>(request);
     return is;
 }
 
@@ -93,11 +71,8 @@ std::ostream &operator<<(std::ostream &out, const HTTPRequest &request)
 {
     out << request._method << " "
         << request.getPath() << " "
-        << request._version << "\r\n";
-    for (std::map<std::string, std::string>::const_iterator it = request._headers.begin();
-        it != request._headers.end(); ++it)
-        out << it->first << ": " << it->second << "\r\n";
-    out << "\r\n" << request._body;
+        << request._version << "\r\n"
+        << dynamic_cast<const HTTPMessage&>(request);
     return out;
 }
 
@@ -152,10 +127,6 @@ std::string HTTPRequest::getPath() const
     return _endpoint + "?" + _query;
 }
 
-std::string HTTPRequest::getBody() const
-{
-    return _body;
-}
 
 std::string HTTPRequest::getQueryString() const
 {
@@ -170,19 +141,6 @@ std::string HTTPRequest::getEndpoint() const
 HTTPMethod HTTPRequest::getMethod() const
 {
     return _method;
-}
-
-std::string HTTPRequest::getHeader(const std::string& key) const
-{
-    std::map<std::string, std::string>::const_iterator it = _headers.find(key);
-    if (it == _headers.end())
-        return "";
-    return it->second;
-}
-
-std::map<std::string, std::string> HTTPRequest::getHeaders() const
-{
-	return _headers;
 }
 
 void HTTPRequest::setPath(const std::string& path)

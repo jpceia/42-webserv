@@ -109,7 +109,7 @@ ParseState HTTPRequestParser::_parse_headers()
         }
     }
     else
-        this->addHeader(line);
+        HTTPMessage::setHeader(line);
     return this->parse();                       // Consume buffer
 }
 
@@ -188,23 +188,9 @@ ParseState HTTPRequestParser::_parse_next_chunk()
     return this->parse(); // consume buffer
 }
 
-void HTTPRequestParser::addHeader(const std::string& s)
+void HTTPRequestParser::setHeader(const std::string& key, const std::string& value)
 {
-    size_t pos = s.find(':');
-    if (pos == std::string::npos)
-        throw HTTPRequest::ParseException();
-    std::string key = s.substr(0, pos);
-    // find first non-whitespace character after ':'
-    pos = s.find_first_not_of(" \t", pos + 1);
-    if (pos == std::string::npos)
-        throw HTTPRequest::ParseException();
-    std::string value = s.substr(pos);
-    this->addHeader(key, value);
-}
-
-void HTTPRequestParser::addHeader(const std::string& key, const std::string& value)
-{
-    _headers[key] = value;
+    HTTPMessage::setHeader(key, value);
     if (key == "Content-Length")
     {
         _content_length = ft_stoi(value);
@@ -219,7 +205,7 @@ void HTTPRequestParser::addHeader(const std::string& key, const std::string& val
             // 'Transfer-Encoding: chunked' and 'Content-Length'
             // are not compatible
             if (_content_length > 0)
-                throw HTTPRequest::ParseException();
+                throw HTTPMessage::ParseException();
         }
     }
 }

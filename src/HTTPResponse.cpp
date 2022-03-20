@@ -6,18 +6,25 @@
 /*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/22 15:33:45 by jceia             #+#    #+#             */
-/*   Updated: 2022/03/20 00:04:30 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/03/20 02:05:22 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 # include "HTTPResponse.hpp"
+# include "utils.hpp"
 # include <sstream>
 # include <fstream>
 
+
 HTTPResponse::HTTPResponse() :
-    _status_code(0),
-    _status_text(""),
-    _version("")
+    HTTPMessage(),
+    _status()
+{
+}
+
+HTTPResponse::HTTPResponse(const HTTPResponse& rhs) :
+    HTTPMessage(rhs),
+    _status(rhs._status)
 {
 }
 
@@ -27,52 +34,25 @@ HTTPResponse::~HTTPResponse()
 
 HTTPResponse& HTTPResponse::operator=(const HTTPResponse &rhs)
 {
+    HTTPMessage::operator=(rhs);
     if (this != &rhs)
-    {
-        _status_code = rhs._status_code;
-        _status_text = rhs._status_text;
-        _version = rhs._version;
-    }
+        _status = rhs._status;
     return *this;
-}
-
-std::string HTTPResponse::getBody() const
-{
-    return _body;
 }
 
 void HTTPResponse::setStatus(int status_code, const std::string& text)
 {
-    _status_code = status_code;
-    _status_text = text;
-}
-
-void HTTPResponse::setHeader(const std::string& name, const std::string& value)
-{
-    _headers[name] = value;
-}
-
-void HTTPResponse::setVersion(const std::string& version)
-{
-    _version = version;
+    _status.code = status_code;
+    _status.text = text;
 }
 
 void HTTPResponse::setBody(const std::string& body)
 {
-    _body = body;
+    HTTPMessage::setBody(body);
+
     // set content length
-    std::stringstream ss;
-    ss << body.size();
-    _headers["Content-Length"] = ss.str();
+    HTTPMessage::setHeader("Content-Length", ft_itos(body.size()));
 }
-
-void HTTPResponse::setBody(const std::ifstream& f)
-{
-    std::stringstream ss;
-    ss << f.rdbuf();
-    this->setBody(ss.str());
-}
-
 
 std::ostream &operator<<(std::ostream &out, const HTTPStatus& status)
 {
@@ -82,10 +62,8 @@ std::ostream &operator<<(std::ostream &out, const HTTPStatus& status)
 
 std::ostream &operator<<(std::ostream &out, const HTTPResponse &response)
 {
-    out << response._version << " " << response._status << "\r\n";
-    for (std::map<std::string, std::string>::const_iterator it = response._headers.begin();
-        it != response._headers.end(); ++it)
-        out << it->first << ": " << it->second << "\r\n";
-    out << "\r\n" << response._body;
+    out << response._version << " "
+        << response._status << "\r\n"
+        << dynamic_cast<const HTTPMessage&>(response);
     return out;
 }

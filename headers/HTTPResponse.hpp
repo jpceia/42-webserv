@@ -6,13 +6,14 @@
 /*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/22 15:40:09 by jceia             #+#    #+#             */
-/*   Updated: 2022/03/20 00:04:02 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/03/20 02:02:38 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef HTTPRESPONSE_HPP
 # define HTTPRESPONSE_HPP
 
+# include "HTTPMessage.hpp"
 # include <iostream>
 # include <map>
 
@@ -30,31 +31,23 @@ public:
 
 std::ostream &operator<<(std::ostream &out, const HTTPStatus& status);
 
-class HTTPResponse
+class HTTPResponse : public HTTPMessage
 {
 
 public:
     HTTPResponse();
+    HTTPResponse(const HTTPResponse& rhs);
     ~HTTPResponse();
-
     HTTPResponse &operator=(const HTTPResponse &rhs);
 
     friend std::ostream &operator<<(std::ostream &out, const HTTPResponse &request);
 
-    std::string getBody() const;
-
     void setStatus(int status_code, const std::string& text);
-    void setHeader(const std::string& name, const std::string& value);
-    void setVersion(const std::string& version);
     void setBody(const std::string& body);
-    void setBody(const std::ifstream& f);
+    using HTTPMessage::setBody;
 
 private:
-    int _status_code;
-    std::string _status_text;
-    std::string _version;
-    std::string _body;
-    std::map<std::string, std::string> _headers;
+    HTTPStatus _status;
 };
 
 

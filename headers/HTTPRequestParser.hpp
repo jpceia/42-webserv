@@ -28,14 +28,12 @@ public:
     HTTPRequestParser();
     HTTPRequestParser(const HTTPRequestParser& rhs);
     virtual ~HTTPRequestParser();
-
     HTTPRequestParser& operator=(const HTTPRequestParser& rhs);
 
     ParseState getState() const;
 
     ParseState parse(const std::string& s = "");
-    void addHeader(const std::string& line);
-    void addHeader(const std::string& key, const std::string& value);
+    void setHeader(const std::string& key, const std::string& value);
     void clear();
 
 private:

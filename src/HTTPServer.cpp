@@ -6,7 +6,7 @@
 /*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/03 17:30:40 by jceia             #+#    #+#             */
-/*   Updated: 2022/03/20 01:50:50 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/03/20 02:42:59 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -261,15 +261,10 @@ HTTPResponse HTTPServer::_cgi_response(const std::string& cmd, const HTTPRequest
     env["SERVER_PORT"] = ft_itos(ctx.server_port);
     env["REMOTE_PORT"] = ft_itos(ctx.client_port);
 
-    std::string body = exec_cmd(cmd, args, env);
-
-    std::cout << "cgi output: " << body << std::endl;
-
+    std::stringstream ss(exec_cmd(cmd, args, env));
     HTTPResponse response;
-    response.setVersion("HTTP/1.1");
-    response.setHeader("Content-Type", "text/html");
+    ss >> dynamic_cast<HTTPMessage&>(response);
     response.setStatus(200, "OK");
-    response.setBody(body);
     return response;
 }
 

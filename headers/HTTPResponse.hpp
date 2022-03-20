@@ -6,7 +6,7 @@
 /*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/22 15:40:09 by jceia             #+#    #+#             */
-/*   Updated: 2022/02/23 05:45:00 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/03/20 00:04:02 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,8 @@ public:
     HTTPResponse &operator=(const HTTPResponse &rhs);
 
     friend std::ostream &operator<<(std::ostream &out, const HTTPResponse &request);
+
+    std::string getBody() const;
 
     void setStatus(int status_code, const std::string& text);
     void setHeader(const std::string& name, const std::string& value);

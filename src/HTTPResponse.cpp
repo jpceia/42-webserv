@@ -6,7 +6,7 @@
 /*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/22 15:33:45 by jceia             #+#    #+#             */
-/*   Updated: 2022/03/08 22:51:45 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/03/20 00:04:30 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,11 @@ HTTPResponse& HTTPResponse::operator=(const HTTPResponse &rhs)
         _version = rhs._version;
     }
     return *this;
+}
+
+std::string HTTPResponse::getBody() const
+{
+    return _body;
 }
 
 void HTTPResponse::setStatus(int status_code, const std::string& text)

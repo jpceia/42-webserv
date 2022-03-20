@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   configLocationBlock.cpp                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tisantos <tisantos@student.42.fr>          +#+  +:+       +#+        */
+/*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/19 15:59:55 by tisantos          #+#    #+#             */
-/*   Updated: 2022/03/19 17:16:19 by tisantos         ###   ########.fr       */
+/*   Updated: 2022/03/20 02:34:51 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -500,53 +500,31 @@ void	configLocationBlock::methodsDirectiveTreatment(std::string line)
 	/* Check for ';' if it's one argument only.				   */
 	/* Check for ';' at the end and remove it.				   */
 	/***********************************************************/
-	std::stringstream	is(line);
+	std::istringstream	is(line);
 	std::string			word;
 	int					number_of_words = 0;
 	while (is >> word)
 	{
+		word = toUpper(word);
 		if (number_of_words == 0)
 		{
 			number_of_words++;
 			continue ;
 		}
 		if (number_of_words == 1 && !word.compare(";"))
-		{
 			throw std::runtime_error("configLocationBlock.hpp exception: methods has no arguments");
-		}
+
 		if (*word.rbegin() == ';')
-		{
 			word.resize(word.size() - 1);
-		}
-		if (toUpper(word) == "GET")
+
+		try
 		{
-			if (std::find(_methods.begin(), _methods.end(), "GET") != _methods.end())
-			{}
-			else
-				_methods.push_back("GET");
+			HTTPMethod method;
+			std::stringstream ss(word);
+			ss >> method;
+			_methods.insert(method);
 		}
-		else if (toUpper(word) == "POST")
-		{
-			if (std::find(_methods.begin(), _methods.end(), "POST") != _methods.end())
-			{}
-			else
-				_methods.push_back("POST");
-		}
-		else if (toUpper(word) == "DELETE")
-		{
-			if (std::find(_methods.begin(), _methods.end(), "DELETE") != _methods.end())
-			{}
-			else
-				_methods.push_back("DELETE");
-		}
-		else if (toUpper(word) == "PUT")
-		{
-			if (std::find(_methods.begin(), _methods.end(), "PUT") != _methods.end())
-			{}
-			else
-				_methods.push_back("PUT");
-		}
-		else
+		catch (std::exception& e) // unknown method
 		{
 			throw std::runtime_error("configLocationBlock.hpp exception: methods has wrong argument");
 		}

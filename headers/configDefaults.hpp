@@ -3,18 +3,20 @@
 /*                                                        :::      ::::::::   */
 /*   configDefaults.hpp                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tisantos <tisantos@student.42.fr>          +#+  +:+       +#+        */
+/*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/19 15:58:50 by tisantos          #+#    #+#             */
-/*   Updated: 2022/03/19 16:46:41 by tisantos         ###   ########.fr       */
+/*   Updated: 2022/03/20 02:32:20 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef CONFIGDEFAULTS_HPP
 # define CONFIGDEFAULTS_HPP
 
-#include <iostream>
-#include <vector>
+# include <iostream>
+# include <vector>
+# include <set>
+# include "HTTPMethod.hpp"
 
 class configDefaults
 {
@@ -45,7 +47,7 @@ class configDefaults
         std::vector<std::string>   		_index_default;
         std::vector<std::string>   		_auto_index_default;
 
-        std::vector<std::string>   		_methods_default;
+        std::set<HTTPMethod>   		    _methods_default;
         std::vector<std::string>  		_upload_default;
 };
 

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   configDefaults.cpp                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tisantos <tisantos@student.42.fr>          +#+  +:+       +#+        */
+/*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/19 15:59:40 by tisantos          #+#    #+#             */
-/*   Updated: 2022/03/19 16:47:14 by tisantos         ###   ########.fr       */
+/*   Updated: 2022/03/20 02:31:20 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@ configDefaults::configDefaults()
 	_index_default.push_back("/index.html");       	 // These needs to be checked
 	_auto_index_default.push_back("off");
 
-	_methods_default.push_back("GET");
+	_methods_default.insert(GET);
 	_upload_default.push_back("");
 }
 

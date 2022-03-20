@@ -3,25 +3,27 @@
 /*                                                        :::      ::::::::   */
 /*   configLocationBlock.hpp                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tisantos <tisantos@student.42.fr>          +#+  +:+       +#+        */
+/*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/19 15:59:08 by tisantos          #+#    #+#             */
-/*   Updated: 2022/03/19 17:10:17 by tisantos         ###   ########.fr       */
+/*   Updated: 2022/03/20 02:22:42 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef CONFIGLOCATIONBLOCK_HPP
 # define CONFIGLOCATIONBLOCK_HPP
 
-#include <iostream>
-#include <string>
-#include <vector>
-#include <map>
-#include <sstream>
-#include <string>
-#include <stdexcept>
-#include <algorithm>
-#include "configDefaults.hpp"
+# include <iostream>
+# include <string>
+# include <vector>
+# include <map>
+# include <set>
+# include <sstream>
+# include <string>
+# include <stdexcept>
+# include <algorithm>
+# include "configDefaults.hpp"
+# include "HTTPMethod.hpp"
 
 class configLocationBlock : public configDefaults
 {
@@ -66,7 +68,7 @@ class configLocationBlock : public configDefaults
 		unsigned long int						getClientMaxBodySize() const	{ return (_client_max_body_size.size() > 0 ? _client_max_body_size.front() : 0); }
 		std::vector<std::string>				getIndex() const				{ return (_index); }
 		std::string								getAutoIndex() const			{ return (_auto_index.size() > 0 ? _auto_index.front() : ""); }
-		std::vector<std::string>				getMethods() const				{ return (_methods); }
+		std::set<HTTPMethod>					getMethods() const				{ return (_methods); }
 		int										getRedirectStatus() const		{ return (_redirect_status.size() > 0 ? _redirect_status.front() : 0); }
 		std::string								getRedirectPath() const			{ return (_redirect_path.size() > 0 ? _redirect_path.front() : ""); }
 		std::map<std::string, std::string>		getCgi() const					{ return (_cgi); }
@@ -82,7 +84,8 @@ class configLocationBlock : public configDefaults
         std::vector<std::string>    			_root;
         std::vector<std::string>    			_index;
         std::vector<std::string>    			_auto_index;
-        std::vector<std::string>    			_methods;
+        // std::vector<std::string>    			_methods;
+		std::set<HTTPMethod>					_methods;
 		std::vector<int>            			_redirect_status;
         std::vector<std::string>    			_redirect_path;
         std::map<std::string, std::string>		_cgi;

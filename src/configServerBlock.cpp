@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   configServerBlock.cpp                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tisantos <tisantos@student.42.fr>          +#+  +:+       +#+        */
+/*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/19 16:00:01 by tisantos          #+#    #+#             */
-/*   Updated: 2022/03/19 17:30:02 by tisantos         ###   ########.fr       */
+/*   Updated: 2022/03/20 02:25:35 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -363,16 +363,14 @@ void	configServerBlock::printDirectives()
 		/**********************************/
 		/*			  methods             */
 		/**********************************/
-		std::vector<std::string> methods_l = _location_blocks[i].getMethods();
+		std::set<HTTPMethod> methods_l = _location_blocks[i].getMethods();
 		if (!methods_l.empty())
 		{
 			std::cout << "  Methods:		   ";
-			std::vector<std::string>::iterator	methods_it = methods_l.begin();
+			std::set<HTTPMethod>::iterator it = methods_l.begin();
 			std::cout << "  { ";
-			for (; methods_it != methods_l.end(); methods_it++)
-			{
-				std::cout <<  *methods_it << " ";
-			}
+			for (; it != methods_l.end(); ++it)
+				std::cout <<  *it << " ";
 			std::cout << "}" << std::endl;
 		}
 

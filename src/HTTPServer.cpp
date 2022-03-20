@@ -6,7 +6,7 @@
 /*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/03 17:30:40 by jceia             #+#    #+#             */
-/*   Updated: 2022/03/20 09:45:16 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/03/20 15:23:00 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,17 +91,7 @@ int HTTPServer::_handle_client_recv(TCPConnection* connection)
         ctx.base_path = ctx.root + "/" + ctx.rel_path;
         ctx.index = location_block.getIndex();
         ctx.autoindex = location_block.getAutoIndex();
-        {
-            std::vector<std::string> methods = location_block.getMethods();
-            for (std::vector<std::string>::iterator it = methods.begin();
-                it != methods.end(); ++it)
-            {
-                std::stringstream ss(*it);
-                HTTPMethod method;
-                ss >> method;
-                ctx.allowed_methods.push_back(method);
-            }
-        }
+        ctx.allowed_methods = location_block.getMethods();
         ctx.redirect_status = location_block.getRedirectStatus();
         ctx.redirect_path = location_block.getRedirectPath();
         // cgi
@@ -149,8 +139,7 @@ int HTTPServer::_handle_client_send(TCPConnection* connection)
 HTTPResponse HTTPServer::_response(const HTTPRequest& request, Context& ctx)
 {
     // checking if the method is allowed
-    if (std::find(ctx.allowed_methods.begin(), ctx.allowed_methods.end(),
-        request.getMethod()) == ctx.allowed_methods.end())
+    if (ctx.allowed_methods.find(request.getMethod()) == ctx.allowed_methods.end())
         return _error_page_response(405, "Method not allowed", ctx);
 
     // checking the body size

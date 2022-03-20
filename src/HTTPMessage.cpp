@@ -6,7 +6,7 @@
 /*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/20 00:50:16 by jpceia            #+#    #+#             */
-/*   Updated: 2022/03/20 02:19:46 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/03/20 02:47:44 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -118,11 +118,16 @@ const char* HTTPMessage::ParseException::what(void) const throw()
     return "Error parsing HTTP Message";
 }
 
-std::string& _drop_carriage_return(std::string& s)
+std::string& _drop_carriage_return(std::string& s, bool raise)
 {
     size_t pos = s.length() - 1;
     if (s[pos] != '\r')
-        throw HTTPMessage::ParseException();
+    {
+        if (raise)
+            throw HTTPMessage::ParseException();
+        else
+            return s;
+    }
     s = s.substr(0, pos);
     return s;
 }
@@ -144,7 +149,7 @@ std::istream &operator>>(std::istream &is, HTTPMessage &msg)
     // Body
     while (std::getline(is, line))
     {
-        msg._body += _drop_carriage_return(line);
+        msg._body += _drop_carriage_return(line, false);
         msg._body += "\n";
     }
     return is;

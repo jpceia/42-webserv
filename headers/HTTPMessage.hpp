@@ -6,7 +6,7 @@
 /*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/20 00:41:19 by jpceia            #+#    #+#             */
-/*   Updated: 2022/03/20 02:15:57 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/03/20 02:47:34 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,6 +59,6 @@ protected:
 };
 
 // Helpers
-std::string& _drop_carriage_return(std::string& s);
+std::string& _drop_carriage_return(std::string& s, bool raise = true);
 
 #endif

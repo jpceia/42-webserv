@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   HTTPServer.cpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
+/*   By: tisantos <tisantos@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/03 17:30:40 by jceia             #+#    #+#             */
-/*   Updated: 2022/03/20 15:23:00 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/03/20 15:47:18 by tisantos         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,7 +78,7 @@ int HTTPServer::_handle_client_recv(TCPConnection* connection)
 
         // Get the server block
         configServerBlock server_block = conn->getServerBlock(request.getHeader("Host"));
-        
+
         // Get correct location config for a given path
         configLocationBlock location_block = server_block.getLocationByPath(request.getPath());
 
@@ -111,7 +111,7 @@ int HTTPServer::_handle_client_recv(TCPConnection* connection)
         std::cout << "Response: " << std::endl;
         std::cout << response << std::endl;
         #endif
-    
+
         conn->setResponse(response);
         return POLLOUT;
     }
@@ -284,7 +284,7 @@ HTTPResponse HTTPServer::_autoindex_response(const Context& ctx, const HTTPReque
 			if (strcmp(epdf->d_name, ".") &&
 				strcmp(epdf->d_name, ".."))
 			{
-				if (std::string(epdf->d_name).find('.') != std::string::npos)
+				if (epdf->d_type != 4)	// If not a folder
 					files.push_back(epdf->d_name);
 				else
 					directories.push_back(epdf->d_name + std::string("/"));

@@ -91,8 +91,9 @@ std::istream &operator>>(std::istream &is, HTTPRequest &request)
 
 std::ostream &operator<<(std::ostream &out, const HTTPRequest &request)
 {
-    out << HTTPRequest::strMethod(request._method) << " ";
-    out << request.getPath() << " " << request._version << "\r\n";
+    out << request._method << " "
+        << request.getPath() << " "
+        << request._version << "\r\n";
     for (std::map<std::string, std::string>::const_iterator it = request._headers.begin();
         it != request._headers.end(); ++it)
         out << it->first << ": " << it->second << "\r\n";
@@ -100,62 +101,48 @@ std::ostream &operator<<(std::ostream &out, const HTTPRequest &request)
     return out;
 }
 
-HTTPMethod HTTPRequest::parseMethod(std::string const &s)
+std::istream &operator>>(std::istream &is, HTTPMethod &method)
 {
+    std::string s;
+    is >> s;
     if (s == "GET")
-        return GET;
-    if (s == "POST")
-        return POST;
-    if (s == "PUT")
-        return PUT;
-    if (s == "DELETE")
-        return DELETE;
-    if (s == "HEAD")
-        return HEAD;
-    throw HTTPRequest::ParseException();
+        method = GET;
+    else if (s == "POST")
+        method = POST;
+    else if (s == "PUT")
+        method = PUT;
+    else if (s == "DELETE")
+        method = DELETE;
+    else if (s == "HEAD")
+        method = HEAD;
+    else
+        throw HTTPMessage::ParseException();
+    return is;
 }
 
-std::string HTTPRequest::strMethod(HTTPMethod method)
+std::ostream &operator<<(std::ostream &out, const HTTPMethod &method)
 {
     switch (method)
     {
     case GET:
-        return "GET";
+        out << "GET";
+        break ;
     case POST:
-        return "POST";
+        out << "POST";
+        break ;
     case PUT:
-        return "PUT";
+        out << "PUT";
+        break ;
     case DELETE:
-        return "DELETE";
+        out << "DELETE";
+        break ;
     case HEAD:
-        return "HEAD";
+        out << "HEAD";
+        break ;
     default:
         throw std::runtime_error("Unkown HTTP method");
     }
-}
-
-void HTTPRequest::addHeader(const std::string& s)
-{
-    size_t pos = s.find(':');
-    if (pos == std::string::npos)
-        throw HTTPRequest::ParseException();
-    std::string key = s.substr(0, pos);
-    // find first non-whitespace character after ':'
-    pos = s.find_first_not_of(" \t", pos + 1);
-    if (pos == std::string::npos)
-        throw HTTPRequest::ParseException();
-    std::string value = s.substr(pos);
-    this->addHeader(key, value);
-}
-
-void HTTPRequest::addHeader(const std::string& key, const std::string& value)
-{
-    _headers[key] = value;
-}
-
-std::string HTTPRequest::getVersion() const
-{
-    return _version;
+    return out;
 }
 
 std::string HTTPRequest::getPath() const
@@ -215,5 +202,6 @@ void HTTPRequest::setPath(const std::string& path)
 
 void HTTPRequest::setMethod(const std::string& method)
 {
-    _method = parseMethod(method);
+    std::stringstream ss(method);
+    ss >> _method;
 }

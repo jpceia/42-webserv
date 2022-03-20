@@ -37,9 +37,6 @@ public:
     friend std::istream &operator>>(std::istream &is, HTTPRequest &request);
     friend std::ostream &operator<<(std::ostream &out, const HTTPRequest &request);
 
-    static HTTPMethod parseMethod(std::string const &s);
-    static std::string strMethod(HTTPMethod method);
-
     void addHeader(const std::string& s);
     virtual void addHeader(const std::string& key, const std::string& value);
 
@@ -69,5 +66,8 @@ protected:
     std::string _version;
     std::map<std::string, std::string> _headers;
 };
+
+std::istream &operator>>(std::istream &is, HTTPMethod &method);
+std::ostream &operator<<(std::ostream &out, const HTTPMethod &method);
 
 #endif

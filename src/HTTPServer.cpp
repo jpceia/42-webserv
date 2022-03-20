@@ -6,7 +6,7 @@
 /*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/03 17:30:40 by jceia             #+#    #+#             */
-/*   Updated: 2022/03/20 00:28:13 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/03/20 01:50:50 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -95,7 +95,12 @@ int HTTPServer::_handle_client_recv(TCPConnection* connection)
             std::vector<std::string> methods = location_block.getMethods();
             for (std::vector<std::string>::iterator it = methods.begin();
                 it != methods.end(); ++it)
-                ctx.allowed_methods.push_back(HTTPRequest::parseMethod(*it));
+            {
+                std::stringstream ss(*it);
+                HTTPMethod method;
+                ss >> method;
+                ctx.allowed_methods.push_back(method);
+            }
         }
         ctx.redirect_status = location_block.getRedirectStatus();
         ctx.redirect_path = location_block.getRedirectPath();
@@ -242,10 +247,14 @@ HTTPResponse HTTPServer::_cgi_response(const std::string& cmd, const HTTPRequest
     env["HTTP_HOST"] = ctx.server_name;
     env["HTTP_USER_AGENT"] = request.getHeader("User-Agent");
     env["HTTP_COOKIE"] = request.getHeader("Cookie");
-    
     env["QUERY_STRING"] = request.getQueryString();
-    env["REQUEST_METHOD"] = HTTPRequest::strMethod(request.getMethod());
-    
+
+    {
+        std::stringstream ss;
+        ss << request.getMethod();
+        env["REQUEST_METHOD"] = ss.str();
+    }
+
     env["SERVER_ADDR"] = ctx.server_addr;
     env["REMOTE_ADDR"] = ctx.client_addr;
 

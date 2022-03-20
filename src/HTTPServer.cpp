@@ -218,7 +218,7 @@ HTTPResponse HTTPServer::_cgi_response(const std::string& cmd, const HTTPRequest
     env["SERVER_PROTOCOL"] = request.getVersion();
     env["SERVER_SOFTWARE"] = "webserv";
     env["AUTH_TYPE"] = "";
-    env["CONTENT_LENGTH"] = request.getHeader("Content-Length");
+    env["CONTENT_LENGTH"] = ft_itos(request.getBody().size());
     env["CONTENT_TYPE"] = request.getHeader("Content-Type");
     env["DOCUMENT_ROOT"] = ctx.root;
     env["GATEWAY_INTERFACE"] = "CGI/1.1";

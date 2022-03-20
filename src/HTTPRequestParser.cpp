@@ -229,5 +229,5 @@ void HTTPRequestParser::clear()
     _state = PARSE_START;
     _buf.clear();
     _content_length = 0;
-    _chunked = true;
+    _chunked = false;
 }

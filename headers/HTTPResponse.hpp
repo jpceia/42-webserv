@@ -16,6 +16,20 @@
 # include <iostream>
 # include <map>
 
+struct HTTPStatus
+{
+public:
+    HTTPStatus() :
+        code(200),
+        text("OK")
+    {}
+
+    int code;
+    std::string text;
+};
+
+std::ostream &operator<<(std::ostream &out, const HTTPStatus& status);
+
 class HTTPResponse
 {
 

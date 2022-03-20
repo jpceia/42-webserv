@@ -73,9 +73,16 @@ void HTTPResponse::setBody(const std::ifstream& f)
     this->setBody(ss.str());
 }
 
+
+std::ostream &operator<<(std::ostream &out, const HTTPStatus& status)
+{
+    out << status.code << " " << status.text;
+    return out;
+}
+
 std::ostream &operator<<(std::ostream &out, const HTTPResponse &response)
 {
-    out << response._version << " " << response._status_code << " " << response._status_text << "\r\n";
+    out << response._version << " " << response._status << "\r\n";
     for (std::map<std::string, std::string>::const_iterator it = response._headers.begin();
         it != response._headers.end(); ++it)
         out << it->first << ": " << it->second << "\r\n";

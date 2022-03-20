@@ -232,7 +232,7 @@ HTTPResponse HTTPServer::_cgi_response(const std::string& cmd, const HTTPRequest
     env["HTTP_ACCEPT_ENCODING"] = request.getHeader("Accept-Encoding");
     env["HTTP_ACCEPT_LANGUAGE"] = request.getHeader("Accept-Language");
     env["HTTP_CONNECTION"] = request.getHeader("Connection");
-    env["HTTP_HOST"] = ctx.server_name; // TODO: get the hostname from config
+    env["HTTP_HOST"] = ctx.server_name;
     env["HTTP_USER_AGENT"] = request.getHeader("User-Agent");
     env["HTTP_COOKIE"] = request.getHeader("Cookie");
     
@@ -242,12 +242,8 @@ HTTPResponse HTTPServer::_cgi_response(const std::string& cmd, const HTTPRequest
     env["SERVER_ADDR"] = ctx.server_addr;
     env["REMOTE_ADDR"] = ctx.client_addr;
 
-    std::stringstream ss;
-    ss << ctx.server_port;
-    ss >> env["SERVER_PORT"];
-    ss.clear();
-    ss << ctx.client_port;
-    ss >> env["REMOTE_PORT"];
+    env["SERVER_PORT"] = ft_itos(ctx.server_port);
+    env["REMOTE_PORT"] = ft_itos(ctx.client_port);
 
     std::string body = exec_cmd(cmd, args, env);
 

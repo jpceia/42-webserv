@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   HTTPServer.cpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tisantos <tisantos@student.42.fr>          +#+  +:+       +#+        */
+/*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/03 17:30:40 by jceia             #+#    #+#             */
-/*   Updated: 2022/03/19 17:57:28 by tisantos         ###   ########.fr       */
+/*   Updated: 2022/03/20 00:28:13 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,8 +70,11 @@ int HTTPServer::_handle_client_recv(TCPConnection* connection)
     {
         HTTPRequest request = conn->getRequest();
 
+        #ifdef DEBUG
         std::cout << "Request: " << std::endl;
         std::cout << request << std::endl;
+        #endif
+
 
         // Get the server block
         configServerBlock server_block = conn->getServerBlock(request.getHeader("Host"));
@@ -105,11 +108,15 @@ int HTTPServer::_handle_client_recv(TCPConnection* connection)
         ctx.client_addr = connection->getClientIP();
         ctx.server_port = connection->getServerPort();
         ctx.client_port = connection->getClientPort();
-    
+
         // build the response
         HTTPResponse response = _response(conn->getRequest(), ctx);
+
+        #ifdef DEBUG
         std::cout << "Response: " << std::endl;
         std::cout << response << std::endl;
+        #endif
+    
         conn->setResponse(response);
         return POLLOUT;
     }

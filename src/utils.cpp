@@ -6,7 +6,7 @@
 /*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/23 20:06:03 by jpceia            #+#    #+#             */
-/*   Updated: 2022/03/20 00:26:00 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/03/21 23:08:18 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -120,38 +120,58 @@ std::vector<std::string> map_to_vector(const std::map<std::string, std::string>&
 std::string exec_cmd(
     const std::string &path,
     const std::vector<std::string>& args,
-    const std::map<std::string, std::string>& env)
+    const std::map<std::string, std::string>& env,
+    std::string& input)
 {
     std::vector<char *> argv = char_ptr_vector(args);
     std::vector<std::string> aux = map_to_vector(env);
     std::vector<char *> envp = char_ptr_vector(aux);
 
-    int fd[2];
-    pipe(fd);
+    std::cout << "Body: " << input << std::endl;
+
+    int saved_stdin = dup(STDIN_FILENO);
+
+    int fd_out[2];
+    int fd_in[2];
+    pipe(fd_out);
+    pipe(fd_in);
+
+    // write to fd_in
+    write(fd_in[1], input.c_str(), input.size());
+    close(fd_in[1]);
+    
     pid_t pid = fork();
 
     if (pid < 0)
         throw std::runtime_error("fork failed");
     if (pid == 0) // child
     {
-        dup2(fd[1], STDOUT_FILENO);
-        close(fd[0]);
-        close(fd[1]);
+        dup2(fd_in[0], STDIN_FILENO);
+        close(fd_in[0]);
+
+        dup2(fd_out[1], STDOUT_FILENO);
+        close(fd_out[0]);
+        close(fd_out[1]);
         std::string full_path = lookup_full_path(path);
         execve(full_path.c_str(), &argv[0], &envp[0]);
-        throw std::runtime_error("execvpe failed");
+        throw std::runtime_error("execve failed");
     }
     // pid > 0 (parent)
-    close(fd[1]);
+    close(fd_in[0]);
+    close(fd_out[1]);
     std::string res;
     char buf[1024];
     int n = 1;
+    waitpid(pid, NULL, 0);
     while (n > 0)
     {
-        n = read(fd[0], buf, sizeof(buf));
+        n = read(fd_out[0], buf, sizeof(buf));
         res.append(buf, n);
     }
-    close(fd[0]);
-    waitpid(pid, NULL, 0);
+    std::cout << "Result: " << res << std::endl;
+    close(fd_out[0]);
+
+    dup2(saved_stdin, STDIN_FILENO);
+    close(saved_stdin);
     return res;
 }

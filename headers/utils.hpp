@@ -6,7 +6,7 @@
 /*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/23 20:05:23 by jpceia            #+#    #+#             */
-/*   Updated: 2022/03/20 00:26:53 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/03/21 22:30:11 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,7 @@ struct pollfd create_pollfd(int fd, short int events);
 std::string exec_cmd(
     const std::string &cmd,
     const std::vector<std::string>& args,
-    const std::map<std::string, std::string>& env);
+    const std::map<std::string, std::string>& env,
+    std::string& input);
 
 #endif

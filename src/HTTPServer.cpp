@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   HTTPServer.cpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tisantos <tisantos@student.42.fr>          +#+  +:+       +#+        */
+/*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/03 17:30:40 by jceia             #+#    #+#             */
-/*   Updated: 2022/03/20 15:50:53 by tisantos         ###   ########.fr       */
+/*   Updated: 2022/03/21 22:41:04 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -248,7 +248,8 @@ HTTPResponse HTTPServer::_cgi_response(const std::string& cmd, const HTTPRequest
     env["SERVER_PORT"] = ft_itos(ctx.server_port);
     env["REMOTE_PORT"] = ft_itos(ctx.client_port);
 
-    std::stringstream ss(exec_cmd(cmd, args, env));
+    std::string s = request.getBody();
+    std::stringstream ss(exec_cmd(cmd, args, env, s));
     HTTPResponse response;
     ss >> dynamic_cast<HTTPMessage&>(response);
     return response;

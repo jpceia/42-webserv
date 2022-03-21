@@ -120,15 +120,18 @@ const char* HTTPMessage::ParseException::what(void) const throw()
 
 std::string& _drop_carriage_return(std::string& s, bool raise)
 {
-    size_t pos = s.length() - 1;
-    if (s[pos] != '\r')
+    if (!s.empty())
     {
-        if (raise)
-            throw HTTPMessage::ParseException();
-        else
-            return s;
+        size_t pos = s.length() - 1;
+        if (s[pos] != '\r')
+        {
+            if (raise)
+                throw HTTPMessage::ParseException();
+            else
+                return s;
+        }
+        s = s.substr(0, pos);
     }
-    s = s.substr(0, pos);
     return s;
 }
 

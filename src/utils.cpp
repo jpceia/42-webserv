@@ -6,7 +6,7 @@
 /*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/23 20:06:03 by jpceia            #+#    #+#             */
-/*   Updated: 2022/03/22 21:36:48 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/03/22 21:44:57 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -130,10 +130,11 @@ std::string exec_cmd(
     // Saving stdin
     int saveStdin = dup(STDIN_FILENO);
 
-    FILE *fOut = tmpfile();
-    long fdOut = fileno(fOut);
     int fd_in[2];
     pipe(fd_in);
+
+    int fd_out[2];
+    pipe(fd_out);
 
     // Write input to pipe
     size_t pos = 0;
@@ -152,19 +153,23 @@ std::string exec_cmd(
         throw std::runtime_error("Fork failed");
     if (pid == 0) // child
     {
+        close(fd_out[0]);
+
         dup2(fd_in[0], STDIN_FILENO);
         close(fd_in[0]);
-        dup2(fdOut, STDOUT_FILENO);
+        dup2(fd_out[1], STDOUT_FILENO);
+        close(fd_out[1]);
         std::string full_path = lookup_full_path(path);
         execve(full_path.c_str(), &argv[0], &envp[0]);
         throw std::runtime_error("execve failed");
     }
 
-    // close stdin
+    // close pipes
     close(fd_in[0]);
+    close(fd_in[1]);
+    close(fd_out[1]);
 
     waitpid(pid, NULL, 0);
-    lseek(fdOut, 0, SEEK_SET);
 
     // Receiving output
     char    buff[1024];
@@ -172,17 +177,14 @@ std::string exec_cmd(
     std::string res;
     while (n > 0)
     {
-        n = read(fdOut, buff, sizeof(buff));
+        n = read(fd_out[0], buff, sizeof(buff));
         res.append(buff, n);
     }
+    close(fd_out[0]);
 
     // Restoring stdin
     dup2(saveStdin, STDIN_FILENO);
     close(saveStdin);
-
-    // Closing file
-    fclose(fOut);
-    close(fdOut);
 
     return (res);
 }

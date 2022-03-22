@@ -6,7 +6,7 @@
 /*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/03 17:30:40 by jceia             #+#    #+#             */
-/*   Updated: 2022/03/22 19:06:04 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/03/22 19:23:22 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -115,7 +115,8 @@ void HTTPServer::_handle_client_recv(TCPConnection* connection, short& event)
         conn->setResponse(response);
         event = POLLOUT;
     }
-    event = POLLIN;
+    else
+        event = POLLIN;
 }
 
 void HTTPServer::_handle_client_send(TCPConnection* connection, short& event)
@@ -130,10 +131,13 @@ void HTTPServer::_handle_client_send(TCPConnection* connection, short& event)
         if (conn->getRequest().getHeader("Connection") != "keep-alive") // close connection
             _close_connection(connection);
         else
+        {
             conn->clear();  // Clear the buffers
-        event = POLLIN;
+            event = POLLIN;
+        }
     }
-    event = POLLOUT;
+    else
+        event = POLLOUT;
 }
 
 HTTPResponse HTTPServer::_response(const HTTPRequest& request, Context& ctx)

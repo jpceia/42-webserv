@@ -6,7 +6,7 @@
 /*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/23 20:06:03 by jpceia            #+#    #+#             */
-/*   Updated: 2022/03/22 00:11:19 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/03/22 16:58:11 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -123,53 +123,44 @@ std::string exec_cmd(
     const std::map<std::string, std::string>& env,
     std::string& input)
 {
-	pid_t		pid;
-	int			saveStdin;
-	std::string	newBody;
-
-    (void)args;
-
+    std::vector<char *> argv = char_ptr_vector(args);
     std::vector<std::string> aux = map_to_vector(env);
     std::vector<char *> envp = char_ptr_vector(aux);
 
 	// SAVING STDIN AND STDOUT IN ORDER TO TURN THEM BACK TO NORMAL LATER
-	saveStdin = dup(STDIN_FILENO);
+	int saveStdin = dup(STDIN_FILENO);
 
 	FILE	*fOut = tmpfile();
 	long	fdOut = fileno(fOut);
     int fd_in[2];
     pipe(fd_in);
-	int		ret = 1;
 
 	write(fd_in[1], input.c_str(), input.size());
 	close(fd_in[1]);
 
-	pid = fork();
+	pid_t pid = fork();
 
 	if (pid == -1)
-		return ("Status: 500\r\n\r\n");
-	else if (!pid)
+		throw std::runtime_error("Fork failed");
+	if (!pid)
 	{
 		dup2(fd_in[0], STDIN_FILENO);
 		dup2(fdOut, STDOUT_FILENO);
 		execve(path.c_str(), (char * const * )NULL, &envp[0]);
-		write(STDOUT_FILENO, "Status: 500\r\n\r\n", 15);
+		throw std::runtime_error("execve failed");
 	}
-	else
-	{
-		char	buffer[1024] = {0};
 
-		waitpid(-1, NULL, 0);
-		lseek(fdOut, 0, SEEK_SET);
+    waitpid(-1, NULL, 0);
+    lseek(fdOut, 0, SEEK_SET);
 
-		ret = 1;
-		while (ret > 0)
-		{
-			memset(buffer, 0, sizeof (buffer));
-			ret = read(fdOut, buffer, sizeof (buffer) - 1);
-			newBody += buffer;
-		}
-	}
+    char	buff[1024];
+    int n = 1;
+    std::string res;
+    while (n > 0)
+    {
+        n = read(fdOut, buff, sizeof(buff));
+        res.append(buff, n);
+    }
 
 	dup2(saveStdin, STDIN_FILENO);
 	fclose(fOut);
@@ -177,5 +168,5 @@ std::string exec_cmd(
 	close(fdOut);
 	close(saveStdin);
 
-	return (newBody);
+	return (res);
 }

@@ -6,7 +6,7 @@
 /*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/07 14:23:33 by jceia             #+#    #+#             */
-/*   Updated: 2022/03/09 21:24:28 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/03/22 19:06:54 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,8 +37,8 @@ public:
     void run();
 
 protected:
-    virtual int _handle_client_send(TCPConnection* connection) = 0; // return event to set in pollfd
-    virtual int _handle_client_recv(TCPConnection* connection) = 0; // return event to set in pollfd
+    virtual void _handle_client_send(TCPConnection* connection, short& event) = 0;
+    virtual void _handle_client_recv(TCPConnection* connection, short& event) = 0;
     virtual void _close_connection(TCPConnection* connection);
     virtual void _close_listener(TCPListener* listener);
 

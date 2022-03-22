@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   HTTPServer.cpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tisantos <tisantos@student.42.fr>          +#+  +:+       +#+        */
+/*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/03 17:30:40 by jceia             #+#    #+#             */
-/*   Updated: 2022/03/20 15:50:53 by tisantos         ###   ########.fr       */
+/*   Updated: 2022/03/22 19:06:04 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,7 +59,7 @@ void HTTPServer::init()
     }
 }
 
-int HTTPServer::_handle_client_recv(TCPConnection* connection)
+void HTTPServer::_handle_client_recv(TCPConnection* connection, short& event)
 {
     HTTPStatefulConnection* conn = dynamic_cast<HTTPStatefulConnection*>(connection);
     if (conn == NULL)
@@ -113,12 +113,12 @@ int HTTPServer::_handle_client_recv(TCPConnection* connection)
         #endif
 
         conn->setResponse(response);
-        return POLLOUT;
+        event = POLLOUT;
     }
-    return POLLIN;
+    event = POLLIN;
 }
 
-int HTTPServer::_handle_client_send(TCPConnection* connection)
+void HTTPServer::_handle_client_send(TCPConnection* connection, short& event)
 {
     HTTPStatefulConnection* conn = dynamic_cast<HTTPStatefulConnection*>(connection);
     if (conn == NULL)
@@ -131,9 +131,9 @@ int HTTPServer::_handle_client_send(TCPConnection* connection)
             _close_connection(connection);
         else
             conn->clear();  // Clear the buffers
-        return POLLIN;
+        event = POLLIN;
     }
-    return POLLOUT;
+    event = POLLOUT;
 }
 
 HTTPResponse HTTPServer::_response(const HTTPRequest& request, Context& ctx)

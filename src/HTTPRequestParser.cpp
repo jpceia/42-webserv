@@ -83,6 +83,7 @@ ParseState HTTPRequestParser::_parse_start()
     this->setPath(path);
     this->setMethod(method);
     _state = PARSE_HEADER;
+    _body = "";
     return this->parse();                       // Consume buffer
 }
 

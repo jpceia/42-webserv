@@ -6,11 +6,12 @@
 /*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/20 00:50:16 by jpceia            #+#    #+#             */
-/*   Updated: 2022/03/20 02:47:44 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/03/22 21:22:50 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "HTTPMessage.hpp"
+#include "utils.hpp"
 #include <sstream>
 #include <fstream>
 
@@ -155,6 +156,8 @@ std::istream &operator>>(std::istream &is, HTTPMessage &msg)
         msg._body += _drop_carriage_return(line, false);
         msg._body += "\n";
     }
+    // Add Content-Length header if not present
+    msg.setHeader("Content-Length", ft_itos(msg._body.length()));
     return is;
 }
 

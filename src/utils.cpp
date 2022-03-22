@@ -6,7 +6,7 @@
 /*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/23 20:06:03 by jpceia            #+#    #+#             */
-/*   Updated: 2022/03/22 16:58:11 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/03/22 21:36:48 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@
 
 bool compareFunction (std::string a, std::string b)
 {
-	return a<b;
+    return a<b;
 }
 
 int ft_stoi(const std::string& str)
@@ -127,33 +127,47 @@ std::string exec_cmd(
     std::vector<std::string> aux = map_to_vector(env);
     std::vector<char *> envp = char_ptr_vector(aux);
 
-	// SAVING STDIN AND STDOUT IN ORDER TO TURN THEM BACK TO NORMAL LATER
-	int saveStdin = dup(STDIN_FILENO);
+    // Saving stdin
+    int saveStdin = dup(STDIN_FILENO);
 
-	FILE	*fOut = tmpfile();
-	long	fdOut = fileno(fOut);
+    FILE *fOut = tmpfile();
+    long fdOut = fileno(fOut);
     int fd_in[2];
     pipe(fd_in);
 
-	write(fd_in[1], input.c_str(), input.size());
-	close(fd_in[1]);
+    // Write input to pipe
+    size_t pos = 0;
+    while (pos < input.size())
+    {
+        int n = write(fd_in[1], input.c_str() + pos, input.size() - pos);
+        if (n < 0)
+            throw std::runtime_error("Error writing to pipe");
+        pos += n;
+    }
+    close(fd_in[1]);
 
-	pid_t pid = fork();
+    pid_t pid = fork();
 
-	if (pid == -1)
-		throw std::runtime_error("Fork failed");
-	if (!pid)
-	{
-		dup2(fd_in[0], STDIN_FILENO);
-		dup2(fdOut, STDOUT_FILENO);
-		execve(path.c_str(), (char * const * )NULL, &envp[0]);
-		throw std::runtime_error("execve failed");
-	}
+    if (pid == -1)
+        throw std::runtime_error("Fork failed");
+    if (pid == 0) // child
+    {
+        dup2(fd_in[0], STDIN_FILENO);
+        close(fd_in[0]);
+        dup2(fdOut, STDOUT_FILENO);
+        std::string full_path = lookup_full_path(path);
+        execve(full_path.c_str(), &argv[0], &envp[0]);
+        throw std::runtime_error("execve failed");
+    }
 
-    waitpid(-1, NULL, 0);
+    // close stdin
+    close(fd_in[0]);
+
+    waitpid(pid, NULL, 0);
     lseek(fdOut, 0, SEEK_SET);
 
-    char	buff[1024];
+    // Receiving output
+    char    buff[1024];
     int n = 1;
     std::string res;
     while (n > 0)
@@ -162,11 +176,13 @@ std::string exec_cmd(
         res.append(buff, n);
     }
 
-	dup2(saveStdin, STDIN_FILENO);
-	fclose(fOut);
-	close(fd_in[0]);
-	close(fdOut);
-	close(saveStdin);
+    // Restoring stdin
+    dup2(saveStdin, STDIN_FILENO);
+    close(saveStdin);
 
-	return (res);
+    // Closing file
+    fclose(fOut);
+    close(fdOut);
+
+    return (res);
 }

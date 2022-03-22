@@ -6,7 +6,7 @@
 /*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/03 17:30:40 by jceia             #+#    #+#             */
-/*   Updated: 2022/03/21 22:41:04 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/03/22 19:54:24 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,7 +59,7 @@ void HTTPServer::init()
     }
 }
 
-int HTTPServer::_handle_client_recv(TCPConnection* connection)
+void HTTPServer::_handle_client_recv(TCPConnection* connection, short& event)
 {
     HTTPStatefulConnection* conn = dynamic_cast<HTTPStatefulConnection*>(connection);
     if (conn == NULL)
@@ -113,12 +113,13 @@ int HTTPServer::_handle_client_recv(TCPConnection* connection)
         #endif
 
         conn->setResponse(response);
-        return POLLOUT;
+        event = POLLOUT;
     }
-    return POLLIN;
+    else
+        event = POLLIN;
 }
 
-int HTTPServer::_handle_client_send(TCPConnection* connection)
+void HTTPServer::_handle_client_send(TCPConnection* connection, short& event)
 {
     HTTPStatefulConnection* conn = dynamic_cast<HTTPStatefulConnection*>(connection);
     if (conn == NULL)
@@ -130,10 +131,13 @@ int HTTPServer::_handle_client_send(TCPConnection* connection)
         if (conn->getRequest().getHeader("Connection") != "keep-alive") // close connection
             _close_connection(connection);
         else
+        {
             conn->clear();  // Clear the buffers
-        return POLLIN;
+            event = POLLIN;
+        }
     }
-    return POLLOUT;
+    else
+        event = POLLOUT;
 }
 
 HTTPResponse HTTPServer::_response(const HTTPRequest& request, Context& ctx)

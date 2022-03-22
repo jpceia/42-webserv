@@ -6,7 +6,7 @@
 /*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/23 02:51:42 by jpceia            #+#    #+#             */
-/*   Updated: 2022/03/20 00:25:23 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/03/22 19:03:58 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -166,14 +166,14 @@ void TCPServer::_handle_connection_revent(TCPConnection* connection, short& even
         #ifdef DEBUG
         std::cout << "POLLIN" << std::endl;
         #endif
-        events = _handle_client_recv(connection);
+        _handle_client_recv(connection, events);
     }
     else if (revents & POLLOUT)
     {
         #ifdef DEBUG
         std::cout << "POLLOUT" << std::endl;
         #endif
-        events = _handle_client_send(connection);
+        _handle_client_send(connection, events);
     }
     else if (revents & POLLHUP)
     {

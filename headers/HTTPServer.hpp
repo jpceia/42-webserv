@@ -6,7 +6,7 @@
 /*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/03 17:30:40 by jceia             #+#    #+#             */
-/*   Updated: 2022/03/20 02:23:30 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/03/22 19:04:46 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,8 +55,8 @@ public:
     void init();
 
 protected:
-    int _handle_client_recv(TCPConnection* connection);
-    int _handle_client_send(TCPConnection* connection);
+    void _handle_client_recv(TCPConnection* connection, short& event);
+    void _handle_client_send(TCPConnection* connection, short& event);
 
 private:
     HTTPResponse _response(const HTTPRequest& request, Context& ctx);

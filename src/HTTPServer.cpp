@@ -6,7 +6,7 @@
 /*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/03 17:30:40 by jceia             #+#    #+#             */
-/*   Updated: 2022/03/22 19:54:24 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/03/22 23:39:42 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -225,7 +225,7 @@ HTTPResponse HTTPServer::_cgi_response(const std::string& cmd, const HTTPRequest
     env["CONTENT_TYPE"] = request.getHeader("Content-Type");
     env["DOCUMENT_ROOT"] = ctx.root;
     env["GATEWAY_INTERFACE"] = "CGI/1.1";
-    env["PATH_INFO"] = request.getPath();
+    env["PATH_INFO"] = request.getEndpoint();
     env["SCRIPT_NAME"] = ctx.path;
     env["SCRIPT_FILENAME"] = ctx.path;
     env["REDIRECT_STATUS"] = ctx.redirect_path;

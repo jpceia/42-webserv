@@ -6,7 +6,7 @@
 /*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/03 17:30:40 by jceia             #+#    #+#             */
-/*   Updated: 2022/03/23 00:58:48 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/03/23 03:06:45 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -225,10 +225,55 @@ HTTPResponse HTTPServer::_cgi_response(const std::string& cmd, const HTTPRequest
     env["CONTENT_TYPE"] = request.getHeader("Content-Type");
     env["DOCUMENT_ROOT"] = ctx.root;
     env["GATEWAY_INTERFACE"] = "CGI/1.1";
-    env["PATH_INFO"] = request.getEndpoint();
-    env["SCRIPT_NAME"] = ctx.path;
+
+    /*
+    In case you still have this issue : Had same issue because we were using
+    absolute path, but they want the target with locations substituted
+        ex :
+        PATH_INFO=/YoupieBanane/youpi.bla
+        for http://host:port/directory/youpi.bla (in tester)
+
+    After searching and suffering a lot,
+    I managed to find what could make the 42 cgi tester happy :
+        * REQUEST_URI should be set to "/directory/youpi.bla".
+          This variable is of course undocumented in the RFC.
+        * SCRIPT_NAME should be set to "/directory/youpi.bla".
+          Of course, this is not the behavior described in the RFC.
+
+    The PATH_INFO variable specifies a path to be interpreted by the CGI
+    script.  It identifies the resource or sub-resource to be returned by
+    the CGI script, and is derived from the portion of the URI path
+    hierarchy following the part that identifies the script itself.
+    Unlike a URI path, the PATH_INFO is not URL-encoded, and cannot
+    contain path-segment parameters.  A PATH_INFO of "/" represents a
+    single void path segment.
+
+    PATH_INFO=/directory/youpi.bla
+    PATH_TRANSLATED=<server_root>/YoupiBanane/
+    SCRIPT_NAME=/directory/youpi.bla
+    SCRIPT_FILENAME=<server_root>/YoupiBanane/youpi.bla
+    */
+    std::string path_info = ctx.path;
+    if (!path_info.empty() && path_info[0] == '.')
+        path_info = path_info.substr(1);
+    // remove consecutive slashes
+    while (path_info.find("//") != std::string::npos)
+        path_info.replace(path_info.find("//"), 2, "/");
+    path_info = "/";
+    env["PATH_INFO"] = path_info;
+    env["PATH_TRANSLATED"] = ctx.root;
+    env["SCRIPT_NAME"] = "/directory/youpi.bla"; //ctx.path;
     env["SCRIPT_FILENAME"] = ctx.path;
     env["REDIRECT_STATUS"] = ctx.redirect_path;
+
+    std::cout << "PATH_INFO: " << env["PATH_INFO"] << std::endl;
+    std::cout << "PATH_TRANSLATED: " << env["PATH_TRANSLATED"] << std::endl;
+    std::cout << "SCRIPT_NAME: " << env["SCRIPT_NAME"] << std::endl;
+    std::cout << "SCRIPT_FILENAME: " << env["SCRIPT_FILENAME"] << std::endl;
+
+    env["REQUEST_URI"] = ctx.path;
+
+    env["HTTP_X_SECRET_HEADER_FOR_TEST"] = "1";
 
     // HTTP info
     env["HTTP_ACCEPT"] = request.getHeader("Accept");
@@ -256,6 +301,21 @@ HTTPResponse HTTPServer::_cgi_response(const std::string& cmd, const HTTPRequest
     std::stringstream ss(exec_cmd(cmd, args, env, s));
     HTTPResponse response;
     ss >> dynamic_cast<HTTPMessage&>(response);
+
+    // https://www.php.net/manual/en/function.http-response-code.php
+    
+    std::string status = response.getHeader("Status");
+    if (!status.empty())
+    {
+        size_t pos = status.find(' ');
+        if (pos != std::string::npos)
+        {
+            std::string code = status.substr(0, pos);
+            response.setStatus(ft_stoi(code), status.substr(pos + 1));
+        }
+        response.removeHeader("Status");
+    }
+    
     return response;
 }
 

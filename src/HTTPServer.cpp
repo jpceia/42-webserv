@@ -6,7 +6,7 @@
 /*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/03 17:30:40 by jceia             #+#    #+#             */
-/*   Updated: 2022/03/22 23:39:42 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/03/23 00:58:48 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,7 +72,7 @@ void HTTPServer::_handle_client_recv(TCPConnection* connection, short& event)
 
         #ifdef DEBUG
         std::cout << "Request: " << std::endl;
-        std::cout << request << std::endl;
+        request.print();
         #endif
 
 
@@ -109,7 +109,7 @@ void HTTPServer::_handle_client_recv(TCPConnection* connection, short& event)
 
         #ifdef DEBUG
         std::cout << "Response: " << std::endl;
-        std::cout << response << std::endl;
+        response.print();
         #endif
 
         conn->setResponse(response);

@@ -6,7 +6,7 @@
 /*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/20 00:50:16 by jpceia            #+#    #+#             */
-/*   Updated: 2022/03/22 21:22:50 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/03/23 00:58:18 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -112,6 +112,41 @@ void HTTPMessage::setBody(const std::ifstream& f)
     std::stringstream ss;
     ss << f.rdbuf();
     this->setBody(ss.str());
+}
+
+// -----------------------------------------------------------------------------
+//                                  Helpers
+// -----------------------------------------------------------------------------
+
+void HTTPMessage::printStart() const
+{
+    std::cout << _version << std::endl;
+}
+
+void HTTPMessage::printHeaders() const
+{
+    for (std::map<std::string, std::string>::const_iterator it = _headers.begin();
+        it != _headers.end(); it++)
+        std::cout << it->first << ": " << it->second << std::endl;
+}
+
+void HTTPMessage::printBody() const
+{
+    size_t max_size = 250;
+    if (_body.size() > max_size)
+        std::cout << _body.substr(0, max_size) << "..." << std::endl;
+    else
+        std::cout << _body << std::endl;
+    std::cout << "(size: " << _body.size() << ")" << std::endl;
+}
+
+void HTTPMessage::print() const
+{
+    this->printStart();
+    this->printHeaders();
+    std::cout << std::endl;
+    this->printBody();
+    std::cout << std::endl;
 }
 
 const char* HTTPMessage::ParseException::what(void) const throw()

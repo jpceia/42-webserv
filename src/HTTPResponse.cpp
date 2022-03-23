@@ -6,7 +6,7 @@
 /*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/22 15:33:45 by jceia             #+#    #+#             */
-/*   Updated: 2022/03/20 02:05:22 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/03/23 00:57:20 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,6 +52,11 @@ void HTTPResponse::setBody(const std::string& body)
 
     // set content length
     HTTPMessage::setHeader("Content-Length", ft_itos(body.size()));
+}
+
+void HTTPResponse::printStart() const
+{
+    std::cout << _version << " " << _status.code << " " << _status.text << std::endl;
 }
 
 std::ostream &operator<<(std::ostream &out, const HTTPStatus& status)

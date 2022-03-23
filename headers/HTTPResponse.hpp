@@ -6,7 +6,7 @@
 /*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/22 15:40:09 by jceia             #+#    #+#             */
-/*   Updated: 2022/03/20 02:02:38 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/03/23 00:52:47 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,6 +45,8 @@ public:
     void setStatus(int status_code, const std::string& text);
     void setBody(const std::string& body);
     using HTTPMessage::setBody;
+
+    void printStart() const;
 
 private:
     HTTPStatus _status;

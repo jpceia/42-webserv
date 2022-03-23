@@ -6,7 +6,7 @@
 /*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/22 15:33:45 by jceia             #+#    #+#             */
-/*   Updated: 2022/03/20 02:19:09 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/03/23 00:56:54 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -125,4 +125,9 @@ void HTTPRequest::setMethod(const std::string& method)
 {
     std::stringstream ss(method);
     ss >> _method;
+}
+
+void HTTPRequest::printStart() const
+{
+    std::cout << _method << " " << this->getPath() << " " << _version << std::endl;
 }

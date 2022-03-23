@@ -6,7 +6,7 @@
 /*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/20 00:41:19 by jpceia            #+#    #+#             */
-/*   Updated: 2022/03/20 02:47:34 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/03/23 00:53:27 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,6 +38,12 @@ public:
     virtual void setHeader(const std::string& line);
     virtual void setBody(const std::string& body);
     virtual void setBody(const std::ifstream& f);
+
+    // Helpers
+    virtual void printStart() const;
+    virtual void printHeaders() const;
+    virtual void printBody() const;
+    virtual void print() const;
 
     // io
     friend std::istream &operator>>(std::istream &is, HTTPMessage &msg);

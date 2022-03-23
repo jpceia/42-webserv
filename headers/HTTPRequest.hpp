@@ -6,7 +6,7 @@
 /*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/22 13:00:01 by jceia             #+#    #+#             */
-/*   Updated: 2022/03/20 02:16:25 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/03/23 00:52:34 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,6 +36,8 @@ public:
 
     void setPath(const std::string& path);
     void setMethod(const std::string& method);
+
+    void printStart() const;
     
 protected:
     HTTPMethod _method;

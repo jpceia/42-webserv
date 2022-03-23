@@ -19,6 +19,9 @@ enum ParseState {
     PARSE_START,
     PARSE_HEADER,
     PARSE_BODY,
+    PARSE_CHUNK_HEAD,
+    PARSE_CHUNK_CONTENT,
+    PARSE_CHUNK_TAIL,
     PARSE_COMPLETE
 };
 
@@ -40,9 +43,9 @@ private:
     ParseState _parse_start();
     ParseState _parse_headers();
     ParseState _parse_body();
-    ParseState _parse_chunked_body();
-    ParseState _parse_body_chunk();
-    ParseState _parse_next_chunk();
+    ParseState _parse_chunk_head();
+    ParseState _parse_chunk_content();
+    ParseState _parse_chunk_tail();
 
     ParseState _state;
     std::string _buf;

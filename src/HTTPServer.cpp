@@ -253,16 +253,9 @@ HTTPResponse HTTPServer::_cgi_response(const std::string& cmd, const HTTPRequest
     SCRIPT_NAME=/directory/youpi.bla
     SCRIPT_FILENAME=<server_root>/YoupiBanane/youpi.bla
     */
-    std::string path_info = ctx.path;
-    if (!path_info.empty() && path_info[0] == '.')
-        path_info = path_info.substr(1);
-    // remove consecutive slashes
-    while (path_info.find("//") != std::string::npos)
-        path_info.replace(path_info.find("//"), 2, "/");
-    path_info = "/";
-    env["PATH_INFO"] = path_info;
-    env["PATH_TRANSLATED"] = ctx.root;
-    env["SCRIPT_NAME"] = "/directory/youpi.bla"; //ctx.path;
+    env["PATH_INFO"] = ctx.path;
+    env["PATH_TRANSLATED"] = ctx.path;
+    env["SCRIPT_NAME"] = ctx.path;
     env["SCRIPT_FILENAME"] = ctx.path;
     env["REDIRECT_STATUS"] = ctx.redirect_path;
 

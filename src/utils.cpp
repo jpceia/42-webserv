@@ -6,7 +6,7 @@
 /*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/23 20:06:03 by jpceia            #+#    #+#             */
-/*   Updated: 2022/03/22 21:44:57 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/03/23 01:39:56 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,7 @@
 #include <limits.h>
 #include <cstdlib>
 #include <iostream>
+#include <cstdio>
 
 bool compareFunction (std::string a, std::string b)
 {
@@ -130,22 +131,29 @@ std::string exec_cmd(
     // Saving stdin
     int saveStdin = dup(STDIN_FILENO);
 
-    int fd_in[2];
-    pipe(fd_in);
+    // create temporary files
+    FILE *tmp_in = tmpfile();
+    if (tmp_in == NULL)
+        throw std::runtime_error("Could not create temporary file");
 
-    int fd_out[2];
-    pipe(fd_out);
+    FILE *tmp_out = tmpfile();
+    if (tmp_out == NULL)
+        throw std::runtime_error("Error creating temporary file");
 
-    // Write input to pipe
+    // Get file descriptors
+    int fd_in = fileno(tmp_in);
+    int fd_out = fileno(tmp_out);
+
+    // Write input to fd_in
     size_t pos = 0;
     while (pos < input.size())
     {
-        int n = write(fd_in[1], input.c_str() + pos, input.size() - pos);
+        int n = write(fd_in, input.c_str() + pos, input.size() - pos);
         if (n < 0)
             throw std::runtime_error("Error writing to pipe");
         pos += n;
     }
-    close(fd_in[1]);
+    rewind(tmp_in);
 
     pid_t pid = fork();
 
@@ -153,38 +161,36 @@ std::string exec_cmd(
         throw std::runtime_error("Fork failed");
     if (pid == 0) // child
     {
-        close(fd_out[0]);
-
-        dup2(fd_in[0], STDIN_FILENO);
-        close(fd_in[0]);
-        dup2(fd_out[1], STDOUT_FILENO);
-        close(fd_out[1]);
+        dup2(fd_in, STDIN_FILENO);
+        dup2(fd_out, STDOUT_FILENO);
         std::string full_path = lookup_full_path(path);
         execve(full_path.c_str(), &argv[0], &envp[0]);
         throw std::runtime_error("execve failed");
     }
-
-    // close pipes
-    close(fd_in[0]);
-    close(fd_in[1]);
-    close(fd_out[1]);
-
+    // PARENT PROCESS
     waitpid(pid, NULL, 0);
 
-    // Receiving output
+    close(fd_in);
+    rewind(tmp_out);
+
+    // Read output from fd_out
     char    buff[1024];
     int n = 1;
     std::string res;
     while (n > 0)
     {
-        n = read(fd_out[0], buff, sizeof(buff));
+        n = read(fd_out, buff, sizeof(buff));
         res.append(buff, n);
     }
-    close(fd_out[0]);
+    close(fd_out);
 
     // Restoring stdin
     dup2(saveStdin, STDIN_FILENO);
     close(saveStdin);
+
+    // Close files
+    fclose(tmp_in);
+    fclose(tmp_out);
 
     return (res);
 }

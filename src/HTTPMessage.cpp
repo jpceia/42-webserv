@@ -6,7 +6,7 @@
 /*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/20 00:50:16 by jpceia            #+#    #+#             */
-/*   Updated: 2022/03/23 00:58:18 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/03/23 01:20:43 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -133,19 +133,23 @@ void HTTPMessage::printHeaders() const
 void HTTPMessage::printBody() const
 {
     size_t max_size = 250;
-    if (_body.size() > max_size)
+    size_t size = _body.size();
+    if (size > max_size)
         std::cout << _body.substr(0, max_size) << "..." << std::endl;
     else
         std::cout << _body << std::endl;
-    std::cout << "(size: " << _body.size() << ")" << std::endl;
+    if (size > 0)
+        std::cout << "(size: " << _body.size() << ")" << std::endl;
 }
 
 void HTTPMessage::print() const
 {
+    std::cout << "----------------------------------------" << std::endl;
     this->printStart();
     this->printHeaders();
     std::cout << std::endl;
     this->printBody();
+    std::cout << "----------------------------------------" << std::endl;
     std::cout << std::endl;
 }
 

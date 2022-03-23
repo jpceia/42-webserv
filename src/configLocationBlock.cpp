@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   configLocationBlock.cpp                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
+/*   By: tisantos <tisantos@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/19 15:59:55 by tisantos          #+#    #+#             */
-/*   Updated: 2022/03/20 02:34:51 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/03/23 15:28:03 by tisantos         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,6 +46,7 @@ configLocationBlock& configLocationBlock::operator=(const configLocationBlock& r
 	_redirect_path = rhs._redirect_path;
 	_cgi = rhs._cgi;
 	_upload = rhs._upload;
+	_isrootfromlocationblock = rhs._isrootfromlocationblock;
 
 	return *this;
 }
@@ -295,6 +296,7 @@ void	configLocationBlock::rootDirectiveTreatment(std::string line)
 			throw std::runtime_error("configLocationBlock.hpp exception: root has duplicated value");
 		}
 		number_of_words++;
+		_isrootfromlocationblock = true;
 	}
 }
 void	configLocationBlock::indexDirectiveTreatment(std::vector<std::string> ind, std::string line)
@@ -636,7 +638,10 @@ void	configLocationBlock::fillDirectivesIfEmpty(
 	if (_client_max_body_size.empty())
 		_client_max_body_size = client_max_body_size;
 	if (_root.empty())
+	{
 		_root = root;
+		_isrootfromlocationblock = false;
+	}
 	if (_index.empty())
 		_index = index;
 	if (_auto_index.empty())

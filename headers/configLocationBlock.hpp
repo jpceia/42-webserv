@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   configLocationBlock.hpp                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
+/*   By: tisantos <tisantos@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/19 15:59:08 by tisantos          #+#    #+#             */
-/*   Updated: 2022/03/20 02:22:42 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/03/23 15:25:26 by tisantos         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@ class configLocationBlock : public configDefaults
         /****************/
         /* Constructors */
         /****************/
-        configLocationBlock();		
+        configLocationBlock();
         configLocationBlock(const configLocationBlock& rhs);
         ~configLocationBlock();
 
@@ -62,17 +62,18 @@ class configLocationBlock : public configDefaults
 		/*****************/
 		/*    Getters    */
 		/*****************/
-		std::string								getLocationPath() const			{ return (_location_path.size() > 0 ? _location_path.front() : ""); }
-		std::map<int, std::string>				getErrorPage() const			{ return (_error_page); }
-		std::string								getRoot() const					{ return (_root.size() > 0 ? _root.front() : ""); }
-		unsigned long int						getClientMaxBodySize() const	{ return (_client_max_body_size.size() > 0 ? _client_max_body_size.front() : 0); }
-		std::vector<std::string>				getIndex() const				{ return (_index); }
-		std::string								getAutoIndex() const			{ return (_auto_index.size() > 0 ? _auto_index.front() : ""); }
-		std::set<HTTPMethod>					getMethods() const				{ return (_methods); }
-		int										getRedirectStatus() const		{ return (_redirect_status.size() > 0 ? _redirect_status.front() : 0); }
-		std::string								getRedirectPath() const			{ return (_redirect_path.size() > 0 ? _redirect_path.front() : ""); }
-		std::map<std::string, std::string>		getCgi() const					{ return (_cgi); }
-		std::string								getUpload() const				{ return (_upload.size() > 0 ? _upload.front() : ""); }
+		std::string								getLocationPath() const				{ return (_location_path.size() > 0 ? _location_path.front() : ""); }
+		std::map<int, std::string>				getErrorPage() const				{ return (_error_page); }
+		std::string								getRoot() const						{ return (_root.size() > 0 ? _root.front() : ""); }
+		unsigned long int						getClientMaxBodySize() const		{ return (_client_max_body_size.size() > 0 ? _client_max_body_size.front() : 0); }
+		std::vector<std::string>				getIndex() const					{ return (_index); }
+		std::string								getAutoIndex() const				{ return (_auto_index.size() > 0 ? _auto_index.front() : ""); }
+		std::set<HTTPMethod>					getMethods() const					{ return (_methods); }
+		int										getRedirectStatus() const			{ return (_redirect_status.size() > 0 ? _redirect_status.front() : 0); }
+		std::string								getRedirectPath() const				{ return (_redirect_path.size() > 0 ? _redirect_path.front() : ""); }
+		std::map<std::string, std::string>		getCgi() const						{ return (_cgi); }
+		std::string								getUpload() const					{ return (_upload.size() > 0 ? _upload.front() : ""); }
+		bool									getIsRootFromLocationBlock() const	{ return (_isrootfromlocationblock); }
 
     public:
         /**********************/
@@ -90,6 +91,7 @@ class configLocationBlock : public configDefaults
         std::vector<std::string>    			_redirect_path;
         std::map<std::string, std::string>		_cgi;
         std::vector<std::string>    			_upload;
+		bool									_isrootfromlocationblock;
 };
 
 #endif

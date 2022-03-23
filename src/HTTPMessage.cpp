@@ -6,7 +6,7 @@
 /*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/20 00:50:16 by jpceia            #+#    #+#             */
-/*   Updated: 2022/03/23 03:01:53 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/03/23 03:55:10 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -199,10 +199,12 @@ std::istream &operator>>(std::istream &is, HTTPMessage &msg)
     }
     
     // Body
+    if (std::getline(is, line))
+        msg._body = _drop_carriage_return(line, false); 
     while (std::getline(is, line))
     {
-        msg._body += _drop_carriage_return(line, false);
         msg._body += "\n";
+        msg._body += _drop_carriage_return(line, false);   
     }
     // Add Content-Length header if not present
     msg.setHeader("Content-Length", ft_itos(msg._body.length()));

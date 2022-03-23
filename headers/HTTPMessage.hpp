@@ -6,7 +6,7 @@
 /*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/20 00:41:19 by jpceia            #+#    #+#             */
-/*   Updated: 2022/03/23 00:53:27 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/03/23 03:00:59 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,6 +38,9 @@ public:
     virtual void setHeader(const std::string& line);
     virtual void setBody(const std::string& body);
     virtual void setBody(const std::ifstream& f);
+
+    // Remover
+    virtual void removeHeader(const std::string& key);
 
     // Helpers
     virtual void printStart() const;

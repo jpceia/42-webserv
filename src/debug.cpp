@@ -6,7 +6,7 @@
 /*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/19 16:00:08 by tisantos          #+#    #+#             */
-/*   Updated: 2022/03/24 02:19:43 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/03/24 07:11:18 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@ void debug_context(const struct Context& ctx)
 {
 	std::cout << "----------------DEBUG CONTEXT----------------" << std::endl;
 
-	std::cout << "PATH = " << ctx.path << std::endl;
+	std::cout << "SYS PATH = " << ctx.getSysPath() << std::endl;
 	for (std::map<int, std::string>::const_iterator it = ctx.error_page.begin();
 		 it != ctx.error_page.end(); it++)
 	{
@@ -24,8 +24,7 @@ void debug_context(const struct Context& ctx)
 	}
     std::cout << "MAX_BODY_SIZE = " << ctx.max_body_size << std::endl;
     std::cout << "ROOT = " << ctx.root << std::endl;
-	std::cout << "REL_PATH = " << ctx.rel_path << std::endl;
-	std::cout << "BASE_PATH = " << ctx.base_path << std::endl;
+	std::cout << "SYS_REL_PATH = " << ctx.sys_rel_path << std::endl;
 	std::cout << "AUTO_INDEX = " << ctx.autoindex << std::endl;
 	for (std::vector<std::string>::const_iterator it = ctx.index.begin();
 		 it != ctx.index.end(); it++)
@@ -33,9 +32,9 @@ void debug_context(const struct Context& ctx)
 		std::cout << "INDEX = " << *it << std::endl;
 	}
 	std::cout << "REDIRECT_STATUS = " << ctx.redirect_status << std::endl;
-	std::cout << "REDIRECT_PATH = " << ctx.path << std::endl;
-	for (std::map<std::string, std::string>::const_iterator it = ctx.cgi.begin();
-		 it != ctx.cgi.end(); it++)
+	std::cout << "REDIRECT_PATH = " << ctx.redirect_path << std::endl;
+	for (std::map<std::string, std::string>::const_iterator it = ctx.cgi_bin.begin();
+		 it != ctx.cgi_bin.end(); it++)
 	{
 		std::cout << "CGI = " << it->first << " " << it->second << std::endl;
 	}

@@ -6,7 +6,7 @@
 /*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/03 17:30:40 by jceia             #+#    #+#             */
-/*   Updated: 2022/03/24 06:51:20 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/03/24 07:30:24 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,7 @@
 # include "HTTPStatefulConnection.hpp"
 # include "configFile.hpp"
 # include "debug.hpp"
+# include "utils.hpp"
 # include <iostream>
 # include <fstream>
 # include <sstream>
@@ -49,7 +50,7 @@ struct Context
 
     std::string getSysPath() const
     {
-        return this->root + "/" + this->sys_rel_path;
+        return cleanup_path(this->root + "/" + this->sys_rel_path);
     }
 };
 

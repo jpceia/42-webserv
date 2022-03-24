@@ -6,11 +6,12 @@
 /*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/24 04:14:47 by jpceia            #+#    #+#             */
-/*   Updated: 2022/03/24 06:26:10 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/03/24 07:30:10 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "HTTPServer.hpp"
+#include "utils.hpp"
 
 // https://stackoverflow.com/questions/8659808/how-does-http-file-upload-work
 
@@ -37,7 +38,7 @@ HTTPResponse HTTPServer::_upload_raw_response(const HTTPRequest& request, const 
 {
     HTTPResponse response;
     response.setHeader("Content-Type", "text/html");
-    std::string path = ctx.upload_path + "/" + ctx.sys_rel_path;
+    std::string path = cleanup_path(ctx.upload_path + "/" + ctx.sys_rel_path);
     std::cout << "Upload path: " << path << std::endl;
     // write to file
     std::ofstream ofs(path.c_str(), std::ios::binary | std::ios::trunc);
@@ -99,7 +100,7 @@ void HTTPServer::_handle_multipart_chunk(const std::string& chunk, const Context
     filename = filename.substr(0, filename.find("\""));
 
     // write to file
-    std::string path = ctx.upload_path + "/" + filename;
+    std::string path = cleanup_path(ctx.upload_path + "/" + filename);
     std::cout << "Upload path: " << path << std::endl;
     std::ofstream ofs(path.c_str(), std::ios::binary | std::ios::trunc);
     if (!ofs.good())
@@ -111,7 +112,8 @@ void HTTPServer::_handle_multipart_chunk(const std::string& chunk, const Context
 
 HTTPResponse HTTPServer::_delete_response(const Context& ctx) const
 {
-    std::string path = ctx.upload_path + "/" + ctx.sys_rel_path;
+    std::string path = cleanup_path(ctx.upload_path + "/" + ctx.sys_rel_path);
+    std::cout << "Rel path: " << ctx.sys_rel_path << std::endl;
     std::cout << "Delete path: " << path << std::endl;
 
     if (std::remove(path.c_str()) != 0)

@@ -6,7 +6,7 @@
 /*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/03 17:30:40 by jceia             #+#    #+#             */
-/*   Updated: 2022/03/24 07:09:20 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/03/24 07:29:06 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -174,7 +174,7 @@ HTTPResponse HTTPServer::_response(const HTTPRequest& request, Context& ctx)
             // std::cout << "path: " << ctx.base_path << "\t index:" << *it << std::endl;
             if (is_readable_file(path + "/" + *it))
             {
-                ctx.sys_rel_path += "/" + *it;
+                ctx.sys_rel_path = cleanup_path(ctx.sys_rel_path + "/" + *it);
                 found = true;
                 break ;
             }

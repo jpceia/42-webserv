@@ -6,7 +6,7 @@
 /*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/03 17:30:40 by jceia             #+#    #+#             */
-/*   Updated: 2022/03/24 03:02:40 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/03/24 06:51:20 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,11 +75,16 @@ private:
     HTTPResponse _response(const HTTPRequest& request, Context& ctx);
     HTTPResponse _cgi_response(const std::string& cmd, const HTTPRequest& request, const Context& ctx);
     HTTPResponse _static_response(const Context& ctx) const;
-    HTTPResponse _autoindex_response(const Context& ctx, const HTTPRequest& request) const;
-    HTTPResponse _upload_response(const HTTPRequest& request, const Context& ctx) const;
-    HTTPResponse _delete_response(const Context& ctx) const;
+    HTTPResponse _autoindex_response(const Context& ctx) const;
     HTTPResponse _redirect_response(const Context& ctx) const;
     HTTPResponse _status_page_response(const HTTPStatus& status, const Context& ctx) const;
+
+    // Uploads
+    HTTPResponse _upload_response(const HTTPRequest& request, const Context& ctx) const;
+    HTTPResponse _upload_multipart_response(const HTTPRequest& request, const Context& ctx) const;
+    HTTPResponse _upload_raw_response(const HTTPRequest& request, const Context& ctx) const;
+    HTTPResponse _delete_response(const Context& ctx) const;
+    void _handle_multipart_chunk(const std::string& chunk, const Context& ctx) const;
 
     // Helpers
     std::string _get_file_extension(const std::string& path) const;

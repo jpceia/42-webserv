@@ -6,7 +6,7 @@
 /*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/03 17:30:40 by jceia             #+#    #+#             */
-/*   Updated: 2022/03/24 03:28:36 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/03/24 07:09:20 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -182,7 +182,7 @@ HTTPResponse HTTPServer::_response(const HTTPRequest& request, Context& ctx)
         if (!found)
         {
             if (ctx.autoindex == "on")
-                return _autoindex_response(ctx, request);
+                return _autoindex_response(ctx);
             else
                 return _status_page_response(404, ctx);
         }
@@ -312,45 +312,6 @@ HTTPResponse HTTPServer::_redirect_response(const Context& ctx) const
     HTTPResponse response;
     response.setHeader("Location", ctx.redirect_path);
     response.setStatus(ctx.redirect_status);
-    return response;
-}
-
-HTTPResponse HTTPServer::_upload_response(const HTTPRequest& request, const Context& ctx) const
-{
-    HTTPMethod method = request.getMethod();
-    if (method == DELETE)
-        return _delete_response(ctx);
-    if (method == GET)
-        return _static_response(ctx);
-    if (method != POST && method != PUT)
-        return _status_page_response(405, ctx);
-
-    HTTPResponse response;
-    response.setHeader("Content-Type", "text/html");
-    std::string path = ctx.upload_path + ctx.rel_path;
-    std::cout << "Upload path: " << path << std::endl;
-    // write to file
-    std::ofstream ofs(path.c_str(), std::ios::binary | std::ios::trunc);
-    if (!ofs.good())
-        return _status_page_response(500, ctx);
-    std::string body = request.getBody();
-    ofs.write(body.c_str(), body.size());
-    ofs.close();
-
-    response.setBody("Upload Successfull");
-    return response;
-}
-
-HTTPResponse HTTPServer::_delete_response(const Context& ctx) const
-{
-    std::string path = ctx.upload_path + ctx.rel_path;
-    std::cout << "Delete path: " << path << std::endl;
-
-    if (std::remove(path.c_str()) != 0)
-        return _status_page_response(500, ctx);
-
-    HTTPResponse response = _status_page_response(202, ctx);
-    response.setBody("Delete Successfull");
     return response;
 }
 

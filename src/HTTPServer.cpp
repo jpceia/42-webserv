@@ -106,15 +106,26 @@ void HTTPServer::_handle_client_recv(TCPConnection* connection, short& event)
         ctx.allowed_methods = location_block.getMethods();
         ctx.redirect_status = location_block.getRedirectStatus();
         ctx.redirect_path = location_block.getRedirectPath();
-        // cgi
         ctx.cgi = location_block.getCgi();
         ctx.upload_path = location_block.getUpload();
-        if (server_block.getServerName().size() > 0)
-            ctx.server_name = server_block.getServerName().front();
         ctx.server_addr = connection->getServerIP();
         ctx.client_addr = connection->getClientIP();
         ctx.server_port = connection->getServerPort();
         ctx.client_port = connection->getClientPort();
+        
+        if (server_block.getServerName().size() > 0)
+        {
+            ctx.server_name = server_block.getServerName().front();
+            ctx.host_port = ctx.server_name;
+        }
+        else
+        {
+            ctx.server_name = "";
+            ctx.host_port = ctx.server_addr;
+        }
+
+        if (ctx.server_port != 80)
+            ctx.host_port += ":" + ft_itos(ctx.server_port);
 
         // build the response
         HTTPResponse response = _response(conn->getRequest(), ctx);
@@ -358,17 +369,11 @@ HTTPResponse HTTPServer::_autoindex_response(const Context& ctx, const HTTPReque
 
     // Print the directories
 	for (std::vector<std::string>::iterator it = directories.begin(); it != directories.end(); it++)
-	{
-    	ss << "<a href=\"http://" + ctx.client_addr + ":" <<\
-        	   "8081" << path_treated + *it + "\">" + *it + "</a>\n";
-	}
+    	ss << "<a href=\"http://" << ctx.host_port << path_treated <<  *it << "\">" << *it << "</a>\n";
 
     // Print the files
 	for (std::vector<std::string>::iterator it = files.begin(); it != files.end(); it++)
-	{
-    	ss << "<a href=\"http://" + ctx.client_addr + ":" <<
-        	   "8081" << path_treated + *it + "\">" + *it + "</a>\n";
-	}
+    	ss << "<a href=\"http://" << ctx.host_port << path_treated << *it << "\">" << *it << "</a>\n";
 
     ss << "</pre><hr></body></html>";
     std::string body = ss.str();

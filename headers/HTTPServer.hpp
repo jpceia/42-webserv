@@ -6,7 +6,7 @@
 /*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/03 17:30:40 by jceia             #+#    #+#             */
-/*   Updated: 2022/03/24 01:27:25 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/03/24 02:36:52 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,6 +38,7 @@ struct Context
     int redirect_status;
     std::string redirect_path;
     std::map<std::string, std::string> cgi;
+    std::string host_port;
     std::string upload_path;
     std::string server_name;
     std::string server_addr;

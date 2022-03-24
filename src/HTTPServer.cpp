@@ -6,7 +6,7 @@
 /*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/03 17:30:40 by jceia             #+#    #+#             */
-/*   Updated: 2022/03/24 01:07:44 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/03/24 01:13:17 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -237,6 +237,29 @@ HTTPResponse HTTPServer::_cgi_response(const std::string& cmd, const HTTPRequest
     args.push_back(cmd);
     //args.push_back(ctx.path);
 
+    map_str_str env = _get_cgi_env(request, ctx);
+    std::string s = request.getBody();
+    std::stringstream ss(exec_cmd(cmd, args, env, s));
+    HTTPResponse response;
+    ss >> dynamic_cast<HTTPMessage&>(response);
+
+    // https://www.php.net/manual/en/function.http-response-code.php
+    std::string status = response.getHeader("Status");
+    if (!status.empty())
+    {
+        size_t pos = status.find(' ');
+        if (pos != std::string::npos)
+        {
+            std::string code = status.substr(0, pos);
+            response.setStatus(ft_stoi(code)); // Ignore the message
+        }
+        response.removeHeader("Status");
+    }
+    return response;
+}
+
+HTTPServer::map_str_str HTTPServer::_get_cgi_env(const HTTPRequest& request, const Context& ctx) const
+{
     map_str_str env;
 
     env["SERVER_NAME"] = ctx.server_name;
@@ -285,24 +308,7 @@ HTTPResponse HTTPServer::_cgi_response(const std::string& cmd, const HTTPRequest
     env["SERVER_PORT"] = ft_itos(ctx.server_port);
     env["REMOTE_PORT"] = ft_itos(ctx.client_port);
 
-    std::string s = request.getBody();
-    std::stringstream ss(exec_cmd(cmd, args, env, s));
-    HTTPResponse response;
-    ss >> dynamic_cast<HTTPMessage&>(response);
-
-    // https://www.php.net/manual/en/function.http-response-code.php
-    std::string status = response.getHeader("Status");
-    if (!status.empty())
-    {
-        size_t pos = status.find(' ');
-        if (pos != std::string::npos)
-        {
-            std::string code = status.substr(0, pos);
-            response.setStatus(ft_stoi(code)); // Ignore the message
-        }
-        response.removeHeader("Status");
-    }
-    return response;
+    return env;
 }
 
 // Client_port or Server_port is wrong

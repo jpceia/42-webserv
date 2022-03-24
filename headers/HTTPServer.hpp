@@ -6,7 +6,7 @@
 /*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/03 17:30:40 by jceia             #+#    #+#             */
-/*   Updated: 2022/03/24 01:06:39 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/03/24 01:09:07 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,6 +75,8 @@ private:
 
     // Helpers
     std::string _get_file_extension(const std::string& path) const;
+    map_str_str _get_cgi_env(const HTTPRequest& request, const Context& ctx) const;
+
     configFile _config;
 };
 

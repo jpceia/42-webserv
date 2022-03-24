@@ -211,7 +211,7 @@ HTTPResponse HTTPServer::_response(const HTTPRequest& request, Context& ctx)
     return _static_response(ctx);
 }
 
-HTTPResponse HTTPServer::_static_response(const Context& ctx)
+HTTPResponse HTTPServer::_static_response(const Context& ctx) const
 {
     // Static page
     std::ifstream ifs(ctx.path.c_str(), std::ifstream::in);

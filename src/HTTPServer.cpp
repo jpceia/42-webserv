@@ -6,7 +6,7 @@
 /*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/03 17:30:40 by jceia             #+#    #+#             */
-/*   Updated: 2022/03/24 02:49:01 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/03/24 03:09:28 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,8 +76,19 @@ void HTTPServer::_handle_client_recv(TCPConnection* connection, short& event)
     HTTPStatefulConnection* conn = dynamic_cast<HTTPStatefulConnection*>(connection);
     if (conn == NULL)
         throw std::runtime_error("HTTPServer::_handle_client_request: dynamic_cast failed");
-
-    bool finished = conn->recvChunk();
+    
+    bool finished;
+    try
+    {
+        finished = conn->recvChunk();
+    }
+    catch (const HTTPMessage::ParseException& err) // Illegal HTTP request
+    {
+        conn->setResponse(_status_page_response(400, _get_context(conn)));
+        event = POLLOUT;
+        return ;
+    }
+    
     if (finished) // Finished receiving the request
     {
         HTTPRequest request = conn->getRequest();

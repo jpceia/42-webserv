@@ -128,8 +128,13 @@ void HTTPServer::_handle_client_send(TCPConnection* connection, short& event)
     bool finished = conn->sendChuck();
     if (finished)
     {
-        if (conn->getRequest().getHeader("Connection") != "keep-alive") // close connection
+        if (conn->getRequest().getHeader("Connection") == "close") // close connection
+        {
+            #ifdef DEBUG
+            std::cout << "Connection: close" << std::endl;
+            #endif
             _close_connection(connection);
+        }
         else
         {
             conn->clear();  // Clear the buffers

@@ -6,7 +6,7 @@
 /*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/03 17:30:40 by jceia             #+#    #+#             */
-/*   Updated: 2022/03/24 01:09:07 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/03/24 01:27:25 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,6 +70,7 @@ private:
     HTTPResponse _static_response(const Context& ctx) const;
     HTTPResponse _autoindex_response(const Context& ctx, const HTTPRequest& request) const;
     HTTPResponse _upload_response(const HTTPRequest& request, const Context& ctx) const;
+    HTTPResponse _delete_response(const Context& ctx) const;
     HTTPResponse _redirect_response(const Context& ctx) const;
     HTTPResponse _error_page_response(const HTTPStatus& status, const Context& ctx) const;
 

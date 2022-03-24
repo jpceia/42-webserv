@@ -6,7 +6,7 @@
 /*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/03 17:30:40 by jceia             #+#    #+#             */
-/*   Updated: 2022/03/24 01:16:08 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/03/24 01:28:31 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -389,30 +389,40 @@ HTTPResponse HTTPServer::_redirect_response(const Context& ctx) const
 
 HTTPResponse HTTPServer::_upload_response(const HTTPRequest& request, const Context& ctx) const
 {
-    std::cout << "Entering upload response" << std::endl;
+    HTTPMethod method = request.getMethod();
+    if (method == DELETE)
+        return _delete_response(ctx);
+    if (method == GET)
+        return _static_response(ctx);
+    if (method != POST && method != PUT)
+        return _error_page_response(405, ctx);
+
     HTTPResponse response;
     response.setHeader("Content-Type", "text/html");
-    HTTPMethod method = request.getMethod();
-    if (method != POST && method != PUT)
-    {
-        response.setStatus(405);
-        return response;
-    }
     std::string path = ctx.upload_path + ctx.rel_path;
     std::cout << "Upload path: " << path << std::endl;
     // write to file
     std::ofstream ofs(path.c_str(), std::ios::binary | std::ios::trunc);
     if (!ofs.good())
-    {
-        // cannot open file
-        response.setStatus(500);
-        return response;
-    }
+        return _error_page_response(500, ctx);
     std::string body = request.getBody();
     ofs.write(body.c_str(), body.size());
     ofs.close();
 
     response.setBody("Upload Successfull");
+    return response;
+}
+
+HTTPResponse HTTPServer::_delete_response(const Context& ctx) const
+{
+    std::string path = ctx.upload_path + ctx.rel_path;
+    std::cout << "Delete path: " << path << std::endl;
+
+    if (std::remove(path.c_str()) != 0)
+        return _error_page_response(500, ctx);
+
+    HTTPResponse response = _error_page_response(202, ctx);
+    response.setBody("Delete Successfull");
     return response;
 }
 

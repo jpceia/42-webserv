@@ -340,13 +340,13 @@ HTTPResponse HTTPServer::_autoindex_response(const Context& ctx, const HTTPReque
 		epdf = readdir(dpdf);
 		if (epdf != NULL)
 		{
-			if (strcmp(epdf->d_name, ".") &&
-				strcmp(epdf->d_name, ".."))
+            std::string name = epdf->d_name;
+			if (name != "." && name != "..")
 			{
 				if (epdf->d_type != DT_DIR)	// If not a folder
-					files.push_back(epdf->d_name);
+					files.push_back(name);
 				else
-					directories.push_back(epdf->d_name + std::string("/"));
+					directories.push_back(name + "/");
 			}
 		}
 	} while(epdf != NULL);
@@ -360,11 +360,15 @@ HTTPResponse HTTPServer::_autoindex_response(const Context& ctx, const HTTPReque
     std::stringstream ss;
     ss << "<html><head><title>Index of " << path_treated << "</title></head><body><h1>Index of " << path_treated << "</h1><hr><pre>";
     ss << "<a href=\"..\">../</a>\n";
+
+    // Print the directories
 	for (std::vector<std::string>::iterator it = directories.begin(); it != directories.end(); it++)
 	{
     	ss << "<a href=\"http://" + ctx.client_addr + ":" <<\
         	   "8081" << path_treated + *it + "\">" + *it + "</a>\n";
 	}
+
+    // Print the files
 	for (std::vector<std::string>::iterator it = files.begin(); it != files.end(); it++)
 	{
     	ss << "<a href=\"http://" + ctx.client_addr + ":" <<

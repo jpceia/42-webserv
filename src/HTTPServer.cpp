@@ -376,11 +376,10 @@ HTTPResponse HTTPServer::_autoindex_response(const Context& ctx, const HTTPReque
     	ss << "<a href=\"http://" << ctx.host_port << path_treated << *it << "\">" << *it << "</a>\n";
 
     ss << "</pre><hr></body></html>";
-    std::string body = ss.str();
 
     HTTPResponse response;
     response.setHeader("Content-Type", "text/html");
-    response.setBody(body);
+    response.setBody(ss.str());
     return response;
 }
 

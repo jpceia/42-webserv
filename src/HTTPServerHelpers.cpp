@@ -6,7 +6,7 @@
 /*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/24 04:13:11 by jpceia            #+#    #+#             */
-/*   Updated: 2022/03/24 07:06:41 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/03/24 07:26:19 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -160,7 +160,8 @@ Context HTTPServer::_get_context(const HTTPStatefulConnection *conn) const
     ctx.root = location_block.getRoot();
     ctx.endpoint = request.getEndpoint();
     ctx.location_path = location_block.getLocationPath();
-    if (location_block.getIsRootFromLocationBlock())
+    ctx.upload_path = location_block.getUpload();
+    if (location_block.getIsRootFromLocationBlock() || !ctx.upload_path.empty())
     {
         ctx.sys_rel_path = ctx.endpoint.substr(ctx.location_path.size());
         if (ctx.sys_rel_path.empty())
@@ -178,7 +179,6 @@ Context HTTPServer::_get_context(const HTTPStatefulConnection *conn) const
     ctx.redirect_status = location_block.getRedirectStatus();
     ctx.redirect_path = location_block.getRedirectPath();
     ctx.cgi_bin = location_block.getCgi();
-    ctx.upload_path = location_block.getUpload();
     ctx.server_addr = conn->getServerIP();
     ctx.client_addr = conn->getClientIP();
     ctx.server_port = conn->getServerPort();

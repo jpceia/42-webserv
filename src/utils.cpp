@@ -6,7 +6,7 @@
 /*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/23 20:06:03 by jpceia            #+#    #+#             */
-/*   Updated: 2022/03/24 01:12:15 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/03/24 07:28:14 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -97,6 +97,14 @@ std::string lookup_full_path(const std::string& path)
         }
         throw std::runtime_error("Could not find executable " + path);
     }
+}
+
+std::string cleanup_path(const std::string& path)
+{
+    std::string result = path;
+    while (result.find("//") != std::string::npos)
+        result.replace(result.find("//"), 2, "/");
+    return result;
 }
 
 std::vector<char *> char_ptr_vector(const std::vector<std::string>& args)

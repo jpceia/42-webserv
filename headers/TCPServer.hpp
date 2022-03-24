@@ -6,7 +6,7 @@
 /*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/07 14:23:33 by jceia             #+#    #+#             */
-/*   Updated: 2022/03/22 19:06:54 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/03/24 00:58:17 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,7 @@ public:
     typedef std::set<TCPConnection*, TCPConnection::socket_compare> connections_t;
     typedef std::set<TCPListener*, TCPListener::socket_compare>     listeners_t;
 
-    TCPServer(int timeout);
+    TCPServer(int timeout = -1);
     virtual ~TCPServer();
 
     void add_listener(TCPListener* listener);

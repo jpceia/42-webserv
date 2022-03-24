@@ -6,7 +6,7 @@
 /*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/03 17:30:40 by jceia             #+#    #+#             */
-/*   Updated: 2022/03/24 00:58:09 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/03/24 01:07:44 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -203,8 +203,7 @@ HTTPResponse HTTPServer::_response(const HTTPRequest& request, Context& ctx)
         return _error_page_response(404, ctx);
 
     // CGI
-    std::string extension = ctx.path.substr(ctx.path.find_last_of(".") + 1);
-    std::map<std::string, std::string>::const_iterator it = ctx.cgi.find(extension);
+    map_str_str::const_iterator it = ctx.cgi.find(_get_file_extension(ctx.path));
     if (it != ctx.cgi.end())
         return _cgi_response(it->second, request, ctx);
 
@@ -238,7 +237,7 @@ HTTPResponse HTTPServer::_cgi_response(const std::string& cmd, const HTTPRequest
     args.push_back(cmd);
     //args.push_back(ctx.path);
 
-    std::map<std::string, std::string> env;
+    map_str_str env;
 
     env["SERVER_NAME"] = ctx.server_name;
     env["SERVER_PROTOCOL"] = request.getVersion();
@@ -435,4 +434,13 @@ HTTPResponse HTTPServer::_error_page_response(const HTTPStatus& status, const Co
     ss << "<h1>" << status << "</h1>";
     response.setBody(ss.str());
     return response;
+}
+
+std::string HTTPServer::_get_file_extension(const std::string& path) const
+{
+    std::string ext;
+    size_t pos = path.find_last_of('.');
+    if (pos != std::string::npos)
+        ext = path.substr(pos + 1);
+    return ext;
 }

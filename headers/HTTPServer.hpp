@@ -6,7 +6,7 @@
 /*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/03 17:30:40 by jceia             #+#    #+#             */
-/*   Updated: 2022/03/24 00:42:05 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/03/24 01:06:39 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,6 +49,8 @@ struct Context
 class HTTPServer : public TCPServer
 {
 public:
+    typedef std::map<std::string, std::string> map_str_str;
+
     HTTPServer(configFile config, int timeout = -1);
     virtual ~HTTPServer();
 
@@ -71,6 +73,8 @@ private:
     HTTPResponse _redirect_response(const Context& ctx) const;
     HTTPResponse _error_page_response(const HTTPStatus& status, const Context& ctx) const;
 
+    // Helpers
+    std::string _get_file_extension(const std::string& path) const;
     configFile _config;
 };
 

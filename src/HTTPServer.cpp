@@ -163,8 +163,8 @@ HTTPResponse HTTPServer::_response(const HTTPRequest& request, Context& ctx)
         return _upload_response(request, ctx);
 
     // checking if the file exists
-    ctx.path = ctx.base_path;
-    if (is_dir(ctx.path))
+    std::string path = ctx.getSysPath();
+    if (is_dir(path))
     {
         // std::cout << "path is a directory" << std::endl;
         bool found = false;
@@ -172,9 +172,9 @@ HTTPResponse HTTPServer::_response(const HTTPRequest& request, Context& ctx)
             it != ctx.index.end(); ++it)
         {
             // std::cout << "path: " << ctx.base_path << "\t index:" << *it << std::endl;
-            if (is_readable_file(ctx.path + "/" + *it))
+            if (is_readable_file(path + "/" + *it))
             {
-                ctx.path = ctx.base_path + "/" +  *it;
+                ctx.sys_rel_path += "/" + *it;
                 found = true;
                 break ;
             }
@@ -187,12 +187,12 @@ HTTPResponse HTTPServer::_response(const HTTPRequest& request, Context& ctx)
                 return _status_page_response(404, ctx);
         }
     }
-    else if (!is_readable_file(ctx.path))
+    else if (!is_readable_file(path))
         return _status_page_response(404, ctx);
 
     // CGI
-    map_str_str::const_iterator it = ctx.cgi.find(_get_file_extension(ctx.path));
-    if (it != ctx.cgi.end())
+    map_str_str::const_iterator it = ctx.cgi_bin.find(_get_file_extension(ctx.sys_rel_path));
+    if (it != ctx.cgi_bin.end())
         return _cgi_response(it->second, request, ctx);
 
     // static file
@@ -202,7 +202,7 @@ HTTPResponse HTTPServer::_response(const HTTPRequest& request, Context& ctx)
 HTTPResponse HTTPServer::_static_response(const Context& ctx) const
 {
     // Static page
-    std::ifstream ifs(ctx.path.c_str(), std::ifstream::in);
+    std::ifstream ifs(ctx.getSysPath().c_str(), std::ifstream::in);
     if (!ifs.good())
     {
         // cannot open file
@@ -249,7 +249,7 @@ HTTPResponse HTTPServer::_cgi_response(const std::string& cmd, const HTTPRequest
 // Need to change it and then change it here:
 // ss << "\t\t<p><a href=\"http://" + ctx.client_addr + ":" <<\
 // "8080" << dirName + "/" + dirEntry + "\">" + dirEntry + "</a></p>\n";
-HTTPResponse HTTPServer::_autoindex_response(const Context& ctx, const HTTPRequest& request) const
+HTTPResponse HTTPServer::_autoindex_response(const Context& ctx) const
 {
 	DIR *dpdf;
 	struct dirent *epdf = NULL;
@@ -260,9 +260,7 @@ HTTPResponse HTTPServer::_autoindex_response(const Context& ctx, const HTTPReque
 	// Get all the directories from /www/request.getPath().
 	// Remove ?example=hello if found on getPath()
 	// Remove the "." / "..", put directories in directories, files in files
-	std::string path_treated = request.getPath().substr(0, request.getPath().find("?"));
-	std::string full_path = ctx.root + path_treated;
-	dpdf = opendir(full_path.c_str());
+	dpdf = opendir(ctx.getSysPath().c_str());
 
 	if (dpdf == NULL)
 		return _status_page_response(404, ctx);
@@ -288,16 +286,18 @@ HTTPResponse HTTPServer::_autoindex_response(const Context& ctx, const HTTPReque
 	std::sort(files.begin(),files.end(),compareFunction);
 
     std::stringstream ss;
-    ss << "<html><head><title>Index of " << path_treated << "</title></head><body><h1>Index of " << path_treated << "</h1><hr><pre>";
-    ss << "<a href=\"..\">../</a>\n";
+    ss << "<html>"
+        << "<head><title>Index of " << ctx.endpoint << "</title></head>"
+        << "<body><h1>Index of " << ctx.endpoint << "</h1><hr><pre>"
+        << "<a href=\"..\">../</a>\n";
 
     // Print the directories
 	for (std::vector<std::string>::iterator it = directories.begin(); it != directories.end(); it++)
-    	ss << "<a href=\"http://" << ctx.host_port << path_treated <<  *it << "\">" << *it << "</a>\n";
+    	ss << "<a href=\"http://localhost:" << ctx.server_port << ctx.endpoint << "/" << *it << "\">" << *it << "</a>\n";
 
     // Print the files
 	for (std::vector<std::string>::iterator it = files.begin(); it != files.end(); it++)
-    	ss << "<a href=\"http://" << ctx.host_port << path_treated << *it << "\">" << *it << "</a>\n";
+    	ss << "<a href=\"http://localhost:" << ctx.server_port << ctx.endpoint << "/" << *it << "\">" << *it << "</a>\n";
 
     ss << "</pre><hr></body></html>";
 

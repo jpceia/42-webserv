@@ -6,7 +6,7 @@
 /*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/24 04:13:11 by jpceia            #+#    #+#             */
-/*   Updated: 2022/03/24 04:19:19 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/03/24 07:06:41 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,12 +81,14 @@ HTTPServer::map_str_str HTTPServer::_get_cgi_env(const HTTPRequest& request, con
     
     env["DOCUMENT_ROOT"] = ctx.root;
     env["GATEWAY_INTERFACE"] = "CGI/1.1";
-    env["PATH_INFO"] = ctx.path;
-    env["PATH_TRANSLATED"] = ctx.path;
-    env["SCRIPT_NAME"] = ctx.path;
-    env["SCRIPT_FILENAME"] = ctx.path;
+
+    std::string path = ctx.getSysPath();
+    env["PATH_INFO"] = path;
+    env["PATH_TRANSLATED"] = path;
+    env["SCRIPT_NAME"] = path;
+    env["SCRIPT_FILENAME"] = path;
     env["REDIRECT_STATUS"] = ctx.redirect_path;
-    env["REQUEST_URI"] = ctx.path;
+    env["REQUEST_URI"] = path;
     env["HTTP_X_SECRET_HEADER_FOR_TEST"] = "1";
     env["QUERY_STRING"] = request.getQueryString();
 
@@ -156,31 +158,39 @@ Context HTTPServer::_get_context(const HTTPStatefulConnection *conn) const
     ctx.error_page = location_block.getErrorPage();
     ctx.max_body_size = location_block.getClientMaxBodySize();
     ctx.root = location_block.getRoot();
-    ctx.rel_path = request.getEndpoint().substr(location_block.getLocationPath().size());
-    ctx.base_path = ctx.root + "/" + ctx.rel_path;
+    ctx.endpoint = request.getEndpoint();
+    ctx.location_path = location_block.getLocationPath();
+    if (location_block.getIsRootFromLocationBlock())
+    {
+        ctx.sys_rel_path = ctx.endpoint.substr(ctx.location_path.size());
+        if (ctx.sys_rel_path.empty())
+            ctx.sys_rel_path = "/";
+        else if (ctx.sys_rel_path[0] != '/')
+            ctx.sys_rel_path = "/" + ctx.sys_rel_path;
+    }
+    else
+    {
+        ctx.sys_rel_path = ctx.endpoint;
+    }
     ctx.index = location_block.getIndex();
     ctx.autoindex = location_block.getAutoIndex();
     ctx.allowed_methods = location_block.getMethods();
     ctx.redirect_status = location_block.getRedirectStatus();
     ctx.redirect_path = location_block.getRedirectPath();
-    ctx.cgi = location_block.getCgi();
+    ctx.cgi_bin = location_block.getCgi();
     ctx.upload_path = location_block.getUpload();
     ctx.server_addr = conn->getServerIP();
     ctx.client_addr = conn->getClientIP();
     ctx.server_port = conn->getServerPort();
     ctx.client_port = conn->getClientPort();
     
+    std::string server_name = "";
     if (server_block.getServerName().size() > 0)
-    {
-        ctx.server_name = server_block.getServerName().front();
-        ctx.host_port = ctx.server_name;
-    }
-    else
-    {
-        ctx.server_name = "";
+        server_name = server_block.getServerName().front();
+    if (server_name.empty())
         ctx.host_port = ctx.server_addr;
-    }
-
+    else
+        ctx.server_name = "";
     if (ctx.server_port != 80)
         ctx.host_port += ":" + ft_itos(ctx.server_port);
 

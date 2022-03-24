@@ -27,18 +27,18 @@
 
 struct Context
 {
-    std::string path;
     std::map<int, std::string> error_page;
     unsigned long int max_body_size;
     std::string root;
-    std::string rel_path;
-    std::string base_path;
+    std::string endpoint;
+    std::string location_path;
+    std::string sys_rel_path;
     std::string autoindex;
     std::vector<std::string> index;
     std::set<HTTPMethod> allowed_methods;
     int redirect_status;
     std::string redirect_path;
-    std::map<std::string, std::string> cgi;
+    std::map<std::string, std::string> cgi_bin;
     std::string host_port;
     std::string upload_path;
     std::string server_name;
@@ -46,6 +46,11 @@ struct Context
     std::string client_addr;
     int server_port;
     int client_port;
+
+    std::string getSysPath() const
+    {
+        return this->root + "/" + this->sys_rel_path;
+    }
 };
 
 class HTTPServer : public TCPServer

@@ -6,7 +6,7 @@
 /*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/03 17:30:40 by jceia             #+#    #+#             */
-/*   Updated: 2022/03/24 02:48:10 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/03/24 03:02:40 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,7 @@
 # include "HTTPRequest.hpp"
 # include "HTTPResponse.hpp"
 # include "HTTPConnection.hpp"
+# include "HTTPStatefulConnection.hpp"
 # include "configFile.hpp"
 # include "debug.hpp"
 # include <iostream>
@@ -78,6 +79,7 @@ private:
     // Helpers
     std::string _get_file_extension(const std::string& path) const;
     map_str_str _get_cgi_env(const HTTPRequest& request, const Context& ctx) const;
+    Context _get_context(const HTTPStatefulConnection* conn) const;
 
     configFile _config;
 };

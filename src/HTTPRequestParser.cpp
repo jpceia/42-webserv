@@ -18,8 +18,7 @@ HTTPRequestParser::HTTPRequestParser() :
     HTTPRequest(),
     _state(PARSE_START),
     _buf(""),
-    _content_length(0),
-    _chunked(false)
+    _content_length(0)
 {
 }
 
@@ -27,8 +26,7 @@ HTTPRequestParser::HTTPRequestParser(const HTTPRequestParser& rhs) :
     HTTPRequest(rhs),
     _state(rhs._state),
     _buf(rhs._buf),
-    _content_length(rhs._content_length),
-    _chunked(rhs._chunked)
+    _content_length(rhs._content_length)
 {
 }
 
@@ -44,7 +42,6 @@ HTTPRequestParser& HTTPRequestParser::operator=(const HTTPRequestParser& rhs)
         _state = rhs._state;
         _buf = rhs._buf;
         _content_length = rhs._content_length;
-        _chunked = rhs._chunked;
     }
     return *this;
 }
@@ -139,7 +136,10 @@ ParseState HTTPRequestParser::_parse_headers()
     {
         if (_method == POST || _method == PUT)  // if the methods is POST or PUT
         {                                       // we are now parsing the body
-            _state = _chunked ? PARSE_CHUNK_HEAD : PARSE_BODY;
+            if (this->getHeader("Transfer-Encoding") == "chunked")
+                _state = PARSE_CHUNK_HEAD;
+            else
+                _state = PARSE_BODY;
         }
         else
         {

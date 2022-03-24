@@ -56,7 +56,6 @@ private:
     ParseState _state;
     std::string _buf;
     size_t _content_length;
-    bool _chunked;
 };
 
 #endif

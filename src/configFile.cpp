@@ -6,7 +6,7 @@
 /*   By: tisantos <tisantos@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/19 15:59:45 by tisantos          #+#    #+#             */
-/*   Updated: 2022/03/19 16:49:48 by tisantos         ###   ########.fr       */
+/*   Updated: 2022/03/23 15:37:42 by tisantos         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,6 +72,8 @@ configFile::configFile(char *configuration_file)
 	{
 		configServerBlock server_block_obj(*it);
 		server_block_obj.fillBlocks();
+
+		//server_block_obj.printDirectives();
 
 		_server_blocks_obj.push_back(server_block_obj);
 	}

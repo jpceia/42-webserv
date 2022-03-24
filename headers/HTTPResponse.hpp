@@ -13,23 +13,10 @@
 #ifndef HTTPRESPONSE_HPP
 # define HTTPRESPONSE_HPP
 
+# include "HTTPStatus.hpp"
 # include "HTTPMessage.hpp"
 # include <iostream>
 # include <map>
-
-struct HTTPStatus
-{
-public:
-    HTTPStatus() :
-        code(200),
-        text("OK")
-    {}
-
-    int code;
-    std::string text;
-};
-
-std::ostream &operator<<(std::ostream &out, const HTTPStatus& status);
 
 class HTTPResponse : public HTTPMessage
 {
@@ -41,7 +28,7 @@ public:
     HTTPResponse &operator=(const HTTPResponse &rhs);
 
     // Setters
-    void setStatus(int status_code, const std::string& text);
+    void setStatus(const HTTPStatus& status);
     void setBody(const std::string& body);
     using HTTPMessage::setBody;
 

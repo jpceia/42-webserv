@@ -6,7 +6,7 @@
 /*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/22 15:33:45 by jceia             #+#    #+#             */
-/*   Updated: 2022/03/23 23:52:35 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/03/24 00:29:51 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,10 +44,9 @@ HTTPResponse& HTTPResponse::operator=(const HTTPResponse &rhs)
 //                                   Setters
 // -----------------------------------------------------------------------------
 
-void HTTPResponse::setStatus(int status_code, const std::string& text)
+void HTTPResponse::setStatus(const HTTPStatus& status)
 {
-    _status.code = status_code;
-    _status.text = text;
+    _status = status;
 }
 
 void HTTPResponse::setBody(const std::string& body)
@@ -74,18 +73,12 @@ void HTTPResponse::clear()
 
 void HTTPResponse::printStart() const
 {
-    std::cout << _version << " " << _status.code << " " << _status.text << std::endl;
+    std::cout << _version << " " << _status << std::endl;
 }
 
 // -----------------------------------------------------------------------------
 //                                IO operators
 // -----------------------------------------------------------------------------
-
-std::ostream &operator<<(std::ostream &out, const HTTPStatus& status)
-{
-    out << status.code << " " << status.text;
-    return out;
-}
 
 std::ostream &operator<<(std::ostream &out, const HTTPResponse &response)
 {

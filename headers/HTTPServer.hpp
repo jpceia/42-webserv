@@ -6,7 +6,7 @@
 /*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/03 17:30:40 by jceia             #+#    #+#             */
-/*   Updated: 2022/03/22 19:04:46 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/03/24 00:42:05 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,12 +62,10 @@ private:
     HTTPResponse _response(const HTTPRequest& request, Context& ctx);
     HTTPResponse _cgi_response(const std::string& cmd, const HTTPRequest& request, const Context& ctx);
     //HTTPResponse _static_response(const HTTPRequest& request, const Context& ctx);
-    //HTTPResponse _redirect_response(const HTTPRequest& request, const Context& ctx) const;
-    //HTTPResponse _upload_response(const HTTPRequest& request, const Context& ctx);
     HTTPResponse _autoindex_response(const Context& ctx, const HTTPRequest& request) const;
     HTTPResponse _upload_response(const HTTPRequest& request, const Context& ctx) const;
     HTTPResponse _redirect_response(const Context& ctx) const;
-    HTTPResponse _error_page_response(int code, const std::string& msg, const Context& ctx) const;
+    HTTPResponse _error_page_response(const HTTPStatus& status, const Context& ctx) const;
 
     configFile _config;
 };

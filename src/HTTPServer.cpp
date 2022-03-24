@@ -6,7 +6,7 @@
 /*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/03 17:30:40 by jceia             #+#    #+#             */
-/*   Updated: 2022/03/23 03:06:45 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/03/24 00:36:35 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -144,11 +144,11 @@ HTTPResponse HTTPServer::_response(const HTTPRequest& request, Context& ctx)
 {
     // checking if the method is allowed
     if (ctx.allowed_methods.find(request.getMethod()) == ctx.allowed_methods.end())
-        return _error_page_response(405, "Method not allowed", ctx);
+        return _error_page_response(405, ctx);
 
     // checking the body size
     if (request.getBody().size() > (size_t)ctx.max_body_size)
-        return _error_page_response(413, "Request Entity Too Large", ctx);
+        return _error_page_response(413, ctx);
 
     // checking if it is a redirection
     if (!ctx.redirect_path.empty())
@@ -179,11 +179,11 @@ HTTPResponse HTTPServer::_response(const HTTPRequest& request, Context& ctx)
             if (ctx.autoindex == "on")
                 return _autoindex_response(ctx, request);
             else
-                return _error_page_response(404, "Not found", ctx);
+                return _error_page_response(404, ctx);
         }
     }
     else if (!is_readable_file(ctx.path))
-        return _error_page_response(404, "Not found", ctx);
+        return _error_page_response(404, ctx);
 
     // CGI
     std::string extension = ctx.path.substr(ctx.path.find_last_of(".") + 1);
@@ -196,7 +196,7 @@ HTTPResponse HTTPServer::_response(const HTTPRequest& request, Context& ctx)
     if (!ifs.good())
     {
         // cannot open file
-        return _error_page_response(500, "Internal Server Error", ctx);
+        return _error_page_response(500, ctx);
     }
 
     std::cout << "path is " << ctx.path << std::endl;
@@ -296,7 +296,6 @@ HTTPResponse HTTPServer::_cgi_response(const std::string& cmd, const HTTPRequest
     ss >> dynamic_cast<HTTPMessage&>(response);
 
     // https://www.php.net/manual/en/function.http-response-code.php
-    
     std::string status = response.getHeader("Status");
     if (!status.empty())
     {
@@ -304,11 +303,10 @@ HTTPResponse HTTPServer::_cgi_response(const std::string& cmd, const HTTPRequest
         if (pos != std::string::npos)
         {
             std::string code = status.substr(0, pos);
-            response.setStatus(ft_stoi(code), status.substr(pos + 1));
+            response.setStatus(ft_stoi(code)); // Ignore the message
         }
         response.removeHeader("Status");
     }
-    
     return response;
 }
 
@@ -332,9 +330,7 @@ HTTPResponse HTTPServer::_autoindex_response(const Context& ctx, const HTTPReque
 	dpdf = opendir(full_path.c_str());
 
 	if (dpdf == NULL)
-	{
-		return _error_page_response(404, "Not found", ctx);
-	}
+		return _error_page_response(404, ctx);
 	do {
 		epdf = readdir(dpdf);
 		if (epdf != NULL)
@@ -382,39 +378,8 @@ HTTPResponse HTTPServer::_autoindex_response(const Context& ctx, const HTTPReque
 HTTPResponse HTTPServer::_redirect_response(const Context& ctx) const
 {
     HTTPResponse response;
-
-    std::string text;
     response.setHeader("Location", ctx.redirect_path);
-    switch (ctx.redirect_status)
-    {
-    case 300:
-        text = "Multiple Choices";
-        break ;
-    case 301:
-        text = "Moved Permanently";
-        break ;
-    case 302:
-        text = "Found";
-        break ;
-    case 303:
-        text = "See Other";
-        break ;
-    case 304:
-        text = "Not Modified";
-        break ;
-    case 305:
-        text = "Use Proxy";
-        break ;
-    case 307:
-        text = "Temporary Redirect";
-        break ;
-    case 308:
-        text = "Permanent Redirect";
-        break ;
-    default:
-        break;
-    }
-    response.setStatus(ctx.redirect_status, text);
+    response.setStatus(ctx.redirect_status);
     return response;
 }
 
@@ -426,7 +391,7 @@ HTTPResponse HTTPServer::_upload_response(const HTTPRequest& request, const Cont
     HTTPMethod method = request.getMethod();
     if (method != POST && method != PUT)
     {
-        response.setStatus(405, "Method Not Allowed");
+        response.setStatus(405);
         return response;
     }
     std::string path = ctx.upload_path + ctx.rel_path;
@@ -436,7 +401,7 @@ HTTPResponse HTTPServer::_upload_response(const HTTPRequest& request, const Cont
     if (!ofs.good())
     {
         // cannot open file
-        response.setStatus(500, "Internal Server Error");
+        response.setStatus(500);
         return response;
     }
     std::string body = request.getBody();
@@ -447,13 +412,13 @@ HTTPResponse HTTPServer::_upload_response(const HTTPRequest& request, const Cont
     return response;
 }
 
-HTTPResponse HTTPServer::_error_page_response(int code, const std::string& msg, const Context& ctx) const
+HTTPResponse HTTPServer::_error_page_response(const HTTPStatus& status, const Context& ctx) const
 {
     HTTPResponse response;
     response.setHeader("Content-Type", "text/html");
-    response.setStatus(code, msg);
+    response.setStatus(status);
 
-    std::map<int, std::string>::const_iterator it = ctx.error_page.find(code);
+    std::map<int, std::string>::const_iterator it = ctx.error_page.find(status.getCode());
     if (it != ctx.error_page.end())
     {
         std::ifstream ifs(it->second.c_str(), std::ifstream::in);
@@ -467,7 +432,7 @@ HTTPResponse HTTPServer::_error_page_response(int code, const std::string& msg, 
 
     // Backup
     std::stringstream ss;
-    ss << "<h1>" << code << " " << msg << "</h1>";
+    ss << "<h1>" << status << "</h1>";
     response.setBody(ss.str());
     return response;
 }

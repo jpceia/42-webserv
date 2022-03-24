@@ -6,7 +6,7 @@
 /*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/03 17:30:40 by jceia             #+#    #+#             */
-/*   Updated: 2022/03/24 03:09:28 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/03/24 03:28:36 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -103,6 +103,9 @@ void HTTPServer::_handle_client_recv(TCPConnection* connection, short& event)
 
         // build the response
         HTTPResponse response = _response(conn->getRequest(), ctx);
+
+        if (request.getHeader("Connection") == "keep-alive")
+            response.setHeader("Connection", "keep-alive");
 
         #ifdef DEBUG
         std::cout << "Response: " << std::endl;

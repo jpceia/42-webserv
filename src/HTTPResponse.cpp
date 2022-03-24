@@ -6,7 +6,7 @@
 /*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/22 15:33:45 by jceia             #+#    #+#             */
-/*   Updated: 2022/03/24 00:29:51 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/03/24 03:34:27 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,7 @@ HTTPResponse::HTTPResponse() :
     HTTPMessage(),
     _status()
 {
+    this->setHeader("Server", "webserv/1.0");
 }
 
 HTTPResponse::HTTPResponse(const HTTPResponse& rhs) :
@@ -64,6 +65,7 @@ void HTTPResponse::setBody(const std::string& body)
 void HTTPResponse::clear()
 {
     HTTPMessage::clear();
+    this->setHeader("Server", "webserv/1.0");
     _status = HTTPStatus();
 }
 

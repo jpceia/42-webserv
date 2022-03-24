@@ -6,7 +6,7 @@
 /*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/23 02:51:42 by jpceia            #+#    #+#             */
-/*   Updated: 2022/03/22 19:03:58 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/03/23 23:44:40 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,9 +65,6 @@ void TCPServer::run()
     {
         while (true)
         {
-            #ifdef DEBUG
-            std::cout << "Waiting on poll()..." << std::endl;
-            #endif
             int poll_ret = poll(&_fds[0], _fds.size(), _timeout);
             if (poll_ret < 0)
                 throw std::runtime_error("Pool exception");
@@ -88,6 +85,9 @@ void TCPServer::run()
 
 void TCPServer::_close_connection(TCPConnection* connection)
 {
+    #ifdef DEBUG
+    std::cout << "Closing connection... " << connection->getSock() << std::endl;
+    #endif
     _close_fd(connection->getSock());
     _connections.erase(connection);
     delete connection;
@@ -102,10 +102,6 @@ void TCPServer::_close_listener(TCPListener* listener)
 
 void TCPServer::_handle_revent(int fd, short &events, short revents)
 {
-    #ifdef DEBUG
-    std::cout << "Handling revents for fd " << fd << std::endl;
-    #endif
-
     listeners_t::const_iterator it = _find_listener(fd);
     if (it != _listeners.end()) // the fd is from a listener
         _handle_listener_revent(*it, revents);
@@ -135,9 +131,6 @@ void TCPServer::_handle_listener_revent(TCPListener* listener, short revents)
 {
     if (revents & POLLIN)
     {
-        #ifdef DEBUG
-        std::cout << "POLLIN" << std::endl;
-        #endif
         TCPConnection* connection = listener->accept();
         _fds.push_back(create_pollfd(connection->getSock(), POLLIN));
         _connections.insert(connection);
@@ -163,16 +156,10 @@ void TCPServer::_handle_connection_revent(TCPConnection* connection, short& even
 {
     if (revents & POLLIN)
     {
-        #ifdef DEBUG
-        std::cout << "POLLIN" << std::endl;
-        #endif
         _handle_client_recv(connection, events);
     }
     else if (revents & POLLOUT)
     {
-        #ifdef DEBUG
-        std::cout << "POLLOUT" << std::endl;
-        #endif
         _handle_client_send(connection, events);
     }
     else if (revents & POLLHUP)

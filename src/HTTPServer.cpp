@@ -166,12 +166,12 @@ HTTPResponse HTTPServer::_response(const HTTPRequest& request, Context& ctx)
     ctx.path = ctx.base_path;
     if (is_dir(ctx.path))
     {
-        std::cout << "path is a directory" << std::endl;
+        // std::cout << "path is a directory" << std::endl;
         bool found = false;
         for (std::vector<std::string>::const_iterator it = ctx.index.begin();
             it != ctx.index.end(); ++it)
         {
-            std::cout << "path: " << ctx.base_path << "\t index:" << *it << std::endl;
+            // std::cout << "path: " << ctx.base_path << "\t index:" << *it << std::endl;
             if (is_readable_file(ctx.path + "/" + *it))
             {
                 ctx.path = ctx.base_path + "/" +  *it;
@@ -204,7 +204,7 @@ HTTPResponse HTTPServer::_response(const HTTPRequest& request, Context& ctx)
         return _error_page_response(500, ctx);
     }
 
-    std::cout << "path is " << ctx.path << std::endl;
+    // std::cout << "path is " << ctx.path << std::endl;
 
     HTTPResponse response;
     response.setHeader("Content-Type", "text/html");

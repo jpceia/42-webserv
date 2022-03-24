@@ -6,7 +6,7 @@
 /*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/03 17:30:40 by jceia             #+#    #+#             */
-/*   Updated: 2022/03/24 02:36:52 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/03/24 02:48:10 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,7 +73,7 @@ private:
     HTTPResponse _upload_response(const HTTPRequest& request, const Context& ctx) const;
     HTTPResponse _delete_response(const Context& ctx) const;
     HTTPResponse _redirect_response(const Context& ctx) const;
-    HTTPResponse _error_page_response(const HTTPStatus& status, const Context& ctx) const;
+    HTTPResponse _status_page_response(const HTTPStatus& status, const Context& ctx) const;
 
     // Helpers
     std::string _get_file_extension(const std::string& path) const;

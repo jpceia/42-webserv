@@ -6,7 +6,7 @@
 /*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/22 15:40:09 by jceia             #+#    #+#             */
-/*   Updated: 2022/03/23 00:52:47 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/03/24 00:30:00 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@ class HTTPResponse : public HTTPMessage
 public:
     HTTPResponse();
     HTTPResponse(const HTTPResponse& rhs);
-    ~HTTPResponse();
+    virtual ~HTTPResponse();
     HTTPResponse &operator=(const HTTPResponse &rhs);
 
     // Setters

@@ -354,20 +354,20 @@ HTTPResponse HTTPServer::_autoindex_response(const Context& ctx, const HTTPReque
 
 	if (dpdf == NULL)
 		return _error_page_response(404, ctx);
-	do {
+    
+    while (true)
+    {
 		epdf = readdir(dpdf);
-		if (epdf != NULL)
-		{
-            std::string name = epdf->d_name;
-			if (name != "." && name != "..")
-			{
-				if (epdf->d_type != DT_DIR)	// If not a folder
-					files.push_back(name);
-				else
-					directories.push_back(name + "/");
-			}
-		}
-	} while(epdf != NULL);
+        if (epdf == NULL)
+            break ;
+        std::string name = epdf->d_name;
+        if (name == "." || name == "..")
+            continue ;
+        if (epdf->d_type != DT_DIR)	// If not a folder
+            files.push_back(name);
+        else
+            directories.push_back(name + "/");
+	}
 
 	closedir(dpdf);
 

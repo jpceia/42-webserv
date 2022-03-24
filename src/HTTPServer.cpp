@@ -6,7 +6,7 @@
 /*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/03 17:30:40 by jceia             #+#    #+#             */
-/*   Updated: 2022/03/24 00:36:35 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/03/24 00:58:09 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -248,34 +248,6 @@ HTTPResponse HTTPServer::_cgi_response(const std::string& cmd, const HTTPRequest
     env["CONTENT_TYPE"] = request.getHeader("Content-Type");
     env["DOCUMENT_ROOT"] = ctx.root;
     env["GATEWAY_INTERFACE"] = "CGI/1.1";
-
-    /*
-    In case you still have this issue : Had same issue because we were using
-    absolute path, but they want the target with locations substituted
-        ex :
-        PATH_INFO=/YoupieBanane/youpi.bla
-        for http://host:port/directory/youpi.bla (in tester)
-
-    After searching and suffering a lot,
-    I managed to find what could make the 42 cgi tester happy :
-        * REQUEST_URI should be set to "/directory/youpi.bla".
-          This variable is of course undocumented in the RFC.
-        * SCRIPT_NAME should be set to "/directory/youpi.bla".
-          Of course, this is not the behavior described in the RFC.
-
-    The PATH_INFO variable specifies a path to be interpreted by the CGI
-    script.  It identifies the resource or sub-resource to be returned by
-    the CGI script, and is derived from the portion of the URI path
-    hierarchy following the part that identifies the script itself.
-    Unlike a URI path, the PATH_INFO is not URL-encoded, and cannot
-    contain path-segment parameters.  A PATH_INFO of "/" represents a
-    single void path segment.
-
-    PATH_INFO=/directory/youpi.bla
-    PATH_TRANSLATED=<server_root>/YoupiBanane/
-    SCRIPT_NAME=/directory/youpi.bla
-    SCRIPT_FILENAME=<server_root>/YoupiBanane/youpi.bla
-    */
     env["PATH_INFO"] = ctx.path;
     env["PATH_TRANSLATED"] = ctx.path;
     env["SCRIPT_NAME"] = ctx.path;
@@ -290,6 +262,7 @@ HTTPResponse HTTPServer::_cgi_response(const std::string& cmd, const HTTPRequest
     env["REQUEST_URI"] = ctx.path;
 
     env["HTTP_X_SECRET_HEADER_FOR_TEST"] = "1";
+    env["X_SECRET_HEADER_FOR_TEST"] = "1";
 
     // HTTP info
     env["HTTP_ACCEPT"] = request.getHeader("Accept");

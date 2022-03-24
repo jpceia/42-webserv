@@ -233,7 +233,7 @@ void TCPServer::_close_fd(int fd)
         throw std::runtime_error(ss.str());
     }
     close(it->fd);
-    _fds.erase(it);
-    // *it = _fds.back();
-    //_fds.pop_back();
+    //_fds.erase(it);
+    *it = _fds.back();
+    _fds.pop_back();
 }

@@ -6,7 +6,7 @@
 /*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/03 17:30:40 by jceia             #+#    #+#             */
-/*   Updated: 2022/03/24 01:28:31 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/03/24 02:39:01 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -269,15 +269,61 @@ HTTPResponse HTTPServer::_cgi_response(const std::string& cmd, const HTTPRequest
 }
 
 HTTPServer::map_str_str HTTPServer::_get_cgi_env(const HTTPRequest& request, const Context& ctx) const
-{
+{   
+    // http://www.wijata.com/cgi/cgispec.html#4.0
+    
     map_str_str env;
 
-    env["SERVER_NAME"] = ctx.server_name;
-    env["SERVER_PROTOCOL"] = request.getVersion();
-    env["SERVER_SOFTWARE"] = "webserv";
-    env["AUTH_TYPE"] = "";
-    env["CONTENT_LENGTH"] = ft_itos(request.getBody().size());
+    /*
+    This variable is specific to requests made via the HTTP scheme.
+
+    If the script-URI required access authentication for external access,
+    then the server SHOULD set the value of this variable from the
+    'auth-scheme' token in the request's "Authorization" header field.,
+    otherwise it is set to NULL.
+
+        AUTH_TYPE   = "" | auth-scheme
+        auth-scheme = "Basic" | token
+
+    Servers SHOULD provide this meta-variable to scripts if the request header
+    included an "Authorization" field.
+
+    https://developer.mozilla.org/en-US/docs/Web/HTTP/Authentication
+    */
+    std::string auth = request.getHeader("Authorization");
+    if (!auth.empty())
+    {
+        std::stringstream ss (auth);
+        std::string auth_scheme;
+        ss >> auth_scheme;
+        env["AUTH_TYPE"] = auth_scheme;
+    }
+
+    /*
+    This meta-variable is set to the size of the content-body entity attached
+    to the request, if any, in decimal number of octets. If no data are attached,
+    then this meta-variable is either NULL or not defined.
+    The syntax is the same as for the HTTP "Content-Length" header field
+    (section 14.14, HTTP/1.1 specification [8]).
+
+        CONTENT_LENGTH = "" | 1*digit
+  
+    Servers MUST provide this meta-variable to scripts if the request was
+    accompanied by a content-body entity.
+    */
+    size_t content_length = request.getBody().size();
+    if (content_length > 0)
+        env["CONTENT_LENGTH"] = ft_itos(content_length);
+    else
+        env["CONTENT_LENGTH"] = "";
+    
+    /*
+    If the request includes a content-body, CONTENT_TYPE is set to the Internet
+    Media Type [9] of the attached entity if the type was provided via a
+    "Content-type" field in the request header
+    */
     env["CONTENT_TYPE"] = request.getHeader("Content-Type");
+    
     env["DOCUMENT_ROOT"] = ctx.root;
     env["GATEWAY_INTERFACE"] = "CGI/1.1";
     env["PATH_INFO"] = ctx.path;
@@ -285,26 +331,25 @@ HTTPServer::map_str_str HTTPServer::_get_cgi_env(const HTTPRequest& request, con
     env["SCRIPT_NAME"] = ctx.path;
     env["SCRIPT_FILENAME"] = ctx.path;
     env["REDIRECT_STATUS"] = ctx.redirect_path;
-
-    std::cout << "PATH_INFO: " << env["PATH_INFO"] << std::endl;
-    std::cout << "PATH_TRANSLATED: " << env["PATH_TRANSLATED"] << std::endl;
-    std::cout << "SCRIPT_NAME: " << env["SCRIPT_NAME"] << std::endl;
-    std::cout << "SCRIPT_FILENAME: " << env["SCRIPT_FILENAME"] << std::endl;
-
     env["REQUEST_URI"] = ctx.path;
-
     env["HTTP_X_SECRET_HEADER_FOR_TEST"] = "1";
-    env["X_SECRET_HEADER_FOR_TEST"] = "1";
+    env["QUERY_STRING"] = request.getQueryString();
 
     // HTTP info
     env["HTTP_ACCEPT"] = request.getHeader("Accept");
+    env["HTTP_ACCEPT_CHARSET"] = request.getHeader("Accept-Charset");
     env["HTTP_ACCEPT_ENCODING"] = request.getHeader("Accept-Encoding");
     env["HTTP_ACCEPT_LANGUAGE"] = request.getHeader("Accept-Language");
-    env["HTTP_CONNECTION"] = request.getHeader("Connection");
-    env["HTTP_HOST"] = ctx.server_name;
+    env["HTTP_FORWARDED"] = request.getHeader("Forwarded");
+    env["HTTP_PROXY_AUTHORIZATION"] = request.getHeader("Proxy-Authorization");
     env["HTTP_USER_AGENT"] = request.getHeader("User-Agent");
+    env["HTTP_CONNECTION"] = request.getHeader("Connection");
     env["HTTP_COOKIE"] = request.getHeader("Cookie");
-    env["QUERY_STRING"] = request.getQueryString();
+
+    std::string host = request.getHeader("Hostname");
+    if (host.empty())
+        host = ctx.server_addr;
+    env["HTTP_HOST"] = host;
 
     {
         std::stringstream ss;
@@ -312,10 +357,31 @@ HTTPServer::map_str_str HTTPServer::_get_cgi_env(const HTTPRequest& request, con
         env["REQUEST_METHOD"] = ss.str();
     }
 
-    env["SERVER_ADDR"] = ctx.server_addr;
-    env["REMOTE_ADDR"] = ctx.client_addr;
+    /*
+    The SERVER_PORT meta-variable is set to the port on which thise request was
+    received, as used in the <port> part of the script-URI.
+        SERVER_PORT = 1*digit
+    
+    If the <port> portion of the script-URI is blank, the actual port number upon
+    which the request was received MUST be supplied.
 
+    Servers MUST provide this meta-variable to scripts.
+    */
+    env["SERVER_ADDR"] = ctx.server_addr +  ft_itos(ctx.server_port);
     env["SERVER_PORT"] = ft_itos(ctx.server_port);
+    env["SERVER_PROTOCOL"] = request.getVersion();
+    env["SERVER_SOFTWARE"] = "webserv/1.0";
+    if (ctx.server_name.empty())
+        env["SERVER_NAME"] = env["SERVER_ADDR"] + ":" + env["SERVER_PORT"];
+    else
+        env["SERVER_NAME"] = ctx.server_name;
+    
+    /*
+    The IP address of the agent sending the request to the server.
+    This is not necessarily that of the client (such as if the request came
+    through a proxy).
+    */
+    env["REMOTE_ADDR"] = ctx.client_addr;
     env["REMOTE_PORT"] = ft_itos(ctx.client_port);
 
     return env;

@@ -34,8 +34,20 @@ HTTPServer::HTTPServer(configFile config, int timeout) :
 {
 }
 
+HTTPServer::HTTPServer(const HTTPServer& rhs) :
+    TCPServer(),
+    _config(rhs._config)
+{
+}
+
 HTTPServer::~HTTPServer()
 {
+}
+
+HTTPServer& HTTPServer::operator=(const HTTPServer &rhs)
+{
+    (void)rhs;
+    return *this;
 }
 
 void HTTPServer::init()

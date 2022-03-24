@@ -59,6 +59,10 @@ protected:
     void _handle_client_send(TCPConnection* connection, short& event);
 
 private:
+    // Non-copyable
+    HTTPServer(const HTTPServer& rhs);
+    HTTPServer &operator=(const HTTPServer& rhs);
+
     HTTPResponse _response(const HTTPRequest& request, Context& ctx);
     HTTPResponse _cgi_response(const std::string& cmd, const HTTPRequest& request, const Context& ctx);
     //HTTPResponse _static_response(const HTTPRequest& request, const Context& ctx);

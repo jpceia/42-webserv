@@ -6,7 +6,7 @@
 /*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/20 00:50:16 by jpceia            #+#    #+#             */
-/*   Updated: 2022/03/23 23:55:30 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/03/24 02:17:06 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,7 +55,7 @@ std::string HTTPMessage::getVersion() const
     return _version;
 }
 
-std::map<std::string, std::string> HTTPMessage::getHeaders() const
+HeaderMap HTTPMessage::getHeaders() const
 {
     return _headers;
 }
@@ -145,7 +145,7 @@ void HTTPMessage::printStart() const
 
 void HTTPMessage::printHeaders() const
 {
-    for (std::map<std::string, std::string>::const_iterator it = _headers.begin();
+    for (HeaderMap::const_iterator it = _headers.begin();
         it != _headers.end(); it++)
         std::cout << it->first << ": " << it->second << std::endl;
 }

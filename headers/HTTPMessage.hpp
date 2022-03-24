@@ -6,7 +6,7 @@
 /*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/20 00:41:19 by jpceia            #+#    #+#             */
-/*   Updated: 2022/03/23 23:54:51 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/03/24 02:16:29 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,34 @@
 # include <iostream>
 # include <map>
 
+/************************************************************************/
+/* Comparator for case-insensitive comparison in STL assos. containers  */
+/************************************************************************/
+
+// https://stackoverflow.com/questions/1801892/how-can-i-make-the-mapfind-operation-case-insensitive
+struct ci_less : std::binary_function<std::string, std::string, bool>
+{
+    // case-independent (ci) compare_less binary function
+    struct nocase_compare : public std::binary_function<unsigned char,unsigned char,bool> 
+    {
+        bool operator() (const unsigned char& c1, const unsigned char& c2) const
+        {
+            return tolower (c1) < tolower (c2); 
+        }
+    };
+
+    bool operator() (const std::string & s1, const std::string & s2) const
+    {
+        return std::lexicographical_compare 
+        (s1.begin (), s1.end (),   // source range
+        s2.begin (), s2.end (),   // dest range
+        nocase_compare ());  // comparison
+    }
+};
+
 // https://developer.mozilla.org/en-US/docs/Web/HTTP/Messages
+
+typedef std::map<std::string, std::string, ci_less> HeaderMap;
 
 class HTTPMessage
 {
@@ -28,7 +55,7 @@ public:
 
     // Getters
     std::string getVersion() const;
-    std::map<std::string, std::string> getHeaders() const;
+    HeaderMap getHeaders() const;
     std::string getHeader(const std::string& key) const;
     std::string getBody() const;
 
@@ -67,7 +94,7 @@ protected:
     // private attributes
     std::string _version;
     std::string _body;
-    std::map<std::string, std::string> _headers;
+    HeaderMap _headers;
 };
 
 // Helpers

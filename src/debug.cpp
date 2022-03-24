@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   debug.cpp                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tisantos <tisantos@student.42.fr>          +#+  +:+       +#+        */
+/*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/19 16:00:08 by tisantos          #+#    #+#             */
-/*   Updated: 2022/03/19 16:28:45 by tisantos         ###   ########.fr       */
+/*   Updated: 2022/03/24 02:19:43 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,12 +57,9 @@ void debug_request(const HTTPRequest& request)
 	std::cout << "PATH = " << request.getPath() << std::endl;
 	std::cout << "VERSION = " << request.getVersion() << std::endl;
 
-	std::map<std::string, std::string> headers = request.getHeaders();
-	std::map<std::string, std::string>::const_iterator it = headers.begin();
-	for (; it != headers.end(); it++)
-	{
+	HeaderMap headers = request.getHeaders();
+	for (HeaderMap::const_iterator it = headers.begin(); it != headers.end(); ++it)
 		std::cout << "HEADERS = " << it->first << " " << it->second << std::endl;
-	}
 	std::cout << "QUERY_STRING = " << request.getQueryString() << std::endl;
 	std::cout << "END_POINT = " << request.getEndpoint() << std::endl;
 	std::cout << "BODY = " << request.getBody() << std::endl;

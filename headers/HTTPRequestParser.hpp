@@ -33,11 +33,17 @@ public:
     virtual ~HTTPRequestParser();
     HTTPRequestParser& operator=(const HTTPRequestParser& rhs);
 
+    // Getters
     ParseState getState() const;
 
-    ParseState parse(const std::string& s = "");
+    // Setters
     void setHeader(const std::string& key, const std::string& value);
+
+    // Clear
     void clear();
+
+    // Parsers
+    ParseState parse(const std::string& s = "");
 
 private:
     ParseState _parse_start();

@@ -49,10 +49,41 @@ HTTPRequestParser& HTTPRequestParser::operator=(const HTTPRequestParser& rhs)
     return *this;
 }
 
+// -----------------------------------------------------------------------------
+//                                  Getters
+// -----------------------------------------------------------------------------
+
 ParseState HTTPRequestParser::getState() const
 {
     return _state;
 }
+
+// -----------------------------------------------------------------------------
+//                                  Setters
+// -----------------------------------------------------------------------------
+
+void HTTPRequestParser::setHeader(const std::string& key, const std::string& value)
+{
+    HTTPMessage::setHeader(key, value);
+    if (key == "Content-Length")
+        _content_length = ft_stoi(value);
+}
+
+// -----------------------------------------------------------------------------
+//                                  Cleaners
+// -----------------------------------------------------------------------------
+
+void HTTPRequestParser::clear()
+{
+    HTTPRequest::clear();
+    _state = PARSE_START;
+    _buf.clear();
+    _content_length = 0;
+}
+
+// -----------------------------------------------------------------------------
+//                                   Parsers
+// -----------------------------------------------------------------------------
 
 ParseState HTTPRequestParser::parse(const std::string& s)
 {
@@ -200,34 +231,4 @@ ParseState HTTPRequestParser::_parse_chunk_tail()
     else
         _state = PARSE_CHUNK_HEAD; // fetch the next chunk
     return this->parse();
-}
-
-void HTTPRequestParser::setHeader(const std::string& key, const std::string& value)
-{
-    HTTPMessage::setHeader(key, value);
-    if (key == "Content-Length")
-    {
-        _content_length = ft_stoi(value);
-        _chunked = false;
-    }
-    else if (key == "Transfer-Encoding")
-    {
-        if (value == "chunked")
-        {
-            _chunked = true;
-
-            // 'Transfer-Encoding: chunked' and 'Content-Length'
-            // are not compatible
-            if (_content_length > 0)
-                throw HTTPMessage::ParseException();
-        }
-    }
-}
-
-void HTTPRequestParser::clear()
-{
-    _state = PARSE_START;
-    _buf.clear();
-    _content_length = 0;
-    _chunked = false;
 }

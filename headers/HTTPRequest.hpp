@@ -6,7 +6,7 @@
 /*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/22 13:00:01 by jceia             #+#    #+#             */
-/*   Updated: 2022/03/23 00:52:34 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/03/23 23:54:24 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,18 +26,25 @@ public:
     virtual ~HTTPRequest();
     HTTPRequest &operator=(const HTTPRequest &rhs);
 
-    friend std::istream &operator>>(std::istream &is, HTTPRequest &request);
-    friend std::ostream &operator<<(std::ostream &out, const HTTPRequest &request);
-
+    // Getters
     std::string getPath() const;
     HTTPMethod getMethod() const;
     std::string getQueryString() const;
     std::string getEndpoint() const;
 
+    // Setters
     void setPath(const std::string& path);
     void setMethod(const std::string& method);
 
+    // Clear
+    virtual void clear();
+
+    // Helpers
     void printStart() const;
+
+    // IO operators
+    friend std::istream &operator>>(std::istream &is, HTTPRequest &request);
+    friend std::ostream &operator<<(std::ostream &out, const HTTPRequest &request);
     
 protected:
     HTTPMethod _method;

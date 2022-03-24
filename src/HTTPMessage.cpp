@@ -6,7 +6,7 @@
 /*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/20 00:50:16 by jpceia            #+#    #+#             */
-/*   Updated: 2022/03/23 03:55:10 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/03/23 23:55:30 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -124,6 +124,17 @@ void HTTPMessage::removeHeader(const std::string& key)
 }
 
 // -----------------------------------------------------------------------------
+//                                 Cleaners
+// -----------------------------------------------------------------------------
+
+void HTTPMessage::clear()
+{
+    _version = "HTTP/1.1";
+    _body.clear();
+    _headers.clear();
+}
+
+// -----------------------------------------------------------------------------
 //                                  Helpers
 // -----------------------------------------------------------------------------
 
@@ -162,11 +173,6 @@ void HTTPMessage::print() const
     std::cout << std::endl;
 }
 
-const char* HTTPMessage::ParseException::what(void) const throw()
-{
-    return "Error parsing HTTP Message";
-}
-
 std::string& _drop_carriage_return(std::string& s, bool raise)
 {
     if (!s.empty())
@@ -183,6 +189,10 @@ std::string& _drop_carriage_return(std::string& s, bool raise)
     }
     return s;
 }
+
+// -----------------------------------------------------------------------------
+//                                IO operators
+// -----------------------------------------------------------------------------
 
 // Parses headers and body
 std::istream &operator>>(std::istream &is, HTTPMessage &msg)
@@ -219,4 +229,13 @@ std::ostream &operator<<(std::ostream &out, const HTTPMessage &msg)
         out << it->first << ": " << it->second << "\r\n";
     out << "\r\n" << msg._body;
     return out;
+}
+
+// -----------------------------------------------------------------------------
+//                             Custom exceptions
+// -----------------------------------------------------------------------------
+
+const char* HTTPMessage::ParseException::what(void) const throw()
+{
+    return "Error parsing HTTP Message";
 }

@@ -6,7 +6,7 @@
 /*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/22 15:33:45 by jceia             #+#    #+#             */
-/*   Updated: 2022/03/23 00:57:20 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/03/23 23:52:35 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,6 +40,10 @@ HTTPResponse& HTTPResponse::operator=(const HTTPResponse &rhs)
     return *this;
 }
 
+// -----------------------------------------------------------------------------
+//                                   Setters
+// -----------------------------------------------------------------------------
+
 void HTTPResponse::setStatus(int status_code, const std::string& text)
 {
     _status.code = status_code;
@@ -54,10 +58,28 @@ void HTTPResponse::setBody(const std::string& body)
     HTTPMessage::setHeader("Content-Length", ft_itos(body.size()));
 }
 
+// -----------------------------------------------------------------------------
+//                                  Cleaners
+// -----------------------------------------------------------------------------
+
+void HTTPResponse::clear()
+{
+    HTTPMessage::clear();
+    _status = HTTPStatus();
+}
+
+// -----------------------------------------------------------------------------
+//                                  Helpers                                     
+// -----------------------------------------------------------------------------
+
 void HTTPResponse::printStart() const
 {
     std::cout << _version << " " << _status.code << " " << _status.text << std::endl;
 }
+
+// -----------------------------------------------------------------------------
+//                                IO operators
+// -----------------------------------------------------------------------------
 
 std::ostream &operator<<(std::ostream &out, const HTTPStatus& status)
 {

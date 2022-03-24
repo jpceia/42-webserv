@@ -6,7 +6,7 @@
 /*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/20 00:41:19 by jpceia            #+#    #+#             */
-/*   Updated: 2022/03/23 03:00:59 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/03/23 23:54:51 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,17 +42,20 @@ public:
     // Remover
     virtual void removeHeader(const std::string& key);
 
+    // Clear
+    virtual void clear();
+
     // Helpers
     virtual void printStart() const;
     virtual void printHeaders() const;
     virtual void printBody() const;
     virtual void print() const;
 
-    // io
+    // IO operators
     friend std::istream &operator>>(std::istream &is, HTTPMessage &msg);
     friend std::ostream &operator<<(std::ostream &out, const HTTPMessage &msg);
 
-    // Exceptions
+    // Custom exceptions
     class ParseException : public std::exception
     {
         public:

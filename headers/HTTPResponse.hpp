@@ -40,13 +40,19 @@ public:
     ~HTTPResponse();
     HTTPResponse &operator=(const HTTPResponse &rhs);
 
-    friend std::ostream &operator<<(std::ostream &out, const HTTPResponse &request);
-
+    // Setters
     void setStatus(int status_code, const std::string& text);
     void setBody(const std::string& body);
     using HTTPMessage::setBody;
 
+    // Clear
+    virtual void clear();
+
+    // Helpers
     void printStart() const;
+
+    // IO operators
+    friend std::ostream &operator<<(std::ostream &out, const HTTPResponse &request);
 
 private:
     HTTPStatus _status;

@@ -6,7 +6,7 @@
 /*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/23 20:06:03 by jpceia            #+#    #+#             */
-/*   Updated: 2022/03/23 01:39:56 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/03/24 01:12:15 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -122,7 +122,7 @@ std::string exec_cmd(
     const std::string &path,
     const std::vector<std::string>& args,
     const std::map<std::string, std::string>& env,
-    std::string& input)
+    const std::string& input)
 {
     std::vector<char *> argv = char_ptr_vector(args);
     std::vector<std::string> aux = map_to_vector(env);

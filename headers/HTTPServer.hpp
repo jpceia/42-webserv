@@ -65,7 +65,7 @@ private:
 
     HTTPResponse _response(const HTTPRequest& request, Context& ctx);
     HTTPResponse _cgi_response(const std::string& cmd, const HTTPRequest& request, const Context& ctx);
-    //HTTPResponse _static_response(const HTTPRequest& request, const Context& ctx);
+    HTTPResponse _static_response(const Context& ctx);
     HTTPResponse _autoindex_response(const Context& ctx, const HTTPRequest& request) const;
     HTTPResponse _upload_response(const HTTPRequest& request, const Context& ctx) const;
     HTTPResponse _redirect_response(const Context& ctx) const;

@@ -6,7 +6,7 @@
 /*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/03 17:30:40 by jceia             #+#    #+#             */
-/*   Updated: 2022/03/24 07:29:06 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/03/24 08:19:51 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -222,7 +222,7 @@ HTTPResponse HTTPServer::_cgi_response(const std::string& cmd, const HTTPRequest
 {
     std::vector<std::string> args;
     args.push_back(cmd);
-    //args.push_back(ctx.path);
+    args.push_back(ctx.sys_rel_path);
 
     map_str_str env = _get_cgi_env(request, ctx);
     std::stringstream ss(exec_cmd(cmd, args, env, request.getBody()));
@@ -230,7 +230,7 @@ HTTPResponse HTTPServer::_cgi_response(const std::string& cmd, const HTTPRequest
     ss >> dynamic_cast<HTTPMessage&>(response);
 
     // https://www.php.net/manual/en/function.http-response-code.php
-    // Get the response code from the header
+    // Get the response status code from the header
     std::string status = response.getHeader("Status");
     if (!status.empty())
     {

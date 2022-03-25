@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   configServerBlock.cpp                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tisantos <tisantos@student.42.fr>          +#+  +:+       +#+        */
+/*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/19 16:00:01 by tisantos          #+#    #+#             */
-/*   Updated: 2022/03/25 17:23:36 by tisantos         ###   ########.fr       */
+/*   Updated: 2022/03/25 18:46:43 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,11 +47,7 @@ configServerBlock& configServerBlock::operator=(const configServerBlock& rhs)
 	_index = rhs._index;
 	_auto_index = rhs._auto_index;
 	_server_block = rhs._server_block;
-	for (int i = 0; i < 100; i++)
-	{
-		_location_blocks[i] = rhs._location_blocks[i];
-	}
-	_location_blocks_count = rhs._location_blocks_count;
+	_location_blocks = rhs._location_blocks;
 
 	return *this;
 }
@@ -68,7 +64,7 @@ void    configServerBlock::fillBlocks(configDefaults default_values)
 	/* And then fill the blocks.			 */
 	/*****************************************/
 	_default_values = default_values;
-	for (int i = 0; i < 100; i++)
+	for (size_t i = 0; i < _location_blocks.size(); i++)
 	{
 		_location_blocks[i].fillDefaultValues(default_values);
 	}
@@ -76,7 +72,6 @@ void    configServerBlock::fillBlocks(configDefaults default_values)
 	std::vector<std::string>::iterator it(_server_block.begin());
 	int		on_server			= 0;
 	int		on_location			= 0;
-	_location_blocks_count		= 0; // How many location blocks are there.
 
 	for (;it != _server_block.end(); it++)
 	{
@@ -101,9 +96,11 @@ void    configServerBlock::fillBlocks(configDefaults default_values)
 				// In case server block has a root, location has to have the
 				// same root in default.
 				if (!_root.empty())
-					_location_blocks[_location_blocks_count]._default_values._root_default = _root;
-
-				_location_blocks_count++;
+				{
+					configLocationBlock location_block;
+					location_block._default_values._root_default = _root;
+					_location_blocks.push_back(location_block);
+				}
 			}
 
 			line += subs;
@@ -152,30 +149,25 @@ void    configServerBlock::fillBlocks(configDefaults default_values)
 	/* there is a '/', if there isn't one, add it     */
 	/* manually. 									  */
 	/**************************************************/
-	if (_location_blocks_count == 0)
+	if (_location_blocks.empty())
 	{
-		_location_blocks[_location_blocks_count].locationDirectiveTreatment("location / {");
-		_location_blocks_count++;
+		configLocationBlock location_block;
+		location_block.locationDirectiveTreatment("location / {");
+		_location_blocks.push_back(location_block);
 	}
 	else
 	{
 		bool	is_default_block_path = false;
-		for (int i = 0; i < _location_blocks_count; i++)
+		for (size_t i = 0; i < _location_blocks.size(); i++)
 		{
 			if (_location_blocks[i]._location_path.front() == "/")
 				is_default_block_path = true;
 		}
 		if (is_default_block_path == false)
 		{
-			for (int i = _location_blocks_count + 1; i > 0; i--)
-			{
-				_location_blocks[i] = _location_blocks[i - 1];
-			}
-
 			configLocationBlock locationTemp;
 			locationTemp.locationDirectiveTreatment("location / {");
-			_location_blocks[0] = locationTemp;
-			_location_blocks_count++;
+			_location_blocks.insert(_location_blocks.begin(), locationTemp);
 		}
 	}
 
@@ -186,7 +178,7 @@ void    configServerBlock::fillBlocks(configDefaults default_values)
 	/* Server Blocks information.					  */
 	/**************************************************/
 	fillDirectivesIfEmpty();
-	for (int i = 0; i < _location_blocks_count; i++)
+	for (size_t i = 0; i < _location_blocks.size(); i++)
 	{
 		_location_blocks[i].fillDirectivesIfEmpty(_client_max_body_size,
 													_root,
@@ -287,7 +279,7 @@ void	configServerBlock::printDirectives()
 	/**********************************/
 	/*			  location            */
 	/**********************************/
-	for (int i = 0; i < _location_blocks_count; i++)
+	for (size_t i = 0; i < _location_blocks.size(); i++)
 	{
 		std::cout << "Location:		";
 		std::cout << "  { " << *_location_blocks[i]._location_path.begin() << " }" << std::endl;
@@ -478,26 +470,29 @@ void	configServerBlock::fillLocationBlock(std::string line)
 		std::string subs;
 		iss >> subs;
 
+		if (_location_blocks.empty())
+			continue ;
+		size_t last_idx = _location_blocks.size() - 1;
 		if (!subs.compare("location"))
-			_location_blocks[_location_blocks_count - 1].locationDirectiveTreatment(line);
+			_location_blocks[last_idx].locationDirectiveTreatment(line);
 		else if (!subs.compare("error_page"))
-			_location_blocks[_location_blocks_count - 1].errorpageDirectiveTreatment(_error_page, line);
+			_location_blocks[last_idx].errorpageDirectiveTreatment(_error_page, line);
 		else if (!subs.compare("client_max_body_size"))
-			_location_blocks[_location_blocks_count - 1].clientmaxbodysizeDirectiveTreatment(line);
+			_location_blocks[last_idx].clientmaxbodysizeDirectiveTreatment(line);
 		else if (!subs.compare("root"))
-			_location_blocks[_location_blocks_count - 1].rootDirectiveTreatment(line);
+			_location_blocks[last_idx].rootDirectiveTreatment(line);
 		else if (!subs.compare("index"))
-			_location_blocks[_location_blocks_count - 1].indexDirectiveTreatment(_index, line);
+			_location_blocks[last_idx].indexDirectiveTreatment(_index, line);
 		else if (!subs.compare("autoindex"))
-			_location_blocks[_location_blocks_count - 1].autoindexDirectiveTreatment(line);
+			_location_blocks[last_idx].autoindexDirectiveTreatment(line);
 		else if (!subs.compare("return"))
-			_location_blocks[_location_blocks_count - 1].returnDirectiveTreatment(line);
+			_location_blocks[last_idx].returnDirectiveTreatment(line);
 		else if (!subs.compare("methods"))
-			_location_blocks[_location_blocks_count - 1].methodsDirectiveTreatment(line);
+			_location_blocks[last_idx].methodsDirectiveTreatment(line);
 		else if (!subs.compare("cgi"))
-			_location_blocks[_location_blocks_count - 1].cgiDirectiveTreatment(line);
+			_location_blocks[last_idx].cgiDirectiveTreatment(line);
 		else if (!subs.compare("upload"))
-			_location_blocks[_location_blocks_count - 1].uploadDirectiveTreatment(line);
+			_location_blocks[last_idx].uploadDirectiveTreatment(line);
 		else if (!subs.compare("}"))
 		{}
 		else
@@ -511,9 +506,9 @@ void	configServerBlock::fillLocationBlock(std::string line)
 }
 void	configServerBlock::checkDuplicatedLocation()
 {
-	for (int i = 0; i < _location_blocks_count; i++)
+	for (size_t i = 0; i < _location_blocks.size(); i++)
 	{
-		for (int x = 0; x < _location_blocks_count; x++)
+		for (size_t x = 0; x < _location_blocks.size(); x++)
 		{
 			if (i != x)
 			{

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   configServerBlock.hpp                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tisantos <tisantos@student.42.fr>          +#+  +:+       +#+        */
+/*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/19 15:59:14 by tisantos          #+#    #+#             */
-/*   Updated: 2022/03/25 17:08:14 by tisantos         ###   ########.fr       */
+/*   Updated: 2022/03/25 18:44:30 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,15 +53,10 @@ class configServerBlock
 		/*****************/
 		/*    Getters    */
 		/*****************/
-		int									getLocationBlocksSize() { return (_location_blocks_count); }
+		size_t								getLocationBlocksSize() { return (_location_blocks.size()); }
 		std::vector<configLocationBlock>	getLocationBlocks()
 		{
-			std::vector<configLocationBlock> send;
-
-			for(int i = 0; i < _location_blocks_count; i++)
-				send.push_back(_location_blocks[i]);
-
-			return (send);
+			return (_location_blocks);
 		}
 		configLocationBlock					getLocationByPath(std::string path)
 		{
@@ -72,7 +67,7 @@ class configServerBlock
 			/* location[1] = /goodbye           */
 			/* location[2] = /goodbye/alo       */
 			/************************************/
-			for (int i = 0; i < _location_blocks_count; i++)
+			for (size_t i = 0; i < _location_blocks.size(); i++)
 			{
 				if (_location_blocks[i].getLocationPath() == path)
 					return _location_blocks[i];
@@ -95,7 +90,7 @@ class configServerBlock
 			std::vector<std::string> location_path;
 			int		count_words = 0;
 			int		location_to_return = 0;
-			for (int i = 0; i < _location_blocks_count; i++)
+			for (size_t i = 0; i < _location_blocks.size(); i++)
 			{
 				int	count_words_temp = 0;
 				location_path = returnSplitedDelimiter(_location_blocks[i].getLocationPath(), "/");
@@ -166,8 +161,7 @@ class configServerBlock
 		std::vector<std::string>	_server_block;	// The server block you receive from
 													// configFile.
 
-		configLocationBlock			_location_blocks[100]; // Location Blocks object treated
-		int							_location_blocks_count; // How many location blocks on
+		std::vector<configLocationBlock> _location_blocks; // Location Blocks object treated
 															// _location_blocks[1000]
 
 		configDefaults				_default_values;		// Default Values

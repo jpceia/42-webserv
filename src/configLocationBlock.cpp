@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   configLocationBlock.cpp                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tisantos <tisantos@student.42.fr>          +#+  +:+       +#+        */
+/*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/19 15:59:55 by tisantos          #+#    #+#             */
-/*   Updated: 2022/03/25 17:08:31 by tisantos         ###   ########.fr       */
+/*   Updated: 2022/03/25 18:39:52 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -220,7 +220,7 @@ void	configLocationBlock::clientmaxbodysizeDirectiveTreatment(std::string line)
 	/***********************************************************/
 	std::stringstream	is(line);
 	std::string			word;
-	char				size_type;
+	char				size_type = '\0';
 	unsigned long int	client_max_body_size = 0;
 	int					number_of_words = 0;
 	while (is >> word)

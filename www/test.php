@@ -24,23 +24,34 @@ foreach ($env_array as $key=>$value)
     echo "$key => $value <br />";
 }
 
+// Get variables
+echo "<h3>GET variables:</h3>";
+echo "<pre>";
+print_r($_GET);
+echo "</pre>";
 echo "<br />";
-echo $_GET;
-echo "<br />";
-foreach ($_GET as $key=>$value)
 
-{
-    echo "$key => $value <br />";
-}
+// Post variables
+echo "<h3>POST variables:</h3>";
+echo "<pre>";
+print_r($_POST);
+echo "</pre>";
 echo "<br />";
-echo $_POST;
-echo "<br />";
-foreach ($_POST as $key=>$value)
 
-{
-    echo "$key => $value <br />";
-}
+// Cookies
+echo "<h3>Cookies:</h3>";
+echo "<pre>";
+print_r($_COOKIE);
+echo "</pre>";
 echo "<br />";
+
+// Session
+echo "<h3>Session:</h3>";
+echo "<pre>";
+print_r($_SESSION);
+echo "</pre>";
+
+
 
 
 ?>

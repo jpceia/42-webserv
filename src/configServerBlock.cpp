@@ -6,7 +6,7 @@
 /*   By: tisantos <tisantos@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/19 16:00:01 by tisantos          #+#    #+#             */
-/*   Updated: 2022/03/25 20:33:34 by tisantos         ###   ########.fr       */
+/*   Updated: 2022/03/25 23:20:49 by tisantos         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -1033,7 +1033,7 @@ void	configServerBlock::fillDirectivesIfEmpty()
 		_root = _default_values._root_default;
 	if (_index.empty())
 	{
-		_index.push_back(_root.front() + _default_values._index_default.front());
+		_index.push_back(_default_values._index_default.front());
 	}
 	if (_auto_index.empty())
 		_auto_index = _default_values._auto_index_default;

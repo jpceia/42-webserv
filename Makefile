@@ -6,7 +6,7 @@
 #    By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/11/04 23:37:29 by jceia             #+#    #+#              #
-#    Updated: 2022/03/19 22:17:52 by jpceia           ###   ########.fr        #
+#    Updated: 2022/03/25 22:44:25 by jpceia           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -27,13 +27,15 @@ OS          = $(shell uname)
 FLAGS_WARN  = -Wall -Werror -Wextra -pedantic-errors
 FLAGS_INC   = -I$(INC_DIR)
 FLAGS_OPT   = -O3
+FLAGS_DEP   = -MD -MF $(OBJ_DIR)/$(NAME).d
+
 ifeq ($(OS), Linux)
-	FLAGS_DEBUG = -ggdb3 -fsanitize=address -DDEBUG -D_GLIBCXX_DEBUG
+	FLAGS_DEBUG = -ggdb3 -DDEBUG -D_GLIBCXX_DEBUG -fsanitize=address
 else
-	FLAGS_DEBUG = -g -fsanitize=address -DDEBUG
+	FLAGS_DEBUG = -g -DDEBUG -fsanitize=address 
 endif
 
-CXXFLAGS    = $(FLAGS_WARN) $(FLAGS_INC) $(FLAGS_OPT) -std=c++98
+CXXFLAGS    = $(FLAGS_WARN) $(FLAGS_INC) $(FLAGS_DEP) $(FLAGS_OPT) -std=c++98
 
 # Compilation
 $(OBJ_DIR)/%.o:    $(SRC_DIR)/%
@@ -57,7 +59,7 @@ fclean: clean
 re: fclean all
 
 # Debug build
-debug:      CXXFLAGS = $(FLAGS_WARN) $(FLAGS_INC) $(FLAGS_DEBUG) -std=c++98
+debug:      CXXFLAGS = $(FLAGS_WARN) $(FLAGS_INC)  $(FLAGS_DEP) $(FLAGS_DEBUG) -std=c++98
 debug:      all
 
 

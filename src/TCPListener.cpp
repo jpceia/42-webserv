@@ -6,7 +6,7 @@
 /*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/23 02:51:42 by jpceia            #+#    #+#             */
-/*   Updated: 2022/03/09 02:20:47 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/03/24 02:01:16 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,6 +76,7 @@ TCPConnectionArgs TCPListener::_accept() const
     args.sock = ::accept(_sock, (struct sockaddr *)&args.client_addr, &cli_len);
     if (args.sock < 0)
         throw TCPListener::AcceptException();
+    args.server_addr = _addr;
     return args;
 }
 

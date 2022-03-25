@@ -6,7 +6,7 @@
 /*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/22 15:33:45 by jceia             #+#    #+#             */
-/*   Updated: 2022/03/20 02:05:22 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/03/24 03:34:27 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,7 @@ HTTPResponse::HTTPResponse() :
     HTTPMessage(),
     _status()
 {
+    this->setHeader("Server", "webserv/1.0");
 }
 
 HTTPResponse::HTTPResponse(const HTTPResponse& rhs) :
@@ -40,10 +41,13 @@ HTTPResponse& HTTPResponse::operator=(const HTTPResponse &rhs)
     return *this;
 }
 
-void HTTPResponse::setStatus(int status_code, const std::string& text)
+// -----------------------------------------------------------------------------
+//                                   Setters
+// -----------------------------------------------------------------------------
+
+void HTTPResponse::setStatus(const HTTPStatus& status)
 {
-    _status.code = status_code;
-    _status.text = text;
+    _status = status;
 }
 
 void HTTPResponse::setBody(const std::string& body)
@@ -54,11 +58,29 @@ void HTTPResponse::setBody(const std::string& body)
     HTTPMessage::setHeader("Content-Length", ft_itos(body.size()));
 }
 
-std::ostream &operator<<(std::ostream &out, const HTTPStatus& status)
+// -----------------------------------------------------------------------------
+//                                  Cleaners
+// -----------------------------------------------------------------------------
+
+void HTTPResponse::clear()
 {
-    out << status.code << " " << status.text;
-    return out;
+    HTTPMessage::clear();
+    this->setHeader("Server", "webserv/1.0");
+    _status = HTTPStatus();
 }
+
+// -----------------------------------------------------------------------------
+//                                  Helpers                                     
+// -----------------------------------------------------------------------------
+
+void HTTPResponse::printStart() const
+{
+    std::cout << _version << " " << _status << std::endl;
+}
+
+// -----------------------------------------------------------------------------
+//                                IO operators
+// -----------------------------------------------------------------------------
 
 std::ostream &operator<<(std::ostream &out, const HTTPResponse &response)
 {

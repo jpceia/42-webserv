@@ -19,6 +19,9 @@ enum ParseState {
     PARSE_START,
     PARSE_HEADER,
     PARSE_BODY,
+    PARSE_CHUNK_HEAD,
+    PARSE_CHUNK_CONTENT,
+    PARSE_CHUNK_TAIL,
     PARSE_COMPLETE
 };
 
@@ -30,24 +33,29 @@ public:
     virtual ~HTTPRequestParser();
     HTTPRequestParser& operator=(const HTTPRequestParser& rhs);
 
+    // Getters
     ParseState getState() const;
 
-    ParseState parse(const std::string& s = "");
+    // Setters
     void setHeader(const std::string& key, const std::string& value);
+
+    // Clear
     void clear();
+
+    // Parsers
+    ParseState parse(const std::string& s = "");
 
 private:
     ParseState _parse_start();
     ParseState _parse_headers();
     ParseState _parse_body();
-    ParseState _parse_chunked_body();
-    ParseState _parse_body_chunk();
-    ParseState _parse_next_chunk();
+    ParseState _parse_chunk_head();
+    ParseState _parse_chunk_content();
+    ParseState _parse_chunk_tail();
 
     ParseState _state;
     std::string _buf;
     size_t _content_length;
-    bool _chunked;
 };
 
 #endif

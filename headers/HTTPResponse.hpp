@@ -6,30 +6,17 @@
 /*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/22 15:40:09 by jceia             #+#    #+#             */
-/*   Updated: 2022/03/20 02:02:38 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/03/24 00:30:00 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef HTTPRESPONSE_HPP
 # define HTTPRESPONSE_HPP
 
+# include "HTTPStatus.hpp"
 # include "HTTPMessage.hpp"
 # include <iostream>
 # include <map>
-
-struct HTTPStatus
-{
-public:
-    HTTPStatus() :
-        code(200),
-        text("OK")
-    {}
-
-    int code;
-    std::string text;
-};
-
-std::ostream &operator<<(std::ostream &out, const HTTPStatus& status);
 
 class HTTPResponse : public HTTPMessage
 {
@@ -37,14 +24,22 @@ class HTTPResponse : public HTTPMessage
 public:
     HTTPResponse();
     HTTPResponse(const HTTPResponse& rhs);
-    ~HTTPResponse();
+    virtual ~HTTPResponse();
     HTTPResponse &operator=(const HTTPResponse &rhs);
 
-    friend std::ostream &operator<<(std::ostream &out, const HTTPResponse &request);
-
-    void setStatus(int status_code, const std::string& text);
+    // Setters
+    void setStatus(const HTTPStatus& status);
     void setBody(const std::string& body);
     using HTTPMessage::setBody;
+
+    // Clear
+    virtual void clear();
+
+    // Helpers
+    void printStart() const;
+
+    // IO operators
+    friend std::ostream &operator<<(std::ostream &out, const HTTPResponse &request);
 
 private:
     HTTPStatus _status;

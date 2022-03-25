@@ -6,7 +6,7 @@
 /*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/20 00:50:16 by jpceia            #+#    #+#             */
-/*   Updated: 2022/03/22 21:22:50 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/03/24 04:20:39 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,14 +55,14 @@ std::string HTTPMessage::getVersion() const
     return _version;
 }
 
-std::map<std::string, std::string> HTTPMessage::getHeaders() const
+HeaderMap HTTPMessage::getHeaders() const
 {
     return _headers;
 }
 
 std::string HTTPMessage::getHeader(const std::string& key) const
 {
-    std::map<std::string, std::string>::const_iterator it = _headers.find(key);
+    HeaderMap::const_iterator it = _headers.find(key);
     if (it == _headers.end())
         return "";
     return it->second;
@@ -114,9 +114,63 @@ void HTTPMessage::setBody(const std::ifstream& f)
     this->setBody(ss.str());
 }
 
-const char* HTTPMessage::ParseException::what(void) const throw()
+// -----------------------------------------------------------------------------
+//                                 Removers
+// -----------------------------------------------------------------------------
+
+void HTTPMessage::removeHeader(const std::string& key)
 {
-    return "Error parsing HTTP Message";
+    _headers.erase(key);
+}
+
+// -----------------------------------------------------------------------------
+//                                 Cleaners
+// -----------------------------------------------------------------------------
+
+void HTTPMessage::clear()
+{
+    _version = "HTTP/1.1";
+    _body.clear();
+    _headers.clear();
+}
+
+// -----------------------------------------------------------------------------
+//                                  Helpers
+// -----------------------------------------------------------------------------
+
+void HTTPMessage::printStart() const
+{
+    std::cout << _version << std::endl;
+}
+
+void HTTPMessage::printHeaders() const
+{
+    for (HeaderMap::const_iterator it = _headers.begin();
+        it != _headers.end(); it++)
+        std::cout << it->first << ": " << it->second << std::endl;
+}
+
+void HTTPMessage::printBody() const
+{
+    size_t max_size = 250;
+    size_t size = _body.size();
+    if (size > max_size)
+        std::cout << _body.substr(0, max_size) << "..." << std::endl;
+    else
+        std::cout << _body << std::endl;
+    if (size > 0)
+        std::cout << "(size: " << _body.size() << ")" << std::endl;
+}
+
+void HTTPMessage::print() const
+{
+    std::cout << "----------------------------------------" << std::endl;
+    this->printStart();
+    this->printHeaders();
+    std::cout << std::endl;
+    this->printBody();
+    std::cout << "----------------------------------------" << std::endl;
+    std::cout << std::endl;
 }
 
 std::string& _drop_carriage_return(std::string& s, bool raise)
@@ -136,6 +190,10 @@ std::string& _drop_carriage_return(std::string& s, bool raise)
     return s;
 }
 
+// -----------------------------------------------------------------------------
+//                                IO operators
+// -----------------------------------------------------------------------------
+
 // Parses headers and body
 std::istream &operator>>(std::istream &is, HTTPMessage &msg)
 {
@@ -151,10 +209,12 @@ std::istream &operator>>(std::istream &is, HTTPMessage &msg)
     }
     
     // Body
+    if (std::getline(is, line))
+        msg._body = _drop_carriage_return(line, false); 
     while (std::getline(is, line))
     {
-        msg._body += _drop_carriage_return(line, false);
         msg._body += "\n";
+        msg._body += _drop_carriage_return(line, false);   
     }
     // Add Content-Length header if not present
     msg.setHeader("Content-Length", ft_itos(msg._body.length()));
@@ -164,9 +224,18 @@ std::istream &operator>>(std::istream &is, HTTPMessage &msg)
 // Write headers and body to an output stream
 std::ostream &operator<<(std::ostream &out, const HTTPMessage &msg)
 {
-    for (std::map<std::string, std::string>::const_iterator it = msg._headers.begin();
+    for (HeaderMap::const_iterator it = msg._headers.begin();
         it != msg._headers.end(); ++it)
         out << it->first << ": " << it->second << "\r\n";
     out << "\r\n" << msg._body;
     return out;
+}
+
+// -----------------------------------------------------------------------------
+//                             Custom exceptions
+// -----------------------------------------------------------------------------
+
+const char* HTTPMessage::ParseException::what(void) const throw()
+{
+    return "Error parsing HTTP Message";
 }

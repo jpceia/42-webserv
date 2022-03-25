@@ -6,7 +6,7 @@
 /*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/09 20:22:56 by jpceia            #+#    #+#             */
-/*   Updated: 2022/03/16 12:45:44 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/03/24 02:56:57 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,9 +49,6 @@ HTTPStatefulConnection& HTTPStatefulConnection::operator=(const HTTPStatefulConn
 
 HTTPRequest HTTPStatefulConnection::getRequest() const
 {
-    if (_request.getState() != PARSE_COMPLETE)
-        throw std::runtime_error("HTTPStatefulConnection::getRequest() - "
-                                    "request not complete");
     return _request;
 }
 

@@ -6,7 +6,7 @@
 /*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/19 16:00:08 by tisantos          #+#    #+#             */
-/*   Updated: 2022/03/24 07:11:18 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/03/25 15:36:56 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,7 @@ void debug_context(const struct Context& ctx)
 	{
 		std::cout << "CGI = " << it->first << " " << it->second << std::endl;
 	}
-	std::cout << "UPLOAD_PATH = " << ctx.upload_path << std::endl;
+	std::cout << "UPLOAD = " << ctx.upload << std::endl;
 	std::cout << "SERVER_NAME = " << ctx.server_name << std::endl;
 	std::cout << "SERVER_ADDR = " << ctx.server_addr << std::endl;
 	std::cout << "CLIENT_ADDR = " << ctx.client_addr << std::endl;

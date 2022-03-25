@@ -6,7 +6,7 @@
 /*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/24 04:14:47 by jpceia            #+#    #+#             */
-/*   Updated: 2022/03/24 07:30:10 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/03/25 15:29:49 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,10 +38,8 @@ HTTPResponse HTTPServer::_upload_raw_response(const HTTPRequest& request, const 
 {
     HTTPResponse response;
     response.setHeader("Content-Type", "text/html");
-    std::string path = cleanup_path(ctx.upload_path + "/" + ctx.sys_rel_path);
-    std::cout << "Upload path: " << path << std::endl;
     // write to file
-    std::ofstream ofs(path.c_str(), std::ios::binary | std::ios::trunc);
+    std::ofstream ofs(ctx.getSysPath().c_str(), std::ios::binary | std::ios::trunc);
     if (!ofs.good())
         return _status_page_response(500, ctx);
     std::string body = request.getBody();
@@ -100,7 +98,7 @@ void HTTPServer::_handle_multipart_chunk(const std::string& chunk, const Context
     filename = filename.substr(0, filename.find("\""));
 
     // write to file
-    std::string path = cleanup_path(ctx.upload_path + "/" + filename);
+    std::string path = cleanup_path(ctx.getSysPath() + "/" + filename);
     std::cout << "Upload path: " << path << std::endl;
     std::ofstream ofs(path.c_str(), std::ios::binary | std::ios::trunc);
     if (!ofs.good())
@@ -112,11 +110,7 @@ void HTTPServer::_handle_multipart_chunk(const std::string& chunk, const Context
 
 HTTPResponse HTTPServer::_delete_response(const Context& ctx) const
 {
-    std::string path = cleanup_path(ctx.upload_path + "/" + ctx.sys_rel_path);
-    std::cout << "Rel path: " << ctx.sys_rel_path << std::endl;
-    std::cout << "Delete path: " << path << std::endl;
-
-    if (std::remove(path.c_str()) != 0)
+    if (std::remove(ctx.getSysPath().c_str()) != 0)
         return _status_page_response(500, ctx);
 
     HTTPResponse response = _status_page_response(202, ctx);

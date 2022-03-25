@@ -6,7 +6,7 @@
 /*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/03 17:30:40 by jceia             #+#    #+#             */
-/*   Updated: 2022/03/24 08:19:51 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/03/25 15:30:36 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -159,7 +159,7 @@ HTTPResponse HTTPServer::_response(const HTTPRequest& request, Context& ctx)
     if (!ctx.redirect_path.empty())
         return _redirect_response(ctx);
 
-    if (!ctx.upload_path.empty())
+    if (ctx.upload)
         return _upload_response(request, ctx);
 
     // checking if the file exists
@@ -181,7 +181,7 @@ HTTPResponse HTTPServer::_response(const HTTPRequest& request, Context& ctx)
         }
         if (!found)
         {
-            if (ctx.autoindex == "on")
+            if (ctx.autoindex)
                 return _autoindex_response(ctx);
             else
                 return _status_page_response(404, ctx);

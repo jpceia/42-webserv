@@ -6,7 +6,7 @@
 /*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/03 17:30:40 by jceia             #+#    #+#             */
-/*   Updated: 2022/03/24 07:30:24 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/03/25 15:25:28 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,19 +34,19 @@ struct Context
     std::string endpoint;
     std::string location_path;
     std::string sys_rel_path;
-    std::string autoindex;
     std::vector<std::string> index;
     std::set<HTTPMethod> allowed_methods;
     int redirect_status;
     std::string redirect_path;
     std::map<std::string, std::string> cgi_bin;
     std::string host_port;
-    std::string upload_path;
     std::string server_name;
     std::string server_addr;
     std::string client_addr;
     int server_port;
     int client_port;
+    bool autoindex;
+    bool upload;
 
     std::string getSysPath() const
     {

@@ -6,7 +6,7 @@
 /*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/24 04:13:11 by jpceia            #+#    #+#             */
-/*   Updated: 2022/03/24 07:26:19 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/03/25 15:27:38 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -160,8 +160,9 @@ Context HTTPServer::_get_context(const HTTPStatefulConnection *conn) const
     ctx.root = location_block.getRoot();
     ctx.endpoint = request.getEndpoint();
     ctx.location_path = location_block.getLocationPath();
-    ctx.upload_path = location_block.getUpload();
-    if (location_block.getIsRootFromLocationBlock() || !ctx.upload_path.empty())
+    ctx.upload = location_block.getUpload() == "on";
+    ctx.autoindex = location_block.getAutoIndex() == "on";
+    if (location_block.getIsRootFromLocationBlock())
     {
         ctx.sys_rel_path = ctx.endpoint.substr(ctx.location_path.size());
         if (ctx.sys_rel_path.empty())
@@ -174,7 +175,6 @@ Context HTTPServer::_get_context(const HTTPStatefulConnection *conn) const
         ctx.sys_rel_path = ctx.endpoint;
     }
     ctx.index = location_block.getIndex();
-    ctx.autoindex = location_block.getAutoIndex();
     ctx.allowed_methods = location_block.getMethods();
     ctx.redirect_status = location_block.getRedirectStatus();
     ctx.redirect_path = location_block.getRedirectPath();

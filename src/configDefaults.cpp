@@ -3,16 +3,17 @@
 /*                                                        :::      ::::::::   */
 /*   configDefaults.cpp                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
+/*   By: tisantos <tisantos@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/19 15:59:40 by tisantos          #+#    #+#             */
-/*   Updated: 2022/03/20 02:31:20 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/03/25 15:24:12 by tisantos         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 # include "configDefaults.hpp"
 # include <sstream>
 # include <fstream>
+# include <cstdlib>
 
 /****************/
 /* Constructors */
@@ -41,10 +42,8 @@ configDefaults::configDefaults()
 	/* error_page default.					 */
 	/*****************************************/
 
-/*
-
 	std::string 	line;
-	std::ifstream 	ifs("/Users/tisantos/Desktop/webserv/defaults/default_config.txt");
+	std::ifstream 	ifs("/defaults/default_config.txt");
 
 	if (ifs.is_open())
 	{
@@ -60,7 +59,7 @@ configDefaults::configDefaults()
 				path_temp.erase(0, pos + 1);
 			}
 			path_vector.push_back(path_temp);
-						
+
 			_error_page.insert(std::pair<int, std::string>(atoi(path_vector.front().c_str()), *path_vector.rbegin()));
 		}
 		ifs.close();
@@ -82,7 +81,7 @@ configDefaults::configDefaults()
 	{
 		throw std::runtime_error("default_config.txt not found or directory incorrect. Should be at /webserv/defaults/default_config.txt");
 	}
-	*/
+
 }
 
 configDefaults::configDefaults(const configDefaults& rhs)
@@ -112,6 +111,6 @@ configDefaults& configDefaults::operator=(const configDefaults& rhs)
     _methods_default = rhs._methods_default;
     _upload_default = rhs._upload_default;
 	_error_page = rhs._error_page;
-	
+
 	return *this;
 }

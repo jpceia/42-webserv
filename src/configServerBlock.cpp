@@ -6,7 +6,7 @@
 /*   By: tisantos <tisantos@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/19 16:00:01 by tisantos          #+#    #+#             */
-/*   Updated: 2022/03/23 15:35:19 by tisantos         ###   ########.fr       */
+/*   Updated: 2022/03/25 15:22:45 by tisantos         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -732,22 +732,22 @@ void	configServerBlock::errorpageDirectiveTreatment(std::string line)
 
 	if (_root.empty())
 	{
-		if (path.front() != '/')
+		if (path[0] != '/')
 		{
 			error_path.push_back(*_root_default.begin() + "/" + path);
 		}
-		else 
+		else
 		{
 			error_path.push_back(path);
-		}					
+		}
 	}
 	else
 	{
-		if (path.front() != '/')
+		if (path[0] != '/')
 		{
 			error_path.push_back(*_root.begin() + "/" + path);
 		}
-		else 
+		else
 		{
 			error_path.push_back(path);
 		}

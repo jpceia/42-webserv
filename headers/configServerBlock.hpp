@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   configServerBlock.hpp                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
+/*   By: tisantos <tisantos@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/19 15:59:14 by tisantos          #+#    #+#             */
-/*   Updated: 2022/03/25 18:44:30 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/03/25 19:57:29 by tisantos         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,7 @@ class configServerBlock
         /***********/
         /* Methods */
         /***********/
-        void    fillBlocks(configDefaults default_values);
+        void    fillBlocks(configDefaults & default_values);
 
         /************/
         /* Debugger */

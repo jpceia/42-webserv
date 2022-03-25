@@ -6,7 +6,7 @@
 /*   By: tisantos <tisantos@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/19 15:59:08 by tisantos          #+#    #+#             */
-/*   Updated: 2022/03/25 17:08:03 by tisantos         ###   ########.fr       */
+/*   Updated: 2022/03/25 19:57:16 by tisantos         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,7 @@ class configLocationBlock
         /***********/
         /* Methods */
         /***********/
-		void	fillDefaultValues(configDefaults default_values);
+		void	fillDefaultValues(configDefaults & default_values);
 
 		void	locationDirectiveTreatment(std::string line);
 		void	errorpageDirectiveTreatment(std::map<int, std::string> error_p,

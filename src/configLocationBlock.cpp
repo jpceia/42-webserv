@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   configLocationBlock.cpp                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
+/*   By: tisantos <tisantos@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/19 15:59:55 by tisantos          #+#    #+#             */
-/*   Updated: 2022/03/25 18:39:52 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/03/25 20:07:38 by tisantos         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,7 +54,7 @@ configLocationBlock& configLocationBlock::operator=(const configLocationBlock& r
 /***********/
 /* Methods */
 /***********/
-void	configLocationBlock::fillDefaultValues(configDefaults default_values)
+void	configLocationBlock::fillDefaultValues(configDefaults & default_values)
 {
 	_default_values = default_values;
 }
@@ -672,7 +672,9 @@ void	configLocationBlock::fillDirectivesIfEmpty(
 	if (_auto_index.empty())
 		_auto_index = autoindex;
 	if (_methods.empty())
+	{
 		_methods = _default_values._methods_default;
+	}
 	if (_upload.empty())
 		_upload = _default_values._upload_default;
 	if (_error_page.empty())

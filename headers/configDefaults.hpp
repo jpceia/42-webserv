@@ -15,6 +15,7 @@
 
 # include <iostream>
 # include <vector>
+# include <map>
 # include <set>
 # include "HTTPMethod.hpp"
 
@@ -49,6 +50,8 @@ class configDefaults
 
         std::set<HTTPMethod>   		    _methods_default;
         std::vector<std::string>  		_upload_default;
+
+        std::map<int, std::string>      _error_page;
 };
 
 #endif

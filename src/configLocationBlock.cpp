@@ -132,11 +132,25 @@ void	configLocationBlock::errorpageDirectiveTreatment(std::map<int, std::string>
 
 	if (_root.empty())
 	{
-		error_path.push_back(*_root_default.begin() + path);
+		if (path.front() != '/')
+		{
+			error_path.push_back(*_root_default.begin() + "/" + path);
+		}
+		else 
+		{
+			error_path.push_back(path);
+		}					
 	}
 	else
 	{
-		error_path.push_back(*_root.begin() + path);
+		if (path.front() != '/')
+		{
+			error_path.push_back(*_root.begin() + "/" + path);
+		}
+		else 
+		{
+			error_path.push_back(path);
+		}
 	}
 
 	std::stringstream	is2(line);
@@ -611,15 +625,20 @@ void	configLocationBlock::uploadDirectiveTreatment(std::string line)
 		word.resize(word.size() - 1);
 	}
 
+	if (word.compare("on"))
+	{
+		throw std::runtime_error("configLocationBlock.hpp exception: upload needs to be on");
+	}
+
 	if (_upload.empty())
 	{
 		if (_root.empty())
 		{
-			_upload.push_back(*_root_default.begin() + "/" + word);
+			_upload.push_back(word);
 		}
 		else
 		{
-			_upload.push_back(*_root.begin() + "/" + word);
+			_upload.push_back(word);
 		}
 	}
 	else
@@ -633,7 +652,8 @@ void	configLocationBlock::fillDirectivesIfEmpty(
 								std::vector<unsigned long int> client_max_body_size,
 								std::vector<std::string> root,
 								std::vector<std::string> autoindex,
-								std::vector<std::string> index)
+								std::vector<std::string> index,
+								std::map<int, std::string> errorpage)
 {
 	if (_client_max_body_size.empty())
 		_client_max_body_size = client_max_body_size;
@@ -650,4 +670,6 @@ void	configLocationBlock::fillDirectivesIfEmpty(
 		_methods = _methods_default;
 	if (_upload.empty())
 		_upload = _upload_default;
+	if (_error_page.empty())
+		_error_page = errorpage;
 }

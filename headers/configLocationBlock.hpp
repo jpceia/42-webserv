@@ -57,7 +57,8 @@ class configLocationBlock : public configDefaults
 		void	fillDirectivesIfEmpty( std::vector<unsigned long int> client_max_body_size,
 									   std::vector<std::string> root,
 									   std::vector<std::string> autoindex,
-									   std::vector<std::string> index);
+									   std::vector<std::string> index,
+									   std::map<int, std::string> errorpage);
 
 		/*****************/
 		/*    Getters    */

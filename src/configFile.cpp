@@ -73,7 +73,7 @@ configFile::configFile(char *configuration_file)
 		configServerBlock server_block_obj(*it);
 		server_block_obj.fillBlocks();
 
-		//server_block_obj.printDirectives();
+		server_block_obj.printDirectives();
 
 		_server_blocks_obj.push_back(server_block_obj);
 	}

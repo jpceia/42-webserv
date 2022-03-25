@@ -177,7 +177,8 @@ void    configServerBlock::fillBlocks()
 		_location_blocks[i].fillDirectivesIfEmpty(_client_max_body_size,
 													_root,
 													_auto_index,
-													_index);
+													_index,
+													_error_page);
 	}
 
 
@@ -347,7 +348,7 @@ void	configServerBlock::printDirectives()
 		if (!_location_blocks[i].getAutoIndex().empty())
 		{
 			std::cout << "  Auto_index:		   ";
-			std::cout << "  { " << *_location_blocks[i].getAutoIndex().begin() << " }" << std::endl;
+			std::cout << "  { " << _location_blocks[i].getAutoIndex() << " }" << std::endl;
 		}
 
 		/**********************************/
@@ -731,11 +732,25 @@ void	configServerBlock::errorpageDirectiveTreatment(std::string line)
 
 	if (_root.empty())
 	{
-		error_path.push_back(*_root_default.begin() + path);
+		if (path.front() != '/')
+		{
+			error_path.push_back(*_root_default.begin() + "/" + path);
+		}
+		else 
+		{
+			error_path.push_back(path);
+		}					
 	}
 	else
 	{
-		error_path.push_back(*_root.begin() + path);
+		if (path.front() != '/')
+		{
+			error_path.push_back(*_root.begin() + "/" + path);
+		}
+		else 
+		{
+			error_path.push_back(path);
+		}
 	}
 
 	std::stringstream	is2(line);

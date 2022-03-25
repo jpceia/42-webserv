@@ -1,0 +1,5 @@
+400 /Users/tisantos/Desktop/webserv/www/error_page/400.html
+404 /Users/tisantos/Desktop/webserv/www/error_page/404.html
+405 /Users/tisantos/Desktop/webserv/www/error_page/405.html
+413 /Users/tisantos/Desktop/webserv/www/error_page/413.html
+500 /Users/tisantos/Desktop/webserv/www/error_page/500.html

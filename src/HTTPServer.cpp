@@ -6,7 +6,7 @@
 /*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/03 17:30:40 by jceia             #+#    #+#             */
-/*   Updated: 2022/03/25 19:23:44 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/03/25 19:31:49 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -321,7 +321,7 @@ HTTPResponse HTTPServer::_redirect_response(const Context& ctx) const
         << "    <title>Page Redirection</title>"
         << "  </head>"
         << "  <body>"
-        << "  If you are not redirected automatically, follow this <a href='" << ctx.redirect_path << "'>link to example</a>."
+        << "  If you are not redirected automatically, follow this <a href='" << ctx.redirect_path << "'>link</a>."
         << "  </body>"
         << "</html>";
     response.setHeader("Location", ctx.redirect_path);

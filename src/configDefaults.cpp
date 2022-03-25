@@ -6,7 +6,7 @@
 /*   By: tisantos <tisantos@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/19 15:59:40 by tisantos          #+#    #+#             */
-/*   Updated: 2022/03/25 15:24:12 by tisantos         ###   ########.fr       */
+/*   Updated: 2022/03/25 15:38:06 by tisantos         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,7 @@ configDefaults::configDefaults()
 	_upload_default.push_back("");
 
 
-			std::cout << "HERE\n";
+			//std::cout << "HERE\n";
 
 
 	/*****************************************/
@@ -43,13 +43,12 @@ configDefaults::configDefaults()
 	/*****************************************/
 
 	std::string 	line;
-	std::ifstream 	ifs("/defaults/default_config.txt");
+	std::ifstream 	ifs("./defaults/default_config.txt");
 
 	if (ifs.is_open())
 	{
 		while (getline(ifs, line))
 		{
-			std::cout << "HERE\n";
 			size_t pos = 0;
 			std::string path_temp = line;
 			std::vector<std::string> path_vector;
@@ -64,7 +63,7 @@ configDefaults::configDefaults()
 		}
 		ifs.close();
 
-		std::map<int, std::string>::iterator	_error_page_it = _error_page.begin();
+/*		std::map<int, std::string>::iterator	_error_page_it = _error_page.begin();
 		for (int i = 0; _error_page_it != _error_page.end(); _error_page_it++, i++)
 		{
 			if (i == 0)
@@ -74,7 +73,7 @@ configDefaults::configDefaults()
 			std::cout <<  _error_page_it->first << " " << _error_page_it->second;
 			std::cout << " }" << std::endl;
 		}
-
+*/
 
 	}
 	else

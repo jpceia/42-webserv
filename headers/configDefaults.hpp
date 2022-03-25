@@ -6,7 +6,7 @@
 /*   By: tisantos <tisantos@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/19 15:58:50 by tisantos          #+#    #+#             */
-/*   Updated: 2022/03/25 16:02:59 by tisantos         ###   ########.fr       */
+/*   Updated: 2022/03/25 17:04:38 by tisantos         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@
 # include "HTTPMethod.hpp"
 
 #ifndef DEFAULTS_PATH
-# define DEFAULTS_PATH "./defaults/default_config.txt"
+# define DEFAULTS_PATH "/home/tisantos/Documents/42Lisboa/42Lisboa-school_projects/lvl_5_webserv/defaults/default_config.txt"
 #endif
 
 class configDefaults
@@ -37,6 +37,11 @@ class configDefaults
         /* Copy Operator */
         /*****************/
         configDefaults& operator=(const configDefaults& rhs);
+
+        /***********/
+        /* Methods */
+        /***********/
+		void fillDefaults();
 
         /**********************/
         /* Default Directives */

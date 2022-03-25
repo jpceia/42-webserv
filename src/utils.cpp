@@ -6,7 +6,7 @@
 /*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/23 20:06:03 by jpceia            #+#    #+#             */
-/*   Updated: 2022/03/24 07:28:14 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/03/25 17:03:35 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -159,6 +159,8 @@ std::string exec_cmd(
         int n = write(fd_in, input.c_str() + pos, input.size() - pos);
         if (n < 0)
             throw std::runtime_error("Error writing to pipe");
+        if (n == 0)
+            break;
         pos += n;
     }
     rewind(tmp_in);

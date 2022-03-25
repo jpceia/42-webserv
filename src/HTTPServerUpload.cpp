@@ -6,7 +6,7 @@
 /*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/24 04:14:47 by jpceia            #+#    #+#             */
-/*   Updated: 2022/03/25 17:02:38 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/03/25 17:11:52 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,7 +99,9 @@ void HTTPServer::_handle_multipart_chunk(const std::string& chunk, const Context
 
     // write to file
     std::string path = cleanup_path(ctx.getSysPath() + "/" + filename);
+    #ifdef DEBUG
     std::cout << "Upload path: " << path << std::endl;
+    #endif // DEBUG
     std::ofstream ofs(path.c_str(), std::ios::binary | std::ios::trunc);
     if (!ofs.good())
         return ;

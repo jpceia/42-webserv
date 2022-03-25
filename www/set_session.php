@@ -31,6 +31,7 @@
             $full_name = htmlspecialchars($_POST["first_name"]) . ' ' . htmlspecialchars($_POST["last_name"]);
             echo "Hello " . $full_name . "!";
             $_SESSION["name"] = $full_name;
+            setcookie("name", $full_name, time() + (86400 * 30), "/");
         }
     ?>
 </body>

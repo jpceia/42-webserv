@@ -6,7 +6,7 @@
 /*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/22 15:33:45 by jceia             #+#    #+#             */
-/*   Updated: 2022/03/20 02:19:09 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/03/24 02:54:37 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@
 HTTPRequest::HTTPRequest() :
     HTTPMessage(),
     _method(GET),
-    _endpoint(""),
+    _endpoint("/"),
     _query("")
 {
 }
@@ -47,33 +47,6 @@ HTTPRequest& HTTPRequest::operator=(const HTTPRequest &rhs)
         _query = rhs._query;
     }
     return *this;
-}
-
-std::istream &operator>>(std::istream &is, HTTPRequest &request)
-{
-    // Start line
-    std::string line;
-    std::getline(is, line);
-    std::stringstream ss(_drop_carriage_return(line));
-    std::string method;
-    std::string path;
-    ss >> method >> path >> request._version;
-    request.setPath(path);
-    request.setMethod(method);
-    if (!ss.eof())
-        throw HTTPMessage::ParseException();
-    // remaining message
-    is >> dynamic_cast<HTTPMessage&>(request);
-    return is;
-}
-
-std::ostream &operator<<(std::ostream &out, const HTTPRequest &request)
-{
-    out << request._method << " "
-        << request.getPath() << " "
-        << request._version << "\r\n"
-        << dynamic_cast<const HTTPMessage&>(request);
-    return out;
 }
 
 // -----------------------------------------------------------------------------
@@ -125,4 +98,56 @@ void HTTPRequest::setMethod(const std::string& method)
 {
     std::stringstream ss(method);
     ss >> _method;
+}
+
+// -----------------------------------------------------------------------------
+//                                 Cleaners
+// -----------------------------------------------------------------------------
+
+void HTTPRequest::clear()
+{
+    HTTPMessage::clear();
+    _method = GET;
+    _endpoint = "/";
+    _query.clear();
+}
+
+// -----------------------------------------------------------------------------
+//                                  Helpers
+// -----------------------------------------------------------------------------
+
+void HTTPRequest::printStart() const
+{
+    std::cout << _method << " " << this->getPath() << " " << _version << std::endl;
+}
+
+// -----------------------------------------------------------------------------
+//                                IO operators
+// -----------------------------------------------------------------------------
+
+std::istream &operator>>(std::istream &is, HTTPRequest &request)
+{
+    // Start line
+    std::string line;
+    std::getline(is, line);
+    std::stringstream ss(_drop_carriage_return(line));
+    std::string method;
+    std::string path;
+    ss >> method >> path >> request._version;
+    request.setPath(path);
+    request.setMethod(method);
+    if (!ss.eof())
+        throw HTTPMessage::ParseException();
+    // remaining message
+    is >> dynamic_cast<HTTPMessage&>(request);
+    return is;
+}
+
+std::ostream &operator<<(std::ostream &out, const HTTPRequest &request)
+{
+    out << request._method << " "
+        << request.getPath() << " "
+        << request._version << "\r\n"
+        << dynamic_cast<const HTTPMessage&>(request);
+    return out;
 }

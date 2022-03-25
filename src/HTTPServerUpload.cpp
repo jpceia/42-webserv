@@ -6,7 +6,7 @@
 /*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/24 04:14:47 by jpceia            #+#    #+#             */
-/*   Updated: 2022/03/25 15:29:49 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/03/25 17:02:38 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,7 @@ HTTPResponse HTTPServer::_upload_raw_response(const HTTPRequest& request, const 
     if (!ofs.good())
         return _status_page_response(500, ctx);
     std::string body = request.getBody();
-    ofs.write(body.c_str(), body.size());
+    ofs << body;
     ofs.close();
 
     response.setBody("Upload Successfull");

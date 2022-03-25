@@ -6,7 +6,7 @@
 /*   By: tisantos <tisantos@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/19 15:59:08 by tisantos          #+#    #+#             */
-/*   Updated: 2022/03/23 15:25:26 by tisantos         ###   ########.fr       */
+/*   Updated: 2022/03/25 17:08:03 by tisantos         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@
 # include "configDefaults.hpp"
 # include "HTTPMethod.hpp"
 
-class configLocationBlock : public configDefaults
+class configLocationBlock
 {
     public:
         /****************/
@@ -43,6 +43,8 @@ class configLocationBlock : public configDefaults
         /***********/
         /* Methods */
         /***********/
+		void	fillDefaultValues(configDefaults default_values);
+
 		void	locationDirectiveTreatment(std::string line);
 		void	errorpageDirectiveTreatment(std::map<int, std::string> error_p,
 											std::string line);
@@ -86,13 +88,14 @@ class configLocationBlock : public configDefaults
         std::vector<std::string>    			_root;
         std::vector<std::string>    			_index;
         std::vector<std::string>    			_auto_index;
-        // std::vector<std::string>    			_methods;
 		std::set<HTTPMethod>					_methods;
 		std::vector<int>            			_redirect_status;
         std::vector<std::string>    			_redirect_path;
         std::map<std::string, std::string>		_cgi;
         std::vector<std::string>    			_upload;
 		bool									_isrootfromlocationblock;
+
+		configDefaults							_default_values;		// Default Values
 };
 
 #endif

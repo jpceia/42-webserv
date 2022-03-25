@@ -6,7 +6,7 @@
 /*   By: tisantos <tisantos@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/19 15:59:14 by tisantos          #+#    #+#             */
-/*   Updated: 2022/03/19 17:26:21 by tisantos         ###   ########.fr       */
+/*   Updated: 2022/03/25 17:08:14 by tisantos         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@
 #include "configLocationBlock.hpp"
 #include "configDefaults.hpp"
 
-class configServerBlock : public configDefaults
+class configServerBlock
 {
     public:
         /****************/
@@ -43,7 +43,7 @@ class configServerBlock : public configDefaults
         /***********/
         /* Methods */
         /***********/
-        void    fillBlocks();
+        void    fillBlocks(configDefaults default_values);
 
         /************/
         /* Debugger */
@@ -166,9 +166,11 @@ class configServerBlock : public configDefaults
 		std::vector<std::string>	_server_block;	// The server block you receive from
 													// configFile.
 
-		configLocationBlock			_location_blocks[1000]; // Location Blocks object treated
+		configLocationBlock			_location_blocks[100]; // Location Blocks object treated
 		int							_location_blocks_count; // How many location blocks on
 															// _location_blocks[1000]
+
+		configDefaults				_default_values;		// Default Values
 
         /**********************/
         /* Current Directives */

@@ -6,7 +6,7 @@
 /*   By: tisantos <tisantos@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/19 15:59:45 by tisantos          #+#    #+#             */
-/*   Updated: 2022/03/25 15:33:09 by tisantos         ###   ########.fr       */
+/*   Updated: 2022/03/25 17:25:53 by tisantos         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,6 +59,14 @@ configFile::configFile(char *configuration_file)
 	_server_blocks = treatment_obj.getServerBlocks();
 
 	/************************************************************/
+	/* We make a Default Config, to send to configServerBlock   */
+	/* and to configLocationBlock.								*/
+	/************************************************************/
+
+	configDefaults config_default;
+	config_default.fillDefaults();
+
+	/************************************************************/
 	/* We now have server blocks separated in vectors<string>.  */
 	/* Now we make an object (configServerBlock) for each of	*/
 	/* the server blocks. These configServerBlock objects have  */
@@ -71,9 +79,11 @@ configFile::configFile(char *configuration_file)
 	for (; it != _server_blocks.end(); it++)
 	{
 		configServerBlock server_block_obj(*it);
-		server_block_obj.fillBlocks();
+		server_block_obj.fillBlocks(config_default);
 
-		server_block_obj.printDirectives();
+		#ifdef DEBUG
+			server_block_obj.printDirectives();
+		#endif
 
 		_server_blocks_obj.push_back(server_block_obj);
 	}

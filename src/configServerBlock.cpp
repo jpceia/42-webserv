@@ -6,7 +6,7 @@
 /*   By: tisantos <tisantos@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/19 16:00:01 by tisantos          #+#    #+#             */
-/*   Updated: 2022/03/25 16:02:36 by tisantos         ###   ########.fr       */
+/*   Updated: 2022/03/25 17:23:36 by tisantos         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,7 +47,7 @@ configServerBlock& configServerBlock::operator=(const configServerBlock& rhs)
 	_index = rhs._index;
 	_auto_index = rhs._auto_index;
 	_server_block = rhs._server_block;
-	for (int i = 0; i < 1000; i++)
+	for (int i = 0; i < 100; i++)
 	{
 		_location_blocks[i] = rhs._location_blocks[i];
 	}
@@ -59,8 +59,20 @@ configServerBlock& configServerBlock::operator=(const configServerBlock& rhs)
 /***********/
 /* Methods */
 /***********/
-void    configServerBlock::fillBlocks()
+void    configServerBlock::fillBlocks(configDefaults default_values)
 {
+	/*****************************************/
+	/* First set the default_values.         */
+	/* Fill all location blocks with default */
+	/* values.								 */
+	/* And then fill the blocks.			 */
+	/*****************************************/
+	_default_values = default_values;
+	for (int i = 0; i < 100; i++)
+	{
+		_location_blocks[i].fillDefaultValues(default_values);
+	}
+
 	std::vector<std::string>::iterator it(_server_block.begin());
 	int		on_server			= 0;
 	int		on_location			= 0;
@@ -89,7 +101,7 @@ void    configServerBlock::fillBlocks()
 				// In case server block has a root, location has to have the
 				// same root in default.
 				if (!_root.empty())
-					_location_blocks[_location_blocks_count]._root_default = _root;
+					_location_blocks[_location_blocks_count]._default_values._root_default = _root;
 
 				_location_blocks_count++;
 			}
@@ -124,15 +136,15 @@ void    configServerBlock::fillBlocks()
 	/**************************************************/
 	if (_ip.empty() && _port.empty())
 	{
-		_ip = _ip_default;
-		_port = _port_default;
+		_ip = _default_values._ip_default;
+		_port = _default_values._port_default;
 	}
 	if (_server_name.empty())
-		_server_name = _server_name_default;
+		_server_name = _default_values._server_name_default;
 	if (_root.empty())
-		_root = _root_default;
+		_root = _default_values._root_default;
 	if (_error_page.empty())
-		_error_page = _error_page_default;
+		_error_page = _default_values._error_page_default;
 
 	/**************************************************/
 	/* If there is no locations add a default '/'     */
@@ -736,7 +748,7 @@ void	configServerBlock::errorpageDirectiveTreatment(std::string line)
 	{
 		if (path[0] != '/')
 		{
-			error_path.push_back(*_root_default.begin() + "/" + path);
+			error_path.push_back(*_default_values._root_default.begin() + "/" + path);
 		}
 		else
 		{
@@ -1013,16 +1025,16 @@ void	configServerBlock::autoindexDirectiveTreatment(std::string line)
 void	configServerBlock::fillDirectivesIfEmpty()
 {
 	if (_server_name.empty())
-		_server_name = _server_name_default;
+		_server_name = _default_values._server_name_default;
 	if (_client_max_body_size.empty())
-		_client_max_body_size = _client_max_body_size_default;
+		_client_max_body_size = _default_values._client_max_body_size_default;
 	if (_root.empty())
-		_root = _root_default;
+		_root = _default_values._root_default;
 	if (_index.empty())
 	{
-		_index.push_back(_root.front() + _index_default.front());
+		_index.push_back(_root.front() + _default_values._index_default.front());
 	}
 	if (_auto_index.empty())
-		_auto_index = _auto_index_default;
+		_auto_index = _default_values._auto_index_default;
 
 }

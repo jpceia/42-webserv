@@ -6,7 +6,7 @@
 /*   By: tisantos <tisantos@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/19 15:59:55 by tisantos          #+#    #+#             */
-/*   Updated: 2022/03/23 15:28:03 by tisantos         ###   ########.fr       */
+/*   Updated: 2022/03/25 15:22:10 by tisantos         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -132,22 +132,22 @@ void	configLocationBlock::errorpageDirectiveTreatment(std::map<int, std::string>
 
 	if (_root.empty())
 	{
-		if (path.front() != '/')
+		if (path[0] != '/')
 		{
 			error_path.push_back(*_root_default.begin() + "/" + path);
 		}
-		else 
+		else
 		{
 			error_path.push_back(path);
-		}					
+		}
 	}
 	else
 	{
-		if (path.front() != '/')
+		if (path[0] != '/')
 		{
 			error_path.push_back(*_root.begin() + "/" + path);
 		}
-		else 
+		else
 		{
 			error_path.push_back(path);
 		}

@@ -6,7 +6,7 @@
 /*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/23 03:04:11 by jpceia            #+#    #+#             */
-/*   Updated: 2022/03/19 22:32:20 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/03/25 17:04:44 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,6 +53,8 @@ TCPConnection& TCPConnection::operator=(const TCPConnection& rhs)
 
 void TCPConnection::send(std::string& msg) const
 {
+    if (msg.empty())
+        return ;
     int n = ::send(_sock, msg.c_str(), msg.size(), 0);
     if (n < 0)
         throw TCPConnection::SendException();

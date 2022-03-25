@@ -6,7 +6,7 @@
 /*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/03 17:30:40 by jceia             #+#    #+#             */
-/*   Updated: 2022/03/25 15:30:36 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/03/25 19:23:44 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -310,8 +310,23 @@ HTTPResponse HTTPServer::_autoindex_response(const Context& ctx) const
 HTTPResponse HTTPServer::_redirect_response(const Context& ctx) const
 {
     HTTPResponse response;
+    std::stringstream ss;
+
+    ss << "<!DOCTYPE HTML>"
+        << "<html lang=\"en-US\">"
+        << "  <head>"
+        << "    <meta charset=\"UTF-8\">"
+        << "    <meta http-equiv=\"refresh\" content=\"0; url=" << ctx.redirect_path << "\">"
+        << "    <script type=\"text/javascript\">window.location.href = \"" << ctx.redirect_path << "\"</script>"
+        << "    <title>Page Redirection</title>"
+        << "  </head>"
+        << "  <body>"
+        << "  If you are not redirected automatically, follow this <a href='" << ctx.redirect_path << "'>link to example</a>."
+        << "  </body>"
+        << "</html>";
     response.setHeader("Location", ctx.redirect_path);
     response.setStatus(ctx.redirect_status);
+    response.setBody(ss.str());
     return response;
 }
 

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   configDefaults.hpp                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tisantos <tisantos@student.42.fr>          +#+  +:+       +#+        */
+/*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/19 15:58:50 by tisantos          #+#    #+#             */
-/*   Updated: 2022/03/25 17:04:38 by tisantos         ###   ########.fr       */
+/*   Updated: 2022/03/25 17:51:04 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@
 # include "HTTPMethod.hpp"
 
 #ifndef DEFAULTS_PATH
-# define DEFAULTS_PATH "/home/tisantos/Documents/42Lisboa/42Lisboa-school_projects/lvl_5_webserv/defaults/default_config.txt"
+# define DEFAULTS_PATH "./defaults/default_config.txt"
 #endif
 
 class configDefaults

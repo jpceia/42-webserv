@@ -6,7 +6,7 @@
 /*   By: tisantos <tisantos@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/19 16:00:01 by tisantos          #+#    #+#             */
-/*   Updated: 2022/03/25 15:22:45 by tisantos         ###   ########.fr       */
+/*   Updated: 2022/03/25 16:02:36 by tisantos         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -131,6 +131,8 @@ void    configServerBlock::fillBlocks()
 		_server_name = _server_name_default;
 	if (_root.empty())
 		_root = _root_default;
+	if (_error_page.empty())
+		_error_page = _error_page_default;
 
 	/**************************************************/
 	/* If there is no locations add a default '/'     */

@@ -6,7 +6,7 @@
 /*   By: tisantos <tisantos@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/19 15:59:40 by tisantos          #+#    #+#             */
-/*   Updated: 2022/03/25 15:38:06 by tisantos         ###   ########.fr       */
+/*   Updated: 2022/03/25 16:03:48 by tisantos         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,7 @@ configDefaults::configDefaults()
 	/*****************************************/
 
 	std::string 	line;
-	std::ifstream 	ifs("./defaults/default_config.txt");
+	std::ifstream 	ifs(DEFAULTS_PATH);
 
 	if (ifs.is_open())
 	{
@@ -59,11 +59,11 @@ configDefaults::configDefaults()
 			}
 			path_vector.push_back(path_temp);
 
-			_error_page.insert(std::pair<int, std::string>(atoi(path_vector.front().c_str()), *path_vector.rbegin()));
+			_error_page_default.insert(std::pair<int, std::string>(atoi(path_vector.front().c_str()), *path_vector.rbegin()));
 		}
 		ifs.close();
 
-/*		std::map<int, std::string>::iterator	_error_page_it = _error_page.begin();
+/*		std::map<int, std::string>::iterator	_error_page_it = _error_page_default.begin();
 		for (int i = 0; _error_page_it != _error_page.end(); _error_page_it++, i++)
 		{
 			if (i == 0)
@@ -109,7 +109,7 @@ configDefaults& configDefaults::operator=(const configDefaults& rhs)
     _auto_index_default = rhs._auto_index_default;
     _methods_default = rhs._methods_default;
     _upload_default = rhs._upload_default;
-	_error_page = rhs._error_page;
+	_error_page_default = rhs._error_page_default;
 
 	return *this;
 }

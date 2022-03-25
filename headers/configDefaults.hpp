@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   configDefaults.hpp                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
+/*   By: tisantos <tisantos@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/19 15:58:50 by tisantos          #+#    #+#             */
-/*   Updated: 2022/03/20 02:32:20 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/03/25 16:02:59 by tisantos         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,10 @@
 # include <map>
 # include <set>
 # include "HTTPMethod.hpp"
+
+#ifndef DEFAULTS_PATH
+# define DEFAULTS_PATH "./defaults/default_config.txt"
+#endif
 
 class configDefaults
 {
@@ -51,7 +55,7 @@ class configDefaults
         std::set<HTTPMethod>   		    _methods_default;
         std::vector<std::string>  		_upload_default;
 
-        std::map<int, std::string>      _error_page;
+        std::map<int, std::string>      _error_page_default;
 };
 
 #endif

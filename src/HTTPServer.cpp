@@ -6,7 +6,7 @@
 /*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/03 17:30:40 by jceia             #+#    #+#             */
-/*   Updated: 2022/03/26 01:39:55 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/03/26 02:27:37 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -225,9 +225,10 @@ HTTPResponse HTTPServer::_static_response(const Context& ctx) const
     }
 
     // std::cout << "path is " << ctx.path << std::endl;
+    std::string last_modified = formatedDate(lastModifiedTime(ctx.getSysPath()));
 
     HTTPResponse response;
-    response.setHeader("Content-Type", "text/html");
+    response.setHeader("Last-Modified", last_modified);
     response.setBody(ifs);
     ifs.close();
     return response;
@@ -317,7 +318,6 @@ HTTPResponse HTTPServer::_autoindex_response(const Context& ctx) const
     ss << "</pre><hr></body></html>";
 
     HTTPResponse response;
-    response.setHeader("Content-Type", "text/html");
     response.setBody(ss.str());
     return response;
 }
@@ -348,7 +348,6 @@ HTTPResponse HTTPServer::_redirect_response(const Context& ctx) const
 HTTPResponse HTTPServer::_status_page_response(const HTTPStatus& status, const Context& ctx) const
 {
     HTTPResponse response;
-    response.setHeader("Content-Type", "text/html");
     response.setStatus(status);
 
     std::map<int, std::string>::const_iterator it = ctx.error_page.find(status.getCode());

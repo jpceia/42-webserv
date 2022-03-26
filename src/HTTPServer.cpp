@@ -6,7 +6,7 @@
 /*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/03 17:30:40 by jceia             #+#    #+#             */
-/*   Updated: 2022/03/26 02:27:37 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/03/26 17:25:28 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -238,7 +238,7 @@ HTTPResponse HTTPServer::_cgi_response(const std::string& cmd, const HTTPRequest
 {
     std::vector<std::string> args;
     args.push_back(cmd);
-    args.push_back(ctx.sys_rel_path);
+    args.push_back(ctx.getSysPath());
 
     map_str_str env = _get_cgi_env(request, ctx);
     std::stringstream ss(exec_cmd(cmd, args, env, request.getBody()));

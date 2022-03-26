@@ -1,10 +1,17 @@
+<?php
+    if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+        // set full name variable
+        $flavour = htmlspecialchars($_POST["flavour"]);
+        setcookie("flavour", $flavour, time() + (86400 * 30), "/");
+    }
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=<, initial-scale=1.0">
-    <title>Set Session</title>
+    <title>Set Cookie</title>
 </head>
 <body>
     <!-- Create a form to get the first name and last name
@@ -16,21 +23,16 @@
         // display the first name and last name
         if ($_SERVER['REQUEST_METHOD'] == 'GET') {
     ?>
-    <form action="set_session.php" method="post">
-        <p>Please enter your name:</p>
-        <input type="text" name="first_name" placeholder="First Name">
-        <br />
-        <input type="text" name="last_name" placeholder="Last Name">
+    <form action="set_cookie.php" method="post">
+        <p>Please enter your favorite cookie flavour:</p>
+        <input type="text" name="flavour" />
         <br />
         <input type="submit" value="Submit">
     </form>
     <?php
         }
         else if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-            // set full name variable
-            $full_name = htmlspecialchars($_POST["first_name"]) . ' ' . htmlspecialchars($_POST["last_name"]);
-            echo "Hello " . $full_name . "!";
-            $_SESSION["name"] = $full_name;
+            echo "Your favorite cookie flavour " . $flavour . " was set up!";
         }
     ?>
 </body>

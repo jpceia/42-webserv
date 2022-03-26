@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   configLocationBlock.hpp                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tisantos <tisantos@student.42.fr>          +#+  +:+       +#+        */
+/*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/19 15:59:08 by tisantos          #+#    #+#             */
-/*   Updated: 2022/03/25 19:57:16 by tisantos         ###   ########.fr       */
+/*   Updated: 2022/03/26 16:46:43 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@ class configLocationBlock
         /****************/
         /* Constructors */
         /****************/
-        configLocationBlock();
+        configLocationBlock(const configDefaults& default_values);
         configLocationBlock(const configLocationBlock& rhs);
         ~configLocationBlock();
 
@@ -43,8 +43,6 @@ class configLocationBlock
         /***********/
         /* Methods */
         /***********/
-		void	fillDefaultValues(configDefaults & default_values);
-
 		void	locationDirectiveTreatment(std::string line);
 		void	errorpageDirectiveTreatment(std::map<int, std::string> error_p,
 											std::string line);

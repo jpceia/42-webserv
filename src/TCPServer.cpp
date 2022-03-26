@@ -6,7 +6,7 @@
 /*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/23 02:51:42 by jpceia            #+#    #+#             */
-/*   Updated: 2022/03/25 17:13:57 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/03/26 17:13:47 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,16 +66,16 @@ void TCPServer::run()
     {
         try
         {
-        int poll_ret = poll(&_fds[0], _fds.size(), _timeout);
-        if (poll_ret < 0)
-            throw std::runtime_error("Pool exception");
-        if (poll_ret == 0)
-            throw std::runtime_error("Timeout exception");
+            int poll_ret = poll(&_fds[0], _fds.size(), _timeout);
+            if (poll_ret < 0)
+                throw std::runtime_error("Pool exception");
+            if (poll_ret == 0)
+                throw std::runtime_error("Timeout exception");
 
-        std::vector<struct pollfd>::iterator it = _fds.begin();
-        for (;it != _fds.end() && !it->revents; ++it) ; // find the first ready fd
-        if (it != _fds.end())  // If there's no activity skip _fds;
-            _handle_revent(it->fd, it->events, it->revents);
+            std::vector<struct pollfd>::iterator it = _fds.begin();
+            for (;it != _fds.end() && !it->revents; ++it) ; // find the first ready fd
+            if (it != _fds.end())  // If there's no activity skip _fds;
+                _handle_revent(it->fd, it->events, it->revents);
         }
         catch(const std::exception& e)
         {
@@ -122,7 +122,9 @@ void TCPServer::_handle_revent(int fd, short &events, short revents)
         }
         catch (const TCPConnection::ConnectionException& e)
         {
+            #ifdef DEBUG
             std::cerr << e.what() << std::endl;
+            #endif
             _close_connection(*it);
         }
     }

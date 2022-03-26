@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   configLocationBlock.cpp                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tisantos <tisantos@student.42.fr>          +#+  +:+       +#+        */
+/*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/19 15:59:55 by tisantos          #+#    #+#             */
-/*   Updated: 2022/03/26 01:49:44 by tisantos         ###   ########.fr       */
+/*   Updated: 2022/03/26 16:44:34 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,8 @@
 /****************/
 /* Constructors */
 /****************/
-configLocationBlock::configLocationBlock()
+configLocationBlock::configLocationBlock(const configDefaults& default_values) :
+	_default_values(default_values)
 {}
 
 configLocationBlock::configLocationBlock(const configLocationBlock& rhs)
@@ -47,16 +48,9 @@ configLocationBlock& configLocationBlock::operator=(const configLocationBlock& r
 	_cgi = rhs._cgi;
 	_upload = rhs._upload;
 	_isrootfromlocationblock = rhs._isrootfromlocationblock;
+	_default_values = rhs._default_values;
 
 	return *this;
-}
-
-/***********/
-/* Methods */
-/***********/
-void	configLocationBlock::fillDefaultValues(configDefaults & default_values)
-{
-	_default_values = default_values;
 }
 
 void	configLocationBlock::locationDirectiveTreatment(std::string line)

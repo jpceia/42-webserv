@@ -6,7 +6,7 @@
 /*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/23 02:51:42 by jpceia            #+#    #+#             */
-/*   Updated: 2022/03/24 02:01:16 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/03/26 16:19:50 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 #include "utils.hpp"
 #include <cstring>
 #include <sstream>
+#include <fcntl.h>
 
 TCPListener::TCPListener(int sock) :
     _sock(sock)
@@ -29,6 +30,8 @@ TCPListener::TCPListener(const std::string& host, int port)
     std::memset(_addr.sin_zero, '\0', sizeof(_addr.sin_zero));
     
     _sock = socket(AF_INET, SOCK_STREAM, 0);
+    fcntl(_sock, F_SETFL, O_NONBLOCK);
+
     if (_sock < 0)
         throw TCPListener::CreateException();
     int on = 1; //char yes='1'; // Solaris people use this
@@ -76,6 +79,7 @@ TCPConnectionArgs TCPListener::_accept() const
     args.sock = ::accept(_sock, (struct sockaddr *)&args.client_addr, &cli_len);
     if (args.sock < 0)
         throw TCPListener::AcceptException();
+    fcntl(_sock, F_SETFL, O_NONBLOCK);
     args.server_addr = _addr;
     return args;
 }

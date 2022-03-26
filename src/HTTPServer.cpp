@@ -6,7 +6,7 @@
 /*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/03 17:30:40 by jceia             #+#    #+#             */
-/*   Updated: 2022/03/25 19:31:49 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/03/26 01:06:47 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -159,6 +159,11 @@ HTTPResponse HTTPServer::_response(const HTTPRequest& request, Context& ctx)
     if (!ctx.redirect_path.empty())
         return _redirect_response(ctx);
 
+    // Delete
+    if (request.getMethod() == DELETE)
+        return _delete_response(ctx);
+
+    // Upload
     if (ctx.upload)
         return _upload_response(request, ctx);
 

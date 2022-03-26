@@ -6,7 +6,7 @@
 /*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/20 02:17:03 by jpceia            #+#    #+#             */
-/*   Updated: 2022/03/20 02:18:15 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/03/26 01:37:19 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,14 @@ std::istream &operator>>(std::istream &is, HTTPMethod &method)
         method = DELETE;
     else if (s == "HEAD")
         method = HEAD;
+    else if (s == "CONNECT")
+        method = CONNECT;
+    else if (s == "OPTIONS")
+        method = OPTIONS;
+    else if (s == "TRACE")
+        method = TRACE;
+    else if (s == "PATCH")
+        method = PATCH;
     else
         throw HTTPMessage::ParseException();
     return is;
@@ -53,6 +61,18 @@ std::ostream &operator<<(std::ostream &out, const HTTPMethod &method)
     case HEAD:
         out << "HEAD";
         break ;
+    case CONNECT:
+        out << "CONNECT";
+        break ;
+    case OPTIONS:
+        out << "OPTIONS";
+        break ;
+    case TRACE:
+        out << "TRACE";
+        break ;
+    case PATCH:
+        out << "PATCH";
+        break ;   
     default:
         throw std::runtime_error("Unkown HTTP method");
     }

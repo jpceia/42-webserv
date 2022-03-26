@@ -6,7 +6,7 @@
 /*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/20 02:16:05 by jpceia            #+#    #+#             */
-/*   Updated: 2022/03/20 02:16:39 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/03/26 01:34:36 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,11 @@ enum HTTPMethod {
     POST,
     PUT,
     DELETE,
-    HEAD
+    HEAD,
+    CONNECT,
+    OPTIONS,
+    TRACE,
+    PATCH
 };
 
 std::istream &operator>>(std::istream &is, HTTPMethod &method);

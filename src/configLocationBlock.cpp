@@ -6,7 +6,7 @@
 /*   By: tisantos <tisantos@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/19 15:59:55 by tisantos          #+#    #+#             */
-/*   Updated: 2022/03/25 20:07:38 by tisantos         ###   ########.fr       */
+/*   Updated: 2022/03/26 01:49:44 by tisantos         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -465,6 +465,7 @@ void	configLocationBlock::returnDirectiveTreatment(std::string line)
 			{
 				_redirect_path.clear();
 				_redirect_path.push_back(last_arg);
+				_redirect_status.push_back(302);
 				return ;
 			}
 		}
@@ -475,6 +476,7 @@ void	configLocationBlock::returnDirectiveTreatment(std::string line)
 			{
 				_redirect_path.clear();
 				_redirect_path.push_back(last_arg);
+				_redirect_status.push_back(302);
 				return ;
 			}
 		}

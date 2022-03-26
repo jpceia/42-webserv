@@ -6,7 +6,7 @@
 /*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/24 04:14:47 by jpceia            #+#    #+#             */
-/*   Updated: 2022/03/26 01:04:44 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/03/26 01:17:53 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -113,7 +113,7 @@ void HTTPServer::_handle_multipart_chunk(const std::string& chunk, const Context
 HTTPResponse HTTPServer::_delete_response(const Context& ctx) const
 {
     if (std::remove(ctx.getSysPath().c_str()) != 0)
-        return _status_page_response(500, ctx);
+        return _status_page_response(410, ctx);
 
     HTTPResponse response = _status_page_response(202, ctx);
     response.setBody("Delete Successful");

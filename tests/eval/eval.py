@@ -109,209 +109,216 @@ def TestPatch(hoststring, status_code, text=False):
         print(r.text)
     print("")
 
+def main():
+    EvaluationTester()
+    input("Press Enter to continue...")
 
 
-EvaluationTester()
-input("Press Enter to continue...")
+    ##################################################################
+    #                Multiple Server Different Ports                 #
+    ##################################################################
 
+    EvaluationTester()
+    print("- Setup multiple servers with different port")
+    print("")
 
-##################################################################
-#                Multiple Server Different Ports                 #
-##################################################################
+    TestGet('http://localhost:8080', True)
+    TestGet('http://localhost:8080/index.html', True)
+    TestGet('http://localhost:8081', True)
+    TestGet('http://localhost:8081/index1.html', True)
+    TestGet('http://localhost:8082', True)
+    TestGet('http://localhost:8082/index4.html', True)
+    TestGet('http://localhost:8080/index2.html', True)
+    TestGet('http://localhost:8081/index.html', True)
 
-EvaluationTester()
-print("- Setup multiple servers with different port")
-print("")
 
-TestGet('http://localhost:8080', True)
-TestGet('http://localhost:8080/index.html', True)
-TestGet('http://localhost:8081', True)
-TestGet('http://localhost:8081/index1.html', True)
-TestGet('http://localhost:8082', True)
-TestGet('http://localhost:8082/index4.html', True)
-TestGet('http://localhost:8080/index2.html', True)
-TestGet('http://localhost:8081/index.html', True)
+    input("Press Enter to continue...")
 
+    ##################################################################
+    #                Multiple Server Different Hosts                 #
+    ##################################################################
 
-input("Press Enter to continue...")
+    EvaluationTester()
+    print("- Multiple Server Different Hosts")
+    print("")
 
-##################################################################
-#                Multiple Server Different Hosts                 #
-##################################################################
+    headers = { }
+    TestGet('http://localhost:8083', True, headers, True)
 
-EvaluationTester()
-print("- Multiple Server Different Hosts")
-print("")
+    input("Press Enter to continue...")
+    EvaluationTester()
+    print("- Multiple Server Different Hosts")
+    print("")
 
-headers = { }
-TestGet('http://localhost:8083', True, headers, True)
 
-input("Press Enter to continue...")
-EvaluationTester()
-print("- Multiple Server Different Hosts")
-print("")
+    headers = { 'Host' : 'name' }
+    TestGet('http://localhost:8083', True, headers, True)
 
+    input("Press Enter to continue...")
+    EvaluationTester()
+    print("- Multiple Server Different Hosts")
+    print("")
 
-headers = { 'Host' : 'name' }
-TestGet('http://localhost:8083', True, headers, True)
+    headers = { 'Host' : 'other_name' }
+    TestGet('http://localhost:8083', True, headers, True)
 
-input("Press Enter to continue...")
-EvaluationTester()
-print("- Multiple Server Different Hosts")
-print("")
+    input("Press Enter to continue...")
+    EvaluationTester()
+    print("- Multiple Server Different Hosts")
+    print("")
 
-headers = { 'Host' : 'other_name' }
-TestGet('http://localhost:8083', True, headers, True)
+    headers = { 'Host' : 'hostname' }
+    TestGet('http://localhost:8083', True, headers, True)
 
-input("Press Enter to continue...")
-EvaluationTester()
-print("- Multiple Server Different Hosts")
-print("")
+    input("Press Enter to continue...")
+    EvaluationTester()
+    print("- Multiple Server Different Hosts")
+    print("")
 
-headers = { 'Host' : 'hostname' }
-TestGet('http://localhost:8083', True, headers, True)
 
-input("Press Enter to continue...")
-EvaluationTester()
-print("- Multiple Server Different Hosts")
-print("")
 
+    headers = { }
+    TestGet('http://localhost:8083', True, headers)
 
+    headers = { 'Host' : 'name' }
+    TestGet('http://localhost:8083', True, headers)
 
-headers = { }
-TestGet('http://localhost:8083', True, headers)
+    headers = { 'Host' : 'other_name' }
+    TestGet('http://localhost:8083', True, headers)
 
-headers = { 'Host' : 'name' }
-TestGet('http://localhost:8083', True, headers)
+    headers = { 'Host' : 'hostname' }
+    TestGet('http://localhost:8083', True, headers)
 
-headers = { 'Host' : 'other_name' }
-TestGet('http://localhost:8083', True, headers)
 
-headers = { 'Host' : 'hostname' }
-TestGet('http://localhost:8083', True, headers)
+    input("Press Enter to continue...")
 
 
-input("Press Enter to continue...")
+    ##################################################################
+    #                         Error Page                             #
+    ##################################################################
 
+    EvaluationTester()
+    print("- Error Page")
+    print("")
 
-##################################################################
-#                         Error Page                             #
-##################################################################
+    TestGet('http://localhost:8084/asdasd', True, '')
+    TestGet('http://localhost:8084/zindex.html', True, '')
 
-EvaluationTester()
-print("- Error Page")
-print("")
+    input("Press Enter to continue...")
 
-TestGet('http://localhost:8084/asdasd', True, '')
-TestGet('http://localhost:8084/zindex.html', True, '')
 
-input("Press Enter to continue...")
+    ##################################################################
+    #                         Body Size Limit                        #
+    ##################################################################
 
+    EvaluationTester()
+    print("- Body Size Limit")
+    print("")
 
-##################################################################
-#                         Body Size Limit                        #
-##################################################################
 
-EvaluationTester()
-print("- Body Size Limit")
-print("")
+    TestPost('http://localhost:8085', True, "1234567890")
+    TestPost('http://localhost:8085', True, "12345678901")
 
 
-TestPost('http://localhost:8085', True, "1234567890")
-TestPost('http://localhost:8085', True, "12345678901")
+    input("Press Enter to continue...")
 
 
-input("Press Enter to continue...")
+    ##################################################################
+    #                     Different Directories                      #
+    ##################################################################
 
+    EvaluationTester()
+    print("- Different Directories")
+    print("")
 
-##################################################################
-#                     Different Directories                      #
-##################################################################
+    TestGet('http://localhost:8086', True)
+    TestGet('http://localhost:8086/blog', True)
+    TestGet('http://localhost:8086/blog/blog2', True)
 
-EvaluationTester()
-print("- Different Directories")
-print("")
+    input("Press Enter to continue...")
 
-TestGet('http://localhost:8086', True)
-TestGet('http://localhost:8086/blog', True)
-TestGet('http://localhost:8086/blog/blog2', True)
 
-input("Press Enter to continue...")
+    ##################################################################
+    #                           Indexes                              #
+    ##################################################################
 
+    EvaluationTester()
+    print("- Indexes")
+    print("")
 
-##################################################################
-#                           Indexes                              #
-##################################################################
+    TestGet('http://localhost:8087', True)
+    TestGet('http://localhost:8087/blog', True)
+    TestGet('http://localhost:8087/blog/blog2', True)
 
-EvaluationTester()
-print("- Indexes")
-print("")
+    input("Press Enter to continue...")
 
-TestGet('http://localhost:8087', True)
-TestGet('http://localhost:8087/blog', True)
-TestGet('http://localhost:8087/blog/blog2', True)
 
-input("Press Enter to continue...")
+    ##################################################################
+    #                           Methods                              #
+    ##################################################################
 
+    EvaluationTester()
+    print("- Methods")
+    print("")
 
-##################################################################
-#                           Methods                              #
-##################################################################
+    TestGet('http://localhost:8088', True)
+    TestPost('http://localhost:8088', True)
+    TestDelete('http://localhost:8088', True)
 
-EvaluationTester()
-print("- Methods")
-print("")
+    input("Press Enter to continue...")
 
-TestGet('http://localhost:8088', True)
-TestPost('http://localhost:8088', True)
-TestDelete('http://localhost:8088', True)
 
-input("Press Enter to continue...")
 
+    EvaluationTester()
+    print("- Methods")
+    print("")
 
+    data = {'A Key': 'Value',
+            'Another Key': 'Another Value'}
 
-EvaluationTester()
-print("- Methods")
-print("")
+    TestGet('http://localhost:8089', True)
+    TestPost('http://localhost:8089/test.php', True, data, True)
+    TestDelete('http://localhost:8089', True)
 
-data = {'A Key': 'Value',
-		 'Another Key': 'Another Value'}
+    input("Press Enter to continue...")
 
-TestGet('http://localhost:8089', True)
-TestPost('http://localhost:8089/test.php', True, data, True)
-TestDelete('http://localhost:8089', True)
 
-input("Press Enter to continue...")
 
+    EvaluationTester()
+    print("- Methods")
+    print("")
 
+    TestGet('http://localhost:8090', True)
 
-EvaluationTester()
-print("- Methods")
-print("")
+    input("Upload File...")
+    files = {'upload_file': open('uploads/teste.html','rb')}
+    TestPost('http://localhost:8090', True, "", False, files)
+    files = {'upload_file': open('uploads/hello.txt','rb')}
+    TestPost('http://localhost:8090', True, "", False, files)
 
-TestGet('http://localhost:8090', True)
+    input("Delete File...")
+    TestDelete('http://localhost:8090/teste.html', True)
+    TestDelete('http://localhost:8090/hello.txt', True)
 
-input("Upload File...")
-files = {'upload_file': open('uploads/teste.html','rb')}
-TestPost('http://localhost:8090', True, "", False, files)
-files = {'upload_file': open('uploads/hello.txt','rb')}
-TestPost('http://localhost:8090', True, "", False, files)
+    input("Press Enter to continue...")
 
-input("Delete File...")
-TestDelete('http://localhost:8090/teste.html', True)
-TestDelete('http://localhost:8090/hello.txt', True)
 
-input("Press Enter to continue...")
+    ##################################################################
+    #                       Unknown Request                          #
+    ##################################################################
 
+    EvaluationTester()
+    print("- Unknown Request")
+    print("")
 
-##################################################################
-#                       Unknown Request                          #
-##################################################################
+    TestPatch('http://localhost:8091', True, True)
 
-EvaluationTester()
-print("- Unknown Request")
-print("")
+    input("Press Enter to continue...")
 
-TestPatch('http://localhost:8091', True, True)
+if __name__ == '__main__':
+    try:
+        main()
+    except Exception as e:
+        print(e)
 
-input("Press Enter to continue...")
+        print("\nCHECK IF THE SERVER IS RUNNING!!!")

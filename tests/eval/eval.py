@@ -277,7 +277,7 @@ def main():
             'Another Key': 'Another Value'}
 
     TestGet('http://localhost:8089', True)
-    TestPost('http://localhost:8089/test.php', True, data, True)
+    TestPost('http://localhost:8089/print_vars.php', True, data, True)
     TestDelete('http://localhost:8089', True)
 
     input("Press Enter to continue...")

@@ -1,3 +1,10 @@
+<?php
+    if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+        // set full name variable
+        $flavour = htmlspecialchars($_POST["flavour"]);
+        setcookie("flavour", $flavour, time() + (86400 * 30), "/");
+    }
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -16,19 +23,16 @@
         // display the first name and last name
         if ($_SERVER['REQUEST_METHOD'] == 'GET') {
     ?>
-    <form action="set_session.php" method="post">
+    <form action="set_cookie.php" method="post">
         <p>Please enter your favorite cookie flavour:</p>
-        <input type="text" name="flavour" placeholder="Flavour" />
+        <input type="text" name="flavour" />
         <br />
         <input type="submit" value="Submit">
     </form>
     <?php
         }
         else if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-            // set full name variable
-            $flavour = htmlspecialchars($_POST["flavour"]);
             echo "Your favorite cookie flavour " . $flavour . " was set up!";
-            setcookie("flavour", $flavour, time() + (86400 * 30), "/");
         }
     ?>
 </body>

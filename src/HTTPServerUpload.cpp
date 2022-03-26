@@ -6,7 +6,7 @@
 /*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/24 04:14:47 by jpceia            #+#    #+#             */
-/*   Updated: 2022/03/26 01:02:18 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/03/26 01:04:44 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@ HTTPResponse HTTPServer::_upload_response(const HTTPRequest& request, const Cont
     if (method == GET)
         return _static_response(ctx);
     if (method != POST && method != PUT)
-        return _status_page_response(405, ctx);
+        return _status_page_response(501, ctx);
 
     std::string content_type = request.getHeader("Content-Type");
     if (content_type == "" || content_type.find("text/html") != std::string::npos)

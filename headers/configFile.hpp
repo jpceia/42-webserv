@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   configFile.hpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tisantos <tisantos@student.42.fr>          +#+  +:+       +#+        */
+/*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/19 15:58:56 by tisantos          #+#    #+#             */
-/*   Updated: 2022/03/19 16:48:02 by tisantos         ###   ########.fr       */
+/*   Updated: 2022/03/26 17:08:57 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,7 @@ class configFile
         /****************/
         /* Constructors */
         /****************/
-        configFile(char *configuration_file);
+        configFile(const std::string& configuration_file);
         configFile(const configFile& rhs);
         ~configFile();
 

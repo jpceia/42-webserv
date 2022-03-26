@@ -6,7 +6,7 @@
 /*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/24 04:14:47 by jpceia            #+#    #+#             */
-/*   Updated: 2022/03/26 01:17:53 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/03/26 02:07:32 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,7 @@ HTTPResponse HTTPServer::_upload_response(const HTTPRequest& request, const Cont
 HTTPResponse HTTPServer::_upload_raw_response(const HTTPRequest& request, const Context& ctx) const
 {
     HTTPResponse response;
-    response.setHeader("Content-Type", "text/html");
+
     // write to file
     std::ofstream ofs(ctx.getSysPath().c_str(), std::ios::binary | std::ios::trunc);
     if (!ofs.good())
@@ -74,7 +74,7 @@ HTTPResponse HTTPServer::_upload_multipart_response(const HTTPRequest& request, 
     }
     // Final response after successful upload
     HTTPResponse response;
-    response.setHeader("Content-Type", "text/html");
+
     response.setBody("Upload Successful");
     return response;
 }

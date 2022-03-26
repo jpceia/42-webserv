@@ -6,7 +6,7 @@
 /*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/03 17:30:40 by jceia             #+#    #+#             */
-/*   Updated: 2022/03/26 01:08:12 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/03/26 01:39:55 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -151,9 +151,15 @@ HTTPResponse HTTPServer::_response(const HTTPRequest& request, Context& ctx)
 	  debug_context(ctx);
 	  debug_request(request);
 	#endif
+
+    HTTPMethod method = request.getMethod();
+
     // checking if the method is allowed
-    if (ctx.allowed_methods.find(request.getMethod()) == ctx.allowed_methods.end())
+    if (ctx.allowed_methods.find(method) == ctx.allowed_methods.end())
         return _status_page_response(405, ctx);
+
+    if (method != GET && method != POST && method != PUT && method != DELETE)
+        return _status_page_response(501, ctx);
 
     // checking the body size
     if (request.getBody().size() > (size_t)ctx.max_body_size)
@@ -164,7 +170,7 @@ HTTPResponse HTTPServer::_response(const HTTPRequest& request, Context& ctx)
         return _redirect_response(ctx);
 
     // Delete
-    if (request.getMethod() == DELETE)
+    if (method == DELETE)
         return _delete_response(ctx);
 
     // Upload

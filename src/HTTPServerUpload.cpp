@@ -6,7 +6,7 @@
 /*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/24 04:14:47 by jpceia            #+#    #+#             */
-/*   Updated: 2022/03/26 01:00:01 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/03/26 01:02:18 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,7 +46,7 @@ HTTPResponse HTTPServer::_upload_raw_response(const HTTPRequest& request, const 
     ofs << body;
     ofs.close();
 
-    response.setBody("Upload Successfull");
+    response.setBody("Upload Successful");
     return response;
 }
 
@@ -72,10 +72,10 @@ HTTPResponse HTTPServer::_upload_multipart_response(const HTTPRequest& request, 
         else
             chunk += line + "\n";
     }
-    // Final response after successfull upload
+    // Final response after successful upload
     HTTPResponse response;
     response.setHeader("Content-Type", "text/html");
-    response.setBody("Upload Successfull");
+    response.setBody("Upload Successful");
     return response;
 }
 
@@ -116,6 +116,6 @@ HTTPResponse HTTPServer::_delete_response(const Context& ctx) const
         return _status_page_response(500, ctx);
 
     HTTPResponse response = _status_page_response(202, ctx);
-    response.setBody("Delete Successfull");
+    response.setBody("Delete Successful");
     return response;
 }

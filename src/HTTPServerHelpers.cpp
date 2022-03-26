@@ -6,7 +6,7 @@
 /*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/24 04:13:11 by jpceia            #+#    #+#             */
-/*   Updated: 2022/03/25 15:27:38 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/03/26 18:14:01 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -124,7 +124,7 @@ HTTPServer::map_str_str HTTPServer::_get_cgi_env(const HTTPRequest& request, con
 
     Servers MUST provide this meta-variable to scripts.
     */
-    env["SERVER_ADDR"] = ctx.server_addr +  ft_itos(ctx.server_port);
+    env["SERVER_ADDR"] = ctx.server_addr;
     env["SERVER_PORT"] = ft_itos(ctx.server_port);
     env["SERVER_PROTOCOL"] = request.getVersion();
     env["SERVER_SOFTWARE"] = "webserv/1.0";

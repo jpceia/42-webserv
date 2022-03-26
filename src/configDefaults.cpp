@@ -6,7 +6,7 @@
 /*   By: tisantos <tisantos@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/19 15:59:40 by tisantos          #+#    #+#             */
-/*   Updated: 2022/03/25 17:26:18 by tisantos         ###   ########.fr       */
+/*   Updated: 2022/03/25 23:00:19 by tisantos         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,7 +63,7 @@ void configDefaults::fillDefaults()
 
 	_server_name_default.push_back("");
 	_client_max_body_size_default.push_back(1000000);
-	_root_default.push_back("/www/html");            // These needs to be checked
+	_root_default.push_back("www");            // These needs to be checked
 	_index_default.push_back("/index.html");       	 // These needs to be checked
 	_auto_index_default.push_back("off");
 

@@ -6,7 +6,7 @@
 /*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/03 17:30:40 by jceia             #+#    #+#             */
-/*   Updated: 2022/03/26 01:06:47 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/03/26 01:08:12 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,7 +76,7 @@ void HTTPServer::_handle_client_recv(TCPConnection* connection, short& event)
     HTTPStatefulConnection* conn = dynamic_cast<HTTPStatefulConnection*>(connection);
     if (conn == NULL)
         throw std::runtime_error("HTTPServer::_handle_client_request: dynamic_cast failed");
-    
+
     bool finished;
     try
     {
@@ -88,7 +88,7 @@ void HTTPServer::_handle_client_recv(TCPConnection* connection, short& event)
         event = POLLOUT;
         return ;
     }
-    
+
     if (finished) // Finished receiving the request
     {
         HTTPRequest request = conn->getRequest();
@@ -147,6 +147,10 @@ void HTTPServer::_handle_client_send(TCPConnection* connection, short& event)
 
 HTTPResponse HTTPServer::_response(const HTTPRequest& request, Context& ctx)
 {
+	#ifdef DEBUG
+	  debug_context(ctx);
+	  debug_request(request);
+	#endif
     // checking if the method is allowed
     if (ctx.allowed_methods.find(request.getMethod()) == ctx.allowed_methods.end())
         return _status_page_response(405, ctx);
@@ -269,7 +273,7 @@ HTTPResponse HTTPServer::_autoindex_response(const Context& ctx) const
 
 	if (dpdf == NULL)
 		return _status_page_response(404, ctx);
-    
+
     while (true)
     {
 		epdf = readdir(dpdf);

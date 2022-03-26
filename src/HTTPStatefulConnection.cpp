@@ -6,7 +6,7 @@
 /*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/09 20:22:56 by jpceia            #+#    #+#             */
-/*   Updated: 2022/03/24 02:56:57 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/03/26 20:06:50 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,10 +88,6 @@ bool HTTPStatefulConnection::sendChuck()
 
 bool HTTPStatefulConnection::recvChunk()
 {
-    ParseState state = _request.getState();
-    if (state == PARSE_COMPLETE)
-        throw std::runtime_error("HTTPStatefulConnection::recv() - "
-                                    "request already complete");
     std::string chunk = TCPConnection::recv();
     if (chunk.empty())
         throw TCPConnection::DisconnectedException();

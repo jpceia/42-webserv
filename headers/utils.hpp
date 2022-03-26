@@ -6,7 +6,7 @@
 /*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/23 20:05:23 by jpceia            #+#    #+#             */
-/*   Updated: 2022/03/24 07:27:37 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/03/26 02:33:30 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,7 @@
 # include <vector>
 # include <string>
 # include <sys/poll.h>
+# include <ctime>
 
 bool compareFunction (std::string a, std::string b);
 int ft_stoi(const std::string& str);
@@ -27,6 +28,10 @@ bool is_readable_file(const std::string& path);
 struct pollfd create_pollfd(int fd, short int events);
 
 std::string cleanup_path(const std::string& path);
+
+std::string formatedDate(std::time_t rawtime);
+std::time_t currentTime();
+std::time_t lastModifiedTime(const std::string& path);
 
 std::string exec_cmd(
     const std::string &cmd,

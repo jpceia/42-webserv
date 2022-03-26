@@ -6,7 +6,7 @@
 /*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/23 20:06:03 by jpceia            #+#    #+#             */
-/*   Updated: 2022/03/25 17:03:35 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/03/26 02:32:39 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,7 @@
 #include <cstdlib>
 #include <iostream>
 #include <cstdio>
+#include <ctime>
 
 bool compareFunction (std::string a, std::string b)
 {
@@ -124,6 +125,33 @@ std::vector<std::string> map_to_vector(const std::map<std::string, std::string>&
         it != map.end(); ++it)
         v.push_back(it->first + "=" + it->second);
     return v;
+}
+
+std::string formatedDate(std::time_t rawtime)
+{
+    char buffer[80];
+    struct tm * timeinfo;
+
+    timeinfo = std::localtime(&rawtime);
+    strftime(buffer, 80, "%a, %d %b %Y %H:%M:%S %Z", timeinfo);
+    return buffer;
+}
+
+
+std::time_t currentTime()
+{
+    std::time_t rawtime;
+    std::time(&rawtime);
+
+    return rawtime;
+}
+
+std::time_t lastModifiedTime(const std::string& path)
+{
+    struct stat s;
+    if (stat(path.c_str(), &s) == 0)
+        return s.st_mtime;
+    return 0;
 }
 
 std::string exec_cmd(

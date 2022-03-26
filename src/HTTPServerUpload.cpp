@@ -6,7 +6,7 @@
 /*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/24 04:14:47 by jpceia            #+#    #+#             */
-/*   Updated: 2022/03/25 17:11:52 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/03/26 01:00:01 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@ HTTPResponse HTTPServer::_upload_response(const HTTPRequest& request, const Cont
         return _upload_raw_response(request, ctx);
     if (content_type.find("multipart/form-data") != std::string::npos)
         return _upload_multipart_response(request, ctx);
-    return _status_page_response(415, ctx);
+    return _status_page_response(501, ctx);
 }
 
 HTTPResponse HTTPServer::_upload_raw_response(const HTTPRequest& request, const Context& ctx) const

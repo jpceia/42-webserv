@@ -6,7 +6,7 @@
 /*   By: jpceia <joao.p.ceia@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/22 15:33:45 by jceia             #+#    #+#             */
-/*   Updated: 2022/03/24 03:34:27 by jpceia           ###   ########.fr       */
+/*   Updated: 2022/03/26 02:34:18 by jpceia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,9 @@ HTTPResponse::HTTPResponse() :
     _status()
 {
     this->setHeader("Server", "webserv/1.0");
+    this->setHeader("Content-Type", "text/html");
+    this->setHeader("Connection", "keep-alive");
+    this->setHeader("Date", formatedDate(currentTime()));
 }
 
 HTTPResponse::HTTPResponse(const HTTPResponse& rhs) :
